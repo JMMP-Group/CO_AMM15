@@ -1,5 +1,33 @@
+Up-to-date MY_SRC files for CO9_AMM15 configuration. 
+These have been brought together from a few different sources. 
+Outlined below.
+*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*
 
+1. River and tracer modifications. 
+From the 10 year run by Nico Bruneau. 
+Originally from /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/MY_SRC
+Same files as in MY_SRC_river15 of this repo.
 
-This was a first go in AMM15 but I finally used the executable compiled for AMM7
-So please use the code in RIV7 and not this one
+trc.F90
+trcbc.F90
+trcini.F90
+trcnam.F90
+trcnxt.F90
+trcsbc.F90
+trcsms_my_trc.F90
 
+2. Tide forcing modifications.
+
+Not yet.
+
+3. Harmonic analysis modifications
+
+Not yet.
+
+4. Wetting & Drying
+
+Not yet.
+
+5. Vertical Coordinates.
+
+Not yet. 
