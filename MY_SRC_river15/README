@@ -9,22 +9,23 @@ Here I highlight differences between nemo v4.0.2 and the files inside RIVER15.
     These are arrays of size `jpi` x `jpj` x `jpk` x `jptra`
     They contain flags for rivers and baltic boundaries.
 
-    
+```    
         REAL(wp), PUBLIC, ALLOCATABLE, SAVE, DIMENSION(:,:,:,:) :: flagRIV, flagOTH !: tracer flags to activate effect of rivers and baltic
 
 
         ALLOCATE( flagRIV(jpi,jpj,jpk,jptra) , STAT = ierr(5) )
         ALLOCATE( flagOTH(jpi,jpj,jpk,jptra) , STAT = ierr(6) )
-
+```
 
 >>>>>>>>> trcbc.F90
 
     trcbc.F90 defines, initialises and applies boundary conditions to tracers.
     There is only a small change in this file, changing a < to a <=. Was this Nico?? (there are no initials)
-
+```
         IF(  .NOT.( 0 <= nn_trcdmp_bdy(ib)  .AND.  nn_trcdmp_bdy(ib) <= 2 )  )  THEN
           CALL ctl_stop( 'trc_bc_ini: Not a valid option for nn_trcdmp_bdy. Allowed: 0,1,2.' )
         ENDIF
+```
 >>>>>>>>> trcini.F90
 
     trcini.F90 initialises passive tracers.
@@ -32,30 +33,34 @@ Here I highlight differences between nemo v4.0.2 and the files inside RIVER15.
     Define some regions of the variables as 1, states where there are rivers using `trn` (tracer  concentration now) variable.
     Sets `trn` to 0
 
-
+```
         flagRIV(:,:,:,:) = 0. ! init flag to 0
         flagOTH(:,:,:,:) = 0. ! init flag to 0
         WHERE( trn .gt. 0. ) flagRIV = 1. ! 1 to state where there are rivers (runoff used for mass flux)
         WHERE( trn .lt. 0. ) flagOTH = 1. ! 1 to state where there are other sources (velocity used for mass flux)
         trn(:,:,:,:) = 0. ! turn off input - now mass flux
-
+```
     Read restart after this point, previously was earlier in the file.
 
-
+```
         IF( ln_rsttr ) THEN
           CALL trc_rst_read
         ENDIF
+```
+
 >>>>>>>>> trcnam.F90
 
     Reads and prints options for the passic tracer run.
     The setting of variable `ln_trcdta` in the event that `ln_rsttr = True` has been commented out.
 
+```
         !IF( ln_rsttr ) ln_trcdta = .FALSE. ! restart : no need of clim data
     trcnxt.F90
+```
 
     This handles timestepping of passive tracers
     All passive tracers at boundaries are fixed to zero:
-
+```
         igrd = 1                          ! Everything is at T-points here
         DO ib_bdy = 1, nb_bdy               ! Loop over open boundary only
             DO jn = 1, jptra
@@ -68,18 +73,18 @@ Here I highlight differences between nemo v4.0.2 and the files inside RIVER15.
               END DO
              END DO
         END DO
-
+```
     This replaces a previous call to `trc_bdy()`, which is now commented out:
-
+```
         !      IF( ln_bdy )  CALL trc_bdy( kt )
-
+```
     why?
 
 >>>>>>>>> trcsbc.F90
 
     Updates tracer trends at the ocean surface. Computes and applies surface boundary conditions.
     Just two lines of modification:
-
+```
         !-- NB -- INITIALISE TABLES THAT WERE NOT
         sbc_trc_b(:,:,:) = 0._wp
         sbc_trc  (:,:,:) = 0._wp
@@ -87,21 +92,21 @@ Here I highlight differences between nemo v4.0.2 and the files inside RIVER15.
 
 
     trcsms_my_trc.F90
-
+```
     Import `bdy_oce`:
-
+```
         USE bdy_oce
-
+```
     Define some integers in trc_sms_my_trc():
 
-
+```
         INTEGER :: jgrd, jb_bdy,jb,jj,ji,jk
         REAL(wp):: flg
-
+```
     Where river flags are true, then update `trn` by adding `rnf/h_rnf`. 
     `h_rnf` is a depth in metres used for runoff. 2D.
     `rnf` is river runoff in kg/m2/s
-
+```
         ! add here the call to BGC model
         !-- NB ------------------------------------------------- 
         ! Add river mass flux at each river mouth
@@ -112,12 +117,12 @@ Here I highlight differences between nemo v4.0.2 and the files inside RIVER15.
               ENDDO
             ENDDO
         ENDDO
-
+```
     Runoff comes in at all model levels? (In an averaged sense?)
 
     The above is for river mouths. The below is for model boundaries. Updates `trn` at baltic model boundaries.
 
-
+```
         ! if other point, add mass flux based on velocity
           jgrd   = 2                        ! Everything is at U-points here
           jb_bdy = 2                        ! baltic sea bnd
@@ -133,3 +138,4 @@ Here I highlight differences between nemo v4.0.2 and the files inside RIVER15.
               END DO
           END DO
               !-- END NB ----------------------------------------------
+```
