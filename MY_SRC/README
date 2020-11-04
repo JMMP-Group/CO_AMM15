@@ -3,7 +3,7 @@ These have been brought together from a few different sources.
 Outlined below.
 *_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*_*
 
-1. River and tracer modifications. 
+1. River and tracer modifications: MY_SRC_river15. 
 From the 10 year run by Nico Bruneau. 
 Originally from /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/MY_SRC
 Same files as in MY_SRC_river15 of this repo.
