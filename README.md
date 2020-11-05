@@ -5,22 +5,29 @@ This repository is still under construction. It has begun to be populated so tha
 
 Directories:
 
-	-EXP00
+	- EXP00
+		Main, combined run directory
+	- EXP_nico
+		Run directory used by Nico for 10-year RIVER run
 
 	- MY_SRC
-	- MY_SRC_AMM7
-	- MY_SRC_amm15
+		Main, combined MY_SRC directory
 	- MY_SRC_river15
-	- MY_SRC_river7
-
+		MY_SRC for freshwater tracers from river runoff, Baltic (Nico)
+	- MY_SRC_tides
+		MY_SRC for modifications to tide forcing.
+		
 	- arch
+		ARCHER architecture files for NEMO and XIOS
 	- scripts
+		Miscellaneous scripts for running, building and moving configurations/files
 
-	- cpp_co9-amm16.fcm
+	- cpp_co9-amm15.fcm
+		NEMO compile/build keys.
 
 Input Files:
 
-These can be found on a few different locations in /projectsa/ and on ARCHER:
+These can be found on a few different locations in /projectsa/, ARCHER and JASMIN:
 
 	- Domain
 	- Surface Forcing
