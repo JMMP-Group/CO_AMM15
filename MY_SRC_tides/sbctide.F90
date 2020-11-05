@@ -33,9 +33,6 @@ MODULE sbctide
 
    REAL(wp), ALLOCATABLE, DIMENSION(:,:,:) ::   amp_pot, phi_pot
    REAL(wp), ALLOCATABLE, DIMENSION(:,:,:) ::   amp_load, phi_load
-
-   ! davbyr: Tide drag
-   REAL(wp), ALLOCATABLE, SAVE, DIMENSION(:,:) ::   tdiss
  
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
@@ -61,10 +58,6 @@ CONTAINS
             IF( ln_read_load )THEN
                ALLOCATE( amp_load(jpi,jpj,nb_harmo), phi_load(jpi,jpj,nb_harmo) )
                CALL tide_init_load
-            ENDIF
-            IF( ln_int_wave_drag )THEN !davbyr: Allocation and read tdiss
-               ALLOCATE( tdiss(jpi, jpj) )        
-               CALL tide_init_diss
             ENDIF
          ENDIF
          !
