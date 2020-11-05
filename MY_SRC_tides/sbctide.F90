@@ -175,24 +175,5 @@ CONTAINS
       !
    END SUBROUTINE tide_init_load
 
-   SUBROUTINE tide_init_diss !davbyr: subroutine
-      !!----------------------------------------------------------------------
-      !!                 ***  ROUTINE tide_init_diss  ***
-      !!----------------------------------------------------------------------
-      INTEGER :: inum                 ! Logical unit of input file
-      INTEGER :: iii, jjj             ! dummy loop indices
-      !!----------------------------------------------------------------------
-      IF(lwp) THEN
-         WRITE(numout,*)
-         WRITE(numout,*) 'tide_init_diss : Read tidal dissipation from file:',cn_int_wave_drag
-         WRITE(numout,*) '~~~~~~~~~~~~~~ '
-      ENDIF
-         
-      CALL iom_open(cn_int_wave_drag, inum)
-      CALL iom_get (inum, jpdom_data, 'tdiss', tdiss(:,:))
-      CALL iom_close(inum)
-      CALL iom_close( inum )
-   END SUBROUTINE tide_init_diss
-
   !!======================================================================
 END MODULE sbctide
