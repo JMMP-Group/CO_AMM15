@@ -3,7 +3,7 @@
 Contains developement code for SE-NEMO
 Square brackets show comment markers in the code to find and identify changes.
 
-sbcrnf.F90 - bugfixes for missing input directory
+Look for initials: NB, davbyr
 
 sbctide.F90
    - [NB] Applies Love Number from namelist.
@@ -17,4 +17,3 @@ tide_mod.F90
 
 tideini.F90
    - [NB] Reads Love number from namelist and outputs to Ocean.output.
-   - [davbyr] Reads/stores ln_int_wave_drag (switches on internal wave drag for tides)

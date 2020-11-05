@@ -105,9 +105,7 @@
          <file id="file15" name_suffix="_25hourm_grid_W" description="ocean W grid variables, 25h meaned" enabled=".TRUE." >
             <field field_ref="vovecrtz25h"          name="vovecrtz"  operation="instant" enabled=".TRUE."/>
             <field field_ref="avt25h"               name="votkeavt"  operation="instant" enabled=".TRUE."/>
-            <field field_ref="avm25h"               name="votkeavm"  operation="instant" enabled=".TRUE."/>
-            <field field_ref="tke25h"               name="votke"  operation="instant" enabled=".TRUE."/>
-            <field field_ref="mxln25h"              name="mxln"   operation="instant" enabled=".TRUE."/>
+            <field field_ref="tke25h"               name="votke"     operation="instant" enabled=".TRUE."/>
          </file>
          
       </file_group>

@@ -35,10 +35,6 @@ MODULE tideini
    ! NB - read love number from namelist
    REAL(wp), PUBLIC ::   dn_love_number  !:
    ! END NB
-   ! davbyr : Switch for internal wave drag on barotropic currents.
-   LOGICAL , PUBLIC :: ln_int_wave_drag !:
-   CHARACTER(lc), PUBLIC ::   cn_int_wave_drag   !:
-   ! END davbyr
    REAL(wp), PUBLIC ::   rn_scal_load    !:
    CHARACTER(lc), PUBLIC ::   cn_tide_load   !: 
 
@@ -60,10 +56,9 @@ CONTAINS
       INTEGER  ::   ios                 ! Local integer output status for namelist read
       !
       ! NB - read love number from namelist (one line)
-      ! davbyr - read ln_int_wave_drag (one line)
       NAMELIST/nam_tide/ln_tide, ln_tide_pot, ln_scal_load, ln_read_load, cn_tide_load, &
                   &     ln_tide_ramp, rn_scal_load, rdttideramp, dn_love_number, &
-                  &     ln_int_wave_drag, cn_int_wave_drag, clname
+                  &     clname
       !!----------------------------------------------------------------------
       !
       ! Read Namelist nam_tide
@@ -92,9 +87,6 @@ CONTAINS
             WRITE(numout,*) '         Duration (days) of ramp                 rdttideramp  = ', rdttideramp
             ! NB - Love number (one line)
             WRITE(numout,*) '         Love Number                             dn_love_number = ', dn_love_number
-            ! davbyr - Output wave drag switch value (two line)
-            WRITE(numout,*) '         Internal Wave Drag Parameterization     ln_int_wave_drag = ', ln_int_wave_drag
-            IF(ln_int_wave_drag) WRITE(numout,*) 'cn_int_wave_drag = ', cn_int_wave_drag
          ENDIF
       ELSE
          rn_scal_load = 0._wp 

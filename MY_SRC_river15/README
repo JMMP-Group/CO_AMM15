@@ -2,6 +2,8 @@ NEMO4.0.2 - RIVER15 - MY_SRC files
 
 Here I highlight differences between nemo v4.0.2 and the files inside RIVER15.
 
+Look for initials: NB
+
 >>>>>>>>> trc.F90
 
     trc.F90 is a module for defining paramaters/variables/arrays for tracers.
