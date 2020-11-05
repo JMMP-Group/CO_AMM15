@@ -1,0 +1,57 @@
+#!/bin/bash
+#PBS -N rebuild
+#PBS -l select=serial=true:ncpus=1
+#PBS -l walltime=06:00:00
+#PBS -A n01-CLASS
+#PBS -q short
+
+### LOAD MODULES
+##module load cray-libsci/16.11.1
+##module load cray-mpich/7.5.5
+##module load cray-netcdf-hdf5parallel/4.4.1.1
+##module load cray-hdf5-parallel/1.10.0.1
+##module swap PrgEnv-cray PrgEnv-intel
+##module load cray-netcdf-hdf5parallel cray-hdf5-parallel
+
+export PBS_O_WORKDIR=$(readlink -f $PBS_O_WORKDIR)
+cd $PBS_O_WORKDIR
+
+echo $DIR
+echo $(PREFIX)
+echo $((PREFIX))
+
+ulimit -c unlimited
+ulimit -s unlimited
+
+cd $PBS_O_WORKDIR
+cd $DIR
+pwd
+
+## DEAL WITH T POINTS
+echo "============= T FILE ============"
+time $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 25hourm_grid_T 12
+time nccopy -k4 -d3 25hourm_grid_T.nc 25hourm_grid_T_compress3.nc
+time rsync -avzu 25hourm_grid_T_compress3.nc /nerc/n01/n01/nibrun/NEW_AMM15/GRID_T/$((PREFIX))_25hourm_grid_T_compress3.nc
+
+## DEAL WITH TRACERS
+echo "============= TRACER FILE ============"
+time $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 tracers_grid_T 12
+time nccopy -k4 -d3 tracers_grid_T.nc tracers_grid_T_compress3.nc
+time rsync -avzu 25hourm_grid_T_compress3.nc /nerc/n01/n01/nibrun/NEW_AMM15/TRACERS/$((PREFIX))_tracers_grid_T_compress3.nc
+
+## COMPRESS THE REST
+echo "============= TAR U ============"
+time tar -cWlf GRID_U.tar 25hourm_grid_U*
+time rsync -avzu GRID_U.tar /nerc/n01/n01/nibrun/NEW_AMM15/GRID_U/$((PREFIX))_25hourm_grid_U.tar
+time tar -cWlf GRID_V.tar 25hourm_grid_V*
+time rsync -avzu GRID_V.tar /nerc/n01/n01/nibrun/NEW_AMM15/GRID_V/$((PREFIX))_25hourm_grid_V.tar
+time tar -cWlf GRID_W.tar 25hourm_grid_W*
+time rsync -avzu GRID_W.tar /nerc/n01/n01/nibrun/NEW_AMM15/GRID_W/$((PREFIX))_25hourm_grid_W.tar
+#time tar -cWlf harmonic.tar harmonic_grid*
+#time rsync -avzu harmonic.tar /nerc/n01/n01/nibrun/NEW_AMM15/HARMO/$((PREFIX))_Harmonic.tar 
+
+## LEFT OVER
+rsync -avzu namelist_cfg       /nerc/n01/n01/nibrun/NEW_AMM15/NAMELIST/$((PREFIX))_namelist_cfg
+rsync -avzu namelist_top_cfg   /nerc/n01/n01/nibrun/NEW_AMM15/NAMELIST/$((PREFIX))_namelist_top_cfg
+rsync -avzu ocean.output       /nerc/n01/n01/nibrun/NEW_AMM15/NAMELIST/$((PREFIX))_ocean.output
+#rsync -avzu NOOS_transport     /nerc/n01/n01/nibrun/NEW_AMM15/SECTIONS/$((PREFIX))_NOOS_transport

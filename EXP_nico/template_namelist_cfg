@@ -414,7 +414,7 @@
 &nambdy_tide   !  tidal forcing at open boundaries
 !-----------------------------------------------------------------------
 !   filtide      = 'tides/bdry_tide_34csts_AMM15'
-   filtide      = 'tides/amm15_bdytide_tp_v2' 
+   filtide      = 'amm15_bdytide_tp_v2' 
    ln_bdytide_2ddta  = .true.
    ln_bdytide_conj   = .false.
 /

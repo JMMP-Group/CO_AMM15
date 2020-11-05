@@ -1,0 +1,39 @@
+#!/bin/bash
+#PBS -N rebuild
+#PBS -l select=serial=true:ncpus=1
+#PBS -l walltime=06:00:00
+#PBS -A n01-CLASS
+#PBS -q short
+
+## LOAD MODULES
+module load cray-libsci/16.11.1
+module load cray-mpich/7.5.5
+module load cray-netcdf-hdf5parallel/4.4.1.1
+module load cray-hdf5-parallel/1.10.0.1
+module swap PrgEnv-cray PrgEnv-intel
+module load cray-netcdf-hdf5parallel cray-hdf5-parallel
+
+export PBS_O_WORKDIR=$(readlink -f $PBS_O_WORKDIR)
+cd $PBS_O_WORKDIR
+
+ulimit -c unlimited
+ulimit -s unlimited
+
+pwd
+
+PREFIX='2012'
+MONTH='12'
+
+mkdir -p /nerc/n01/n01/nibrun/AMM15/$((PREFIX))
+
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_200512   /nerc/n01/n01/nibrun/AMM15/
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_200612   /nerc/n01/n01/nibrun/AMM15/
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_200712   /nerc/n01/n01/nibrun/AMM15/
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_200812   /nerc/n01/n01/nibrun/AMM15/
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_200912   /nerc/n01/n01/nibrun/AMM15/
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_201012   /nerc/n01/n01/nibrun/AMM15/
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_201112   /nerc/n01/n01/nibrun/AMM15/
+time rsync -avzu /work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/RESTART/files_restart_201212   /nerc/n01/n01/nibrun/AMM15/
+
+
+
