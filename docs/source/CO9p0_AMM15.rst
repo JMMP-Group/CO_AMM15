@@ -32,7 +32,12 @@ UBS momentum advection:
   Switched it to grid scale dependence only (30)
   That helps a bit, as did switching to the same option for tracers
   (which had constant diffusion set similar to Jennys)
-  and also switching to using implicit vertical advection.
+  and also switching to using implicit vertical advection
+* Animation of surface and BED fields UBS V VEC (Rolling Monthly means)
+.. raw:: html
+ 
+ <iframe src="https://drive.google.com/file/d/1cAzmE0rsEWX7ZQegofYbO8SvZqWBk3Ab/preview" width="640" height="480"></iframe> 
+ 
 * Time series comparison of rms difference betwewn Jenny's reference run and UBS and Vector Invar. momentmim advection
 .. image:: DAILY_AMM15_V36_V_402UBS_402VEC.png
    :width: 200px
@@ -41,6 +46,4 @@ UBS momentum advection:
    :alt: RMS 3.6 versus UBS and Vec invariant momentum advection SST, SBT, SSS, SBS
    :align: right
    
- .. raw:: html
- 
- <iframe src="https://drive.google.com/file/d/1cAzmE0rsEWX7ZQegofYbO8SvZqWBk3Ab/preview" width="640" height="480"></iframe>
+
