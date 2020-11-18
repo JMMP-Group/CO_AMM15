@@ -40,3 +40,5 @@ UBS momentum advection:
    :scale: 50 %
    :alt: RMS 3.6 versus UBS and Vec invariant momentum advection SST, SBT, SSS, SBS
    :align: right
+ .. raw:: html
+ <iframe src="https://drive.google.com/file/d/1cAzmE0rsEWX7ZQegofYbO8SvZqWBk3Ab/preview" width="640" height="480"></iframe>
