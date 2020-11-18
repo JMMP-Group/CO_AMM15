@@ -34,8 +34,9 @@ UBS momentum advection:
   (which had constant diffusion set similar to Jennys)
   and also switching to using implicit vertical advection
 * Animation of surface and BED fields UBS V VEC (Rolling Monthly means)
+`UBS_V_Vector <https://drive.google.com/file/d/1cAzmE0rsEWX7ZQegofYbO8SvZqWBk3Ab/preview>`_
+
 .. raw:: html
- 
  <iframe src="https://drive.google.com/file/d/1cAzmE0rsEWX7ZQegofYbO8SvZqWBk3Ab/preview" width="640" height="480"></iframe> 
  
 * Time series comparison of rms difference betwewn Jenny's reference run and UBS and Vector Invar. momentmim advection
