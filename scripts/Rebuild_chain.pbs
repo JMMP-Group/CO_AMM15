@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N rebuild
 #PBS -l select=serial=true:ncpus=1
-#PBS -l walltime=12:00:00
+#PBS -l walltime=06:00:00
 #PBS -A n01-CLASS
 #PBS -q short
 
@@ -26,35 +26,34 @@ cd $PBS_O_WORKDIR
 cd $DIR
 pwd
 NAME=AMM15_1d_$((PREFIX))01_$((PREFIX))$((DAY))_
-#OUTDIR="/work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/OUTPUT/"
-OUTDIR=$OUTDIR
+OUTDIR="/work/n01/n01/nibrun/NEMO/release-4.0.1/cfgs/RIVERAMM15/RUN_MODEL/OUTPUT/"
 ## DEAL WITH T POINTS
 echo "============= T FILE ============"
 time $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 $NAME\25hourm_grid_T 12
-#time nccopy -k4 -d3 $NAME\25hourm_grid_T.nc $OUTDIR$NAME\25hourm_grid_T_cmp3.nc
+time nccopy -k4 -d3 $NAME\25hourm_grid_T.nc $OUTDIR$NAME\25hourm_grid_T_cmp3.nc
 
 ## DEAL WITH TRACERS
 echo "============= TRACER FILE ============"
 time $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 tracers_grid_T 12
-#time nccopy -k4 -d3 tracers_grid_T.nc $OUTDIR$NAME\tracers_grid_T_cmp3.nc
+time nccopy -k4 -d3 tracers_grid_T.nc $OUTDIR$NAME\tracers_grid_T_cmp3.nc
 
 ## DEAL WITH U POINTS
 echo "============= U FILE ============"
 time $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 $NAME\25hourm_grid_U 12
-#time nccopy -k4 -d3 $NAME\25hourm_grid_U.nc $OUTDIR$NAME\25hourm_grid_U_cmp3.nc
+time nccopy -k4 -d3 $NAME\25hourm_grid_U.nc $OUTDIR$NAME\25hourm_grid_U_cmp3.nc
 
 ## DEAL WITH V POINTS
 echo "============= V FILE ============"
 time $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 $NAME\25hourm_grid_V 12
-#time nccopy -k4 -d3 $NAME\25hourm_grid_V.nc $OUTDIR$NAME\25hourm_grid_V_cmp3.nc
+time nccopy -k4 -d3 $NAME\25hourm_grid_V.nc $OUTDIR$NAME\25hourm_grid_V_cmp3.nc
 
 
 ## DEAL WITH W POINTS
 echo "============= W FILE ============"
 time $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 $NAME\25hourm_grid_W 12
-#time nccopy -k4 -d3 $NAME\25hourm_grid_W.nc $OUTDIR$NAME\25hourm_grid_W_cmp3.nc
+time nccopy -k4 -d3 $NAME\25hourm_grid_W.nc $OUTDIR$NAME\25hourm_grid_W_cmp3.nc
 
-#rm $NAME\25hourm_grid_W.nc $NAME\25hourm_grid_V.nc $NAME\25hourm_grid_U.nc tracers_grid_T.nc
+rm $NAME\25hourm_grid_W.nc $NAME\25hourm_grid_V.nc $NAME\25hourm_grid_U.nc tracers_grid_T.nc
 ## COMPRESS THE REST
 #echo "============= TAR U ============"
 #time tar -cWlf GRID_U.tar 25hourm_grid_U*
@@ -71,3 +70,8 @@ rsync -avzu namelist_cfg       $OUTDIR$((prefix))\_namelist_cfg
 rsync -avzu namelist_top_cfg   $OUTDIR$((prefix))\_namelist_top_cfg
 rsync -avzu ocean.output       $OUTDIR$((prefix))\_ocean.output
 #rsync -avzu NOOS_transport     /nerc/n01/n01/nibrun/NEW_AMM15/SECTIONS/$((PREFIX))_NOOS_transport
+
+
+
+
+
