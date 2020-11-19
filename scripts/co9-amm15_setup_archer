@@ -72,10 +72,10 @@ module load cray-netcdf-hdf5parallel
 
 # Checkout the NEMO code from the SVN Paris repository 
 echo "Checking out NEMO repository"
-svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2 --depth empty nemo
-svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2/src --depth infinity nemo/src
+svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.1 --depth empty nemo
+svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.1/src --depth infinity nemo/src
 svn co http://forge.ipsl.jussieu.fr/nemo/svn/utils/build/mk nemo/mk
-svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2/cfgs/SHARED nemo/cfgs/SHARED
+svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.1/cfgs/SHARED nemo/cfgs/SHARED
 svn export http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2/cfgs/ref_cfgs.txt nemo/cfgs/ref_cfgs.txt
 svn co http://forge.ipsl.jussieu.fr/nemo/svn/vendors/FCM nemo/ext/FCM
 svn co http://forge.ipsl.jussieu.fr/nemo/svn/vendors/IOIPSL nemo/ext/IOIPSL
@@ -128,9 +128,9 @@ ln -s ../../SHARED/field_def_nemo-ice.xml field_def_nemo-ice.xml
 ln -s ../../SHARED/domain_def_nemo.xml domain_def_nemo.xml
 ln -s ../../SHARED/axis_def_nemo.xml axis_def_nemo.xml
 
-wget http://gws-access.ceda.ac.uk/public/jmmp_collab/se-orca025/inputs.tar.gz
-tar xvfz inputs.tar.gz
-rm inputs.tar.gz
+#wget http://gws-access.ceda.ac.uk/public/jmmp_collab/se-orca025/inputs.tar.gz
+#tar xvfz inputs.tar.gz
+#rm inputs.tar.gz
 
 mkdir meta_out
 mkdir RESTARTS
