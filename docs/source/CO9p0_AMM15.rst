@@ -6,7 +6,9 @@ CO9p0_AMM15
 
 AMM15 in NEMOv4.0.? that is as close to Jenny's v3.6 configuration as possible.
 
+.. _CO9p0_AMM15:
 
+==================================================
 Notes describing experiments to create CO9p0_AMM15
 ==================================================
 
