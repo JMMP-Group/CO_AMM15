@@ -1,8 +1,7 @@
-.. contents:: Table of Contents
 
-********************************************************************
+====================================================================
 Notes on rose suites and  associated branches for running on Monsoon
-*********************************************************************
+====================================================================
 
 Here we keep for the record steps to create a nominal package branch on 
 the Paris svn repository for the running of AMM15 suites.
