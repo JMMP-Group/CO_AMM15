@@ -12,8 +12,9 @@ We start at 4.0.2 for now but will update once the GO package branch is chilled
 Background to rose suite and package branch
 ==================================================
 
-See notes on CO9p0_AMM15 for background to experimental set up
-that derives the p0 AMM15 suite.
+See notes on 
+:doc:`CO9p0_AMM15<CO9p0_AMM15>` for background to experimental set up
+that derives the COp0_AMM15 suite.
 
 Here we take that suite and create a clean suite for use on monsoon.
 
