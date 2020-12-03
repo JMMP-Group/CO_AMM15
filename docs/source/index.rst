@@ -22,6 +22,8 @@ When a new note file is created manually add it to this list to aid finding it.
    template
 
    CO9p0_AMM15
+   
+   rose_monsoon.rst
 
 
 
