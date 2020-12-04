@@ -32,7 +32,16 @@ as the reference point
 
 Create reference version of the suite under collaboration repository
 =====================================================================
+
+
    
 Create package branch on Paris Repository
 =====================================================================
+1. Create 4.0.2 package branch, starting from G08 version of the same:
+ Created Ticket for 4.0.2 starter package for c09
 
+svn copy svn+ssh://deazer@forge.ipsl.jussieu.fr/ipsl/forge/projets/nemo/svn/NEMO/branches/UKMO/NEMO_4.0.2_GO8_package% svn+ssh://deazer@forge.ipsl.jussieu.fr/ipsl/forge/projets/nemo/svn/NEMO/branches/UKMO/NEMO_4.0.2_CO9_package -m "CO9_AMM15 package branch relative to 4.0.2 GO8_package_branch"
+
+See RMED Ticket:
+
+https://code.metoffice.gov.uk/trac/rmed/ticket/133#ticket
