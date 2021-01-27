@@ -45,3 +45,44 @@ svn copy svn+ssh://deazer@forge.ipsl.jussieu.fr/ipsl/forge/projets/nemo/svn/NEMO
 See RMED Ticket:
 
 https://code.metoffice.gov.uk/trac/rmed/ticket/133#ticket
+
+
+
+Move to Version 4.0.4
+=======================
+
+Also ee the issues tracker:
+
+https://github.com/JMMP-Group/CO9_AMM15/issues/15
+
+Have a version of the rose suite at version 4.0.2 on monsoon.
+
+The suite is: u-ca880
+It can be found on the Met office collaboration repository under:
+https://code.metoffice.gov.uk/svn/roses-u/c/a/8/8/0/trunk
+
+To check it out and run: (once you have set up collab repos credentials)
+
+    fcm co https://code.metoffice.gov.uk/svn/roses-u/c/a/8/8/0/trunk u-ca880
+    cd u-ca880
+    rose suite-run
+
+Making Version 404 should be straightforward.
+Note for some reason on monsoon the initial stage of nemo takes a very long time,
+this is even the case if using the same executable and xios executable from the internal MO cray.
+This adds considerably to the overall run time. As the suite is set up to run in a daily cycle this is a bit of an issue for longer runs.
+
+Either we solve what is the initialization problem on monsoon or we rewrite the suite to cycle on longer timescales e.g. months.
+Otherwise it probably isn't very efficient to run long runs on monsoon.
+Also have 4.0.4 version of this suite:
+u-ca907
+
+uses the 404 package branch:
+nemo_sources=branches/UKMO/NEMO_4.0.4_CO9_package
+
+As in 402 we have an odd slow down (factor of ten) for the initialisation step of NEMO compared to running on
+internal cray.
+Source of issue as yet not known
+
+For longer cycle runs e.g. a month the problem wont be to bad but it is a problem for daily cycles which the suite is defaulted to
+adding order 2 minutes to a <8 minute run.
