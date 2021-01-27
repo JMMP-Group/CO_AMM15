@@ -93,4 +93,4 @@ Rose Suites on Monsoon
 
 u-ca996: Tests 90s times step, monthly cycle with default 4.0.4 base starting 1990 with minimal output
 
-u-cb676: As u-ca996, use restart from 4.0.2 run from 2004 tests new outputs
+u-cb676: As u-ca996, use restart from 4.0.2 (RESTART_FROM_U-BP634_BASED_TEST_NEMO4.0.2_CO7_MATCH_SAFEBUILD_TIDE_V1_GLS_EN_BUG_FIX_HALF_MASK) run from 2004 tests new outputs
