@@ -51,7 +51,7 @@ https://code.metoffice.gov.uk/trac/rmed/ticket/133#ticket
 Move to Version 4.0.4
 =======================
 
-Also ee the issues tracker:
+Also see the issues tracker:
 
 https://github.com/JMMP-Group/CO9_AMM15/issues/15
 
@@ -86,3 +86,11 @@ Source of issue as yet not known
 
 For longer cycle runs e.g. a month the problem wont be to bad but it is a problem for daily cycles which the suite is defaulted to
 adding order 2 minutes to a <8 minute run.
+
+
+Rose Suites on Monsoon
+=======================
+
+u-ca996: Tests 90s times step, monthly cycle with default 4.0.4 base starting 1990 with minimal output
+
+u-cb676: As u-ca996, use restart from 4.0.2 run from 2004 tests new outputs
