@@ -22,11 +22,11 @@
    cp_cfg      = 'eorca'
    jp_cfg      = 25
    jperio      = 4
-   jpidta      = 1442
-   jpiglo      = 1442
-   jpjdta      = 1207
-   jpjglo      = 1207
-   jpkdta      = 75
+   jpidta      = 1458
+   jpiglo      = 1458
+   jpjdta      = 1345
+   jpjglo      = 1345
+   jpkdta      = 51
    jpizoom     = 1
    jpjzoom     = 1
 /
