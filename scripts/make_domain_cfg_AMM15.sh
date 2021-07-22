@@ -111,7 +111,7 @@ cd $TDIR
   # Ensure that the namelist_cfg has the appropriate parameters and number of lat,lon,depth levels set
 
   # Ensure the coordinates and bathymetry files, previously generated, are in place.
-  ln -s $DOWNLOADS/coordinates_AMM15.nc $TDIR/DOMAINcfg/coordinate.nc
+  ln -s $DOWNLOADS/coordinates_AMM15.nc $TDIR/DOMAINcfg/coordinates.nc
   ln -s $DOWNLOADS/bathy_meter_AMM15.nc $TDIR/DOMAINcfg/bathy_meter.nc
 
   ## Make an adjustment to the DOMAINcfg source code to accomodate more varied vertical coords.
