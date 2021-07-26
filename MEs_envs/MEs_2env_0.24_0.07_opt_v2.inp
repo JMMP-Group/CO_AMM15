@@ -2,7 +2,6 @@
 # INPUT FILE TO SETUP OCEAN MODELS                                         |
 #                                                                          |
 #     1. Envelopes for building MEs-coordinates                            |
-#     2. Transition area for passing from MEs- TO z-coordinates            |
 #                                                                          |
 # ------------------------------------------------------------------------ |     
 #                                                                          |
@@ -55,7 +54,7 @@
 #                                                                       |
 # =======================================================================
 
-# A) IINPUT FILES
+# A) INPUT FILES
 
 # Bathymetry of the domain
 bathyFile = '/data/users/dbruciaf/JMMP_HPGE/amm7_ancil/ps43.bathy_meter.nc'
@@ -68,7 +67,7 @@ hgridFile = '/data/users/dbruciaf/JMMP_HPGE/amm7_ancil/ps43.coordinates.nc'
 # *) e_min_ofs[i] is the offset to be added to the previous envelope env[i-1]
 #    in order to calcalute the minimum depths of the new envelope.
 #
-# *) To create a flat envelope env[i] with constant depth e_max_dep[i]:                                   
+# *) To create a flat envelope env[i] with constant depth e_max_dep[i]:
 #
 #    e_min_ofs[i] = -1, e_max_dep[i] > 0                                
 #                                                                    
@@ -80,11 +79,6 @@ hgridFile = '/data/users/dbruciaf/JMMP_HPGE/amm7_ancil/ps43.coordinates.nc'
 #    z-levels: 
 #
 #    e_min_dep[i] = -1, e_max_dep[i] = -1                               
-#
-# *) To have an envelope terrain-following in coastal areas but flat in the 
-#    ocean interior:
-#
-#    e_oce_int[i] = false 
 
 e_min_ofs = [  10. , 150.]
 e_max_dep = [ 250. ,  -1 ]
