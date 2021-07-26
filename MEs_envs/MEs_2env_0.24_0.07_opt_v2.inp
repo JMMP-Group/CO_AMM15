@@ -1,0 +1,117 @@
+# ==========================================================================
+# INPUT FILE TO SETUP OCEAN MODELS                                         |
+#                                                                          |
+#     1. Envelopes for building MEs-coordinates                            |
+#     2. Transition area for passing from MEs- TO z-coordinates            |
+#                                                                          |
+# ------------------------------------------------------------------------ |     
+#                                                                          |
+#  SKETCH of the GEOMETRY OF THE MEs-COORD. SYSTEM                         |
+#  (example configuration using 3 envelopes)                               |
+#                                                                          |
+#  Lines represent W-levels:                                               |
+#                                                                          |
+#  0: 1st s-level part. The total number                                   |
+#     of levels in this part is controlled                                 |
+#     by the nn_slev[0] parameter.                                         |
+#                                                                          |
+#     Depth first W-lev: 0 m (surfcace)                                    |
+#     Depth last  W-lev: depth of 1st envelope                             |
+#                                                                          |
+#  o: 2nd s-level part. The total number                                   |
+#     of levels in this part is controlled                                 |
+#     by the nn_slev[1] parameter.                                         |
+#                                                                          |
+#     Depth last  W-lev: depth of 2nd envelope                             |
+#                                                                          |
+#  @: 3rd s-level part. The total number                                   |
+#     of levels in this part is controlled                                 |
+#     by the nn_slev[2] parameter.                                         |
+#                                                                          |
+#     Depth last  W-lev: depth of 3rd envelope                             |
+#                                                                          |
+#     z |~~~~~~~~~~~~~~~~~~~~~~~0~~~~~~~~~~~~~~~~~~~~~~~   SURFACE         |        
+#       |                                                                  |
+#       |-----------------------0-----------------------   nn_slev[0] = 3  |
+#       |                                                                  |
+#       |=======================0=======================   ENVELOPE 1      |
+#       |                                                                  |
+#       |-----------------------o-----------------------                   |
+#       |                                                  nn_slev[1] = 3  |
+#       |-----------------------o-----------------------                   |
+#       |                                                                  |
+#       |¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬o¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬¬   ENVELOPE 2      |
+#       |                                                                  |
+#       |-----------------------@-----------------------   nn_slev[2] = 2  |
+#       |                                                                  |
+#       |_______________________@_______________________   ENVELOPE 3      |
+#       |                                                                  |
+#       V                                                                  |
+#                                                                          |
+#       Reference :                                                        |
+#       Bruciaferri et al., 2018. Oc. Dyn., doi: 10.1007/s10236-018-1189-x |
+#  -------------------------------------------------------------------------------------------
+#
+#                                                                       |
+# =======================================================================
+
+# A) IINPUT FILES
+
+# Bathymetry of the domain
+bathyFile = '/data/users/dbruciaf/JMMP_HPGE/amm7_ancil/ps43.bathy_meter.nc'
+
+# Horizontal grid of the domain
+hgridFile = '/data/users/dbruciaf/JMMP_HPGE/amm7_ancil/ps43.coordinates.nc'
+
+# B) ENVELOPES geometrical parameters -------------------------------------
+
+# *) e_min_ofs[i] is the offset to be added to the previous envelope env[i-1]
+#    in order to calcalute the minimum depths of the new envelope.
+#
+# *) To create a flat envelope env[i] with constant depth e_max_dep[i]:                                   
+#
+#    e_min_ofs[i] = -1, e_max_dep[i] > 0                                
+#                                                                    
+# *) To create an envelope env[0] which will generate classical s-levels:             
+#
+#    e_min_dep[i] > 0, e_max_dep[i] = -1                                
+#
+# *) To create a totally flat envelope env[0] which will generate classical 
+#    z-levels: 
+#
+#    e_min_dep[i] = -1, e_max_dep[i] = -1                               
+#
+# *) To have an envelope terrain-following in coastal areas but flat in the 
+#    ocean interior:
+#
+#    e_oce_int[i] = false 
+
+e_min_ofs = [  10. , 150.]
+e_max_dep = [ 250. ,  -1 ]
+
+# C) ENVELOPES smoothing parameters ------------------------------------------
+
+# 1. LOCAL SMOOTHING 
+
+# List of lists of velocity files to use for HPGE aware local smoothing.   
+# Use an empty list if you don't want to apply local smoothing to a particular envelope.
+e_loc_vel = [ [], 
+              ['/data/users/dbruciaf/mod_dev/jmmp_MEs/amm7_mes_vgrid/MEs_2env_0.1_0.07_opt_v1/20140108_shelftmb_grid_U.nc',
+               '/data/users/dbruciaf/mod_dev/jmmp_MEs/amm7_mes_vgrid/MEs_2env_0.1_0.07_opt_v1/20140108_shelftmb_grid_V.nc'], 
+            ]
+e_loc_var = [ [], ['vozocrtx','vomecrty'] ]
+
+# Value of spurious currents that will be used as a threshold
+e_loc_vmx = [ 0., 0.1 ]
+
+# List of max slope parameters rx0 for local smoothing. 
+e_loc_rmx = [ 0, 0.04 ]
+
+# List of halo for applying the local smoothing.
+e_loc_hal = [ 0, 3 ]  
+
+# 2. GLOBAL SMOOTHING
+
+# List of Maximum slope parameter rx0 of each envelope
+e_glo_rmx = [ 0.24, 0.07]   
+
