@@ -89,11 +89,13 @@ e_max_dep = [ 250. ,  -1 ]
 
 # List of lists of velocity files to use for HPGE aware local smoothing.   
 # Use an empty list if you don't want to apply local smoothing to a particular envelope.
-e_loc_vel = [ [], 
-             []# ['/data/users/dbruciaf/mod_dev/jmmp_MEs/amm7_mes_vgrid/MEs_2env_0.1_0.07_opt_v1/20140108_shelftmb_grid_U.nc',
-               # '/data/users/dbruciaf/mod_dev/jmmp_MEs/amm7_mes_vgrid/MEs_2env_0.1_0.07_opt_v1/20140108_shelftmb_grid_V.nc'], 
-            ]
-e_loc_var = [ [], ['vozocrtx','vomecrty'] ]
+e_loc_vel = [ [], [] ] 
+e_loc_var = [ [], [] ]
+#e_loc_vel = [ [], 
+#              ['20140108_shelftmb_grid_U.nc',
+#               '20140108_shelftmb_grid_V.nc'], 
+#            ]
+#e_loc_var = [ [], ['vozocrtx','vomecrty'] ]
 
 # Value of spurious currents that will be used as a threshold
 e_loc_vmx = [ 0., 0.1 ]
@@ -107,5 +109,5 @@ e_loc_hal = [ 0, 3 ]
 # 2. GLOBAL SMOOTHING
 
 # List of Maximum slope parameter rx0 of each envelope
-e_glo_rmx = [ 0.24, 0.07]   
+e_glo_rmx = [ 0.1, 0.07]   
 

@@ -116,7 +116,7 @@ cd $TDIR
   ln -s $DOWNLOADS/amm15.coordinates.nc $TDIR/DOMAINcfg/coordinates.nc
   #ln -s $DOWNLOADS/amm15.10m.bathy_meter.nc $TDIR/DOMAINcfg/bathy_meter.nc
   ## Use the bathymetry file with envelopes
-  ln -s $DOMAIN/../MEs_envs/bathymetry.MEs_2env_0.24_0.07_opt.nc $TDIR/DOMAINcfg/bathy_meter.nc
+  ln -s $DOMAIN/../MEs_envs/bathymetry.MEs_2env_0.1_0.07_opt.nc $TDIR/DOMAINcfg/bathy_meter.nc
 
   ## Make an adjustment to the DOMAINcfg source code to accomodate more varied vertical coords.
   ## Done in make_tools.sh
