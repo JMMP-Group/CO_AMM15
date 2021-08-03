@@ -19,7 +19,7 @@
    !                       ! =F : e3 analytical derivative of depth function
    !                       !      only there for backward compatibility test with v3.6
    !                       !      
-   cp_cfg      = 'eorca'
+   cp_cfg      = 'AMM15'
    jp_cfg      = 25
    jperio      = 4
    jpidta      = 1458
@@ -39,27 +39,27 @@
 !-----------------------------------------------------------------------
 &namzgr_mes    !   MEs-coordinate                     
 !-----------------------------------------------------------------------
-   ln_envl     =   .TRUE. , .TRUE. , .TRUE. , .TRUE., .TRUE.   ! (T/F) If the envelope is used
-   nn_strt     =     1    ,   1    ,    1   ,   1    ,   1     ! Stretch. funct.: Madec 1996 (0) or
+   ln_envl     =   .TRUE. , .TRUE. , .FALSE. , .FALSE., .FALSE.   ! (T/F) If the envelope is used
+   nn_strt     =     2    ,   1    ,    1   ,   1    ,   1     ! Stretch. funct.: Madec 1996 (0) or
                                                                ! Song & Haidvogel 1994 (1) or                    
                                                                ! Siddorn & Furner 2012 (2)
-   nn_slev     =     3    ,   37   ,   17   ,   18   ,    0    ! number of s-lev between env(n-1)
+   nn_slev     =     25   ,   26   ,    0   ,   0    ,    0    ! number of s-lev between env(n-1)
                                                                ! and env(n)
-   rn_e_hc     =     0.0  ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! critical depth for transition to        
+   rn_e_hc     =     20.0 ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! critical depth for transition to        
                                                                ! stretch. coord.
-   rn_e_th     =     1.0  ,    1.2 ,   2.0  ,   0.0  ,   0.0   ! surf. control param.:                  
+   rn_e_th     =     0.9  ,    1.0 ,   0.0  ,   0.0  ,   0.0   ! surf. control param.:                  
                                                                ! SH94 or MD96: 0<=th<=20
                                                                ! SF12: thickness surf. cell
-   rn_e_bb     =     0.9  ,    0.9 ,   0.85 ,   0.0  ,   0.0   ! bot. control param.:
+   rn_e_bb     =    -0.3  ,    0.8 ,   0.0  ,   0.0  ,   0.0   ! bot. control param.:
                                                                ! SH94 or MD96: 0<=bb<=1
                                                                ! SF12: offset for calculating Zb
-   rn_e_al     =     0.0  ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! alpha stretching param with SF12
-   rn_e_ba     =     0.0  ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! SF12 bathymetry scaling factor for 
+   rn_e_al     =    4.4   ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! alpha stretching param with SF12
+   rn_e_ba     =    0.064 ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! SF12 bathymetry scaling factor for 
                                                                ! calculating Zb
    rn_bot_min  = 10.0       ! minimum depth of the ocean bottom (>0) (m)
    rn_bot_max  = 5900.0     ! maximum depth of the ocean bottom (= ocean depth) (>0) (m)
 
-   ln_loc_mes  = .TRUE.
+   ln_loc_mes  = .FALSE.
 /
 !-----------------------------------------------------------------------
 &namdom        !   space and time domain (bathymetry, mesh, timestep)
