@@ -24,6 +24,8 @@ export TDIR=$NEMO/tools
 export DOMAIN=$WDIR/BUILD_CFG/DOMAIN
 export DOWNLOADS=$WDIR/DOWNLOADS
 
+export BATHYFILE=$DOWNLOADS/amm15.10m.bathy_meter.nc
+export HGRIDFILE=$DOWNLOADS/amm15.coordinates.nc
 
 
 if [ ! -d "$DOMAIN" ]; then
@@ -112,7 +114,9 @@ cd $TDIR
 
   # Ensure the coordinates and bathymetry files, previously generated, are in place.
   ln -s $DOWNLOADS/amm15.coordinates.nc $TDIR/DOMAINcfg/coordinates.nc
-  ln -s $DOWNLOADS/amm15.10m.bathy_meter.nc $TDIR/DOMAINcfg/bathy_meter.nc
+  #ln -s $DOWNLOADS/amm15.10m.bathy_meter.nc $TDIR/DOMAINcfg/bathy_meter.nc
+  ## Use the bathymetry file with envelopes
+  ln -s $DOMAIN/../MEs_envs/bathymetry.MEs_2env_0.24_0.07_opt.nc $TDIR/DOMAINcfg/bathy_meter.nc
 
   ## Make an adjustment to the DOMAINcfg source code to accomodate more varied vertical coords.
   ## Done in make_tools.sh
