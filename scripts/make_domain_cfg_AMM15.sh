@@ -108,7 +108,7 @@ cd $TDIR
 
   ## Obtain the appropriate namelist (modify it if necessary)
   # Multi-Envelope vertical coordinates
-  cp $DOMAIN/ME_DOMAINcfg_namelist_cfg $TDIR/DOMAINcfg/namelist_cfg
+  cp $DOMAIN/namelist_cfg.amm15_MEs_2env_0.1_0.07_opt $TDIR/DOMAINcfg/namelist_cfg
 
   # Ensure that the namelist_cfg has the appropriate parameters and number of lat,lon,depth levels set
 
