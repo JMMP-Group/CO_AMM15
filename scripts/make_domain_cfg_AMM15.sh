@@ -24,7 +24,7 @@ export TDIR=$NEMO/tools
 export DOMAIN=$WDIR/BUILD_CFG/DOMAIN
 export DOWNLOADS=$WDIR/DOWNLOADS
 
-export BATHYFILE=$DOWNLOADS/amm15.10m.bathy_meter.nc
+export BATHYFILE=$DOWNLOADS/amm15.bathydepth.nc
 export HGRIDFILE=$DOWNLOADS/amm15.coordinates.nc
 
 
@@ -91,7 +91,7 @@ cp $WDIR/arch/nemo/arch-X86_ARCHER2-Cray.fcm $NEMO/arch/arch-X86_ARCHER2-Cray.fc
 
 ## Now we actually get the tools
 cd $NEMO	
-svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/branches/UKMO/tools_r4.0-HEAD_dev_MEs $NEMO/tools
+svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/branches/UKMO/tools_r4.0-HEAD_dev_MEs@15172 $NEMO/tools
 
 
 #load modules
@@ -127,21 +127,15 @@ cd $TDIR
   
   # Submit the domain creation as a job,
   cd $TDIR/DOMAINcfg
-  sbatch job_create.slurm
+  echo  "Executing domain_cfg build, waiting for job to finish"
+  sbatch --wait job_create.slurm
+  wait
   
-  #wait for domain creation job to finish
-  for i in {0..7}; do #8 tiles
-  while [ ! -f domain_cfg_000$i.nc ] ;
-  do
-      echo  "wait for domain creation job to finish"
-      sleep 60
-  done
-  done
-  
-  # Rebuild the files. Here there are 8 tiles (and rebuilding on a single thread) 
-  $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 domain_cfg 8
+  # Rebuild the files. Here there are 120 tiles (and rebuilding on a single thread) 
+  $TDIR/REBUILD_NEMO/rebuild_nemo -t 1 domain_cfg 120
+  wait
 
   # After create copy it and store it for further use
   cp $TDIR/DOMAINcfg/domain_cfg.nc $DOMAIN/domain_cfg_AMM15.nc
-  rm $TDIR/DOMAINcfg/domain_cfg_000*.nc #remove tiles
+  rm $TDIR/DOMAINcfg/domain_cfg_0*.nc #remove tiles
   cd $WORK
