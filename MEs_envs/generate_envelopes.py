@@ -175,20 +175,15 @@ for env in range(num_env):
            filename = e_loc_vel[env][m]
            varname  = e_loc_var[env][m]
            ds_vel = xr.open_dataset(filename)
-           hpge = np.absolute(ds_vel[varname].data)
+           hpge = ds_vel[varname].data
 
-           # TO DO: optimise it, 
-           # we don't need this loop
-           nt = hpge.shape[0]
-           nj = hpge.shape[2]
-           ni = hpge.shape[3]
-           for t in range(nt):
-               for j in range(nj):
-                   for i in range(ni):
-                       max_hpge = np.nanmax(hpge[t,:,j,i])
-                       if np.isfinite(max_hpge) and max_hpge >= e_loc_vmx[env]:
-                          msk_pge[j-hal:j+hal+1,i-hal:i+hal+1] = 1
-                          max_hpge = np.nan
+           nj = hpge.shape[0]
+           ni = hpge.shape[1]
+           for j in range(nj):
+               for i in range(ni):
+                   max_hpge = hpge[j,i]
+                   if max_hpge >= e_loc_vmx[env]:
+                      msk_pge[j-hal:j+hal+1,i-hal:i+hal+1] = 1
                           
        msg = '   Total number of points with HPGE > ' + str(e_loc_vmx[env]) + ' m/s: ' + str(np.nansum(msk_pge)) 
        msg_info(msg,)
