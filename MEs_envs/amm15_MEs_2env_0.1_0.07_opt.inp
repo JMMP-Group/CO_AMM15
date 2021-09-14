@@ -89,8 +89,9 @@ e_max_dep = [ 250. ,  -1 ]
 
 # List of lists of velocity files to use for HPGE aware local smoothing.   
 # Use an empty list if you don't want to apply local smoothing to a particular envelope.
-e_loc_vel = [ [], [] ]
-e_loc_var = [ [], [] ]
+e_loc_vel = [ [], 
+              ['/PATH_TO/maximum_hpge.nc'] ]
+e_loc_var = [ [], ['max_hpge_1'] ]
 
 # Value of spurious currents that will be used as a threshold
 e_loc_vmx = [ 0., 0.1 ]
