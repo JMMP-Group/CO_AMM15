@@ -9,7 +9,7 @@ There are few things that needs doing though.
 
    1.  Get the raw data and cut out a section for NWS, note for EMODNET some extra steps required for the tile format it comes in
    1.  We create cubes of the same data which allows us to use iris/cartopy to do the interpolation 
-   1.  Because we later want to pre-smooth the bathy wit the Smagorinsky smoother this needs data that goes beyond the AMM15 domain:
+   1.  Because we later want to pre-smooth the bathy wit the Shapiro smoother this needs data that goes beyond the AMM15 domain:
       1. Thus we need to generate a target grid and coordinates files the has an extent greater than the AMM15
    1. As the data sets are referenced again LAT we need a strategy to undo that. For not that involves
       1. Using a combination of CS3X and CS20 
@@ -24,7 +24,7 @@ There are few things that needs doing though.
 
    1. Pre-Smooth use CDFTOOLS
       * We need the larger then AMM15 domain as input
-      * Use MBells modifications of the CDFTOOLS to run the Smagorinsky Smoother
+      * Use MBells modifications of the CDFTOOLS to run the Shapiro Smoother
       * Requires pre formatting the raw bathy data into a format that CDF smoother expects
    1. If we want to retain  NICOS baltic we need to slice on a section for the Baltic bdy that is straight from his bathy data source
    
