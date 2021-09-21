@@ -31,3 +31,55 @@ There are few things that needs doing though.
 
    
    
+# Retrieve and process source data
+
+The source data considered is that of EMODNET and GEBCO 2020.
+
+  * GEBCO:
+      * https://www.gebco.net/data_and_products/gridded_bathymetry_data/#global  (this at time of writing is  now up to 2021)
+  * EMODNET:
+      * https://portal.emodnet-bathymetry.eu/   (This comes in a selection of tiles with some overlap at the edges that needs care of when processing)
+
+## Processing GEBCO
+
+### Cut out a domain just for the North West shelf
+
+Sample files on jamsin:    
+   *    /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020/SOURCE
+
+
+They are the global data set of the elevations and als lconatin the LSM in the tid file.
+
+we make a more maneagable cut out of each for the NWS:
+
+```bash
+ ncks -d lon,33000,52000 -d lat,29000,40000 GEBCO_2020.nc NWS_CUT_GEBCO.nc
+ ncks -d lon,33000,52000 -d lat,29000,40000 GEBCO_2020_TID.nc NWS_CUT_GEBCO_2020_TID.nc
+```
+
+With a copy on jasmin here:
+
+   * /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020
+
+
+The data needs to be mapped onto the AMM15 grid. To do we we can make use of the iris interpolator.
+In order to use the interpolator we convert the GEBCO data into an iris cube. 
+In the later stages when we use  the Shapiro smoother we need data that goes beyond AMM15s boundaries.
+This we actually map the GEBCO data onto a cube whos lat lon extents are beyond the AMM15 lat lon extents,
+but use the same underlying grid.
+
+In order to expand the grid we need to obtain the underlygin AMM15 grid to begin with.
+This is defined in the grid file AMM15_ROTATED_CS.nc and stored on jasmin under:
+
+   * /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/AMM15_ROTATED_CS.nc
+
+
+
+
+
+
+
+
+
+## Processing EMODNET
+
