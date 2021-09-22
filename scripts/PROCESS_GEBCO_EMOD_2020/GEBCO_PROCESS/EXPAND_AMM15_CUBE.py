@@ -47,7 +47,19 @@ from netCDF4 import Dataset
 
 import argparse
 from pathlib import Path
-import sys
+
+import sys, platform
+
+from datetime import datetime
+import subprocess
+
+def set_history(cube):
+    cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
+    cube.attributes[ 'Input' ]   = "GEBCO_CUBE.nc, created by  MAKE_GEBCO_CUBE.py, NWS_CUT_GEBCO_2020_TID.nc and the AMM15 unrotated coordinates file"
+    cube.attributes[ 'Python version' ] = platform.python_version()
+    cube.attributes[ 'System' ]  = platform.system()
+    cube.attributes[ 'Release' ] = platform.release()
+
 
 
 
@@ -168,24 +180,58 @@ GEBCO_RAW_cube.data[np.where(GEBCO_LSM.data[:] ==0) ] = np.nan
 #
 
 MASK_GEBCO_ON_EXPANDAMM15 = GEBCO_RAW_cube.regrid(expandcube, iris.analysis.Linear(extrapolation_mode='mask'))
-iris.save(MASK_GEBCO_ON_EXPANDAMM15, '{}/MASK_GEBCO_vDec2020_ON_EXPAND_AMM15.nc'.format( args.OUT_DIR[0] ))
 
 
-GEBCO_RAW_cube.data[np.where(GEBCO_LSM.data[:] ==0) ] = np.nan
 #=== remove land values and fill ===
 GEBCO_RAW_cube.data = fill(GEBCO_RAW_cube.data)
 EXTRAPOLATE_GEBCO_ON_EXPANDAMM15 = GEBCO_RAW_cube.regrid(expandcube, iris.analysis.Linear(extrapolation_mode='extrapolate'))
-iris.save(EXTRAPOLATE_GEBCO_ON_EXPANDAMM15, '{}/EXTRAPOLATE_GEBCO_vDec2020_ON_EXPAND_AMM15.nc'.format( args.OUT_DIR[0] ))
 
 MASK_EXTRAPOLATE = MASK_GEBCO_ON_EXPANDAMM15
 
-print(np.shape(MASK_EXTRAPOLATE), np.shape( EXTRAPOLATE_GEBCO_ON_EXPANDAMM15))
 
-# use the masked version outside of the AMM15
-# use the extrapolated version in the code AMM15 domain
+# use the masked version beyond the he AMM15 domain
+# use the extrapolated version in the coee AMM15 domain
 
 MASK_EXTRAPOLATE.data                 [extra_lat:-extra_lat,extra_lon:-extra_lon] = (
 EXTRAPOLATE_GEBCO_ON_EXPANDAMM15.data [extra_lat:-extra_lat,extra_lon:-extra_lon]   )
 
+
+
+# set global attributes to keep track of the origin of the files
+
+#--------------------------------------------------------------------------------------
+# save it to file, set up global attributes to help trace how the file was created
+#--------------------------------------------------------------------------------------
+
+now = datetime.now()
+current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+
+repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+repos = repos.stdout.decode('utf-8').strip('\n')
+
+branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref',  'HEAD'],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+branch = branch.stdout.decode('utf-8').strip('\n')
+
+
+script = parser.prog
+
+set_history( MASK_GEBCO_ON_EXPANDAMM15 )
+set_history( EXTRAPOLATE_GEBCO_ON_EXPANDAMM15 )
+set_history( MASK_EXTRAPOLATE )
+
+
+
+iris.save(MASK_GEBCO_ON_EXPANDAMM15, '{}/MASK_GEBCO_vDec2020_ON_EXPAND_AMM15.nc'.format( args.OUT_DIR[0] ))
+iris.save(EXTRAPOLATE_GEBCO_ON_EXPANDAMM15, '{}/EXTRAPOLATE_GEBCO_vDec2020_ON_EXPAND_AMM15.nc'.format( args.OUT_DIR[0] ))
 iris.save(MASK_EXTRAPOLATE, '{}/MASK_EXTRAPOLATE_GEBCO_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0] ))
 
+
+
+
+
+   
+   
