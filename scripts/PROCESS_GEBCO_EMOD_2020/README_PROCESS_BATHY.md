@@ -26,7 +26,7 @@ There are few things that needs doing though.
       * We need the larger then AMM15 domain as input
       * Use MBells modifications of the CDFTOOLS to run the Shapiro Smoother
       * Requires pre formatting the raw bathy data into a format that CDF smoother expects
-   1. If we want to retain  NICOS baltic we need to slice on a section for the Baltic bdy that is straight from his bathy data source
+   1. If we want to retain  NICOS Baltic we need to slice on a section for the Baltic bdy that is straight from his bathy data source
    
 
    
@@ -48,9 +48,9 @@ Sample files on jamsin:
    *    /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020/SOURCE
 
 
-They are the global data set of the elevations and als lconatin the LSM in the tid file.
+They are the global data set of the elevations and also contain the LSM in the tid file.
 
-we make a more maneagable cut out of each for the NWS:
+we make a more manageable cut out of each for the NWS:
 
 ```bash
  ncks -d lon,33000,52000 -d lat,29000,40000 GEBCO_2020.nc NWS_CUT_GEBCO.nc
@@ -62,16 +62,56 @@ With a copy on jasmin here:
    * /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020
 
 
-The data needs to be mapped onto the AMM15 grid. To do we we can make use of the iris interpolator.
-In order to use the interpolator we convert the GEBCO data into an iris cube. 
-In the later stages when we use  the Shapiro smoother we need data that goes beyond AMM15s boundaries.
-This we actually map the GEBCO data onto a cube whos lat lon extents are beyond the AMM15 lat lon extents,
+The data needs to be mapped onto the AMM15 grid. To do we we can make use of the iris interpolation.
+
+### Convert GEBCO to Cube
+
+In order to use the interpolator we convert the GEBCO data into an iris cube. To do that use:
+
+      * GEBCO_PROCESS/MAKE_GEBCO_CUBE.py
+
+This takes as input the path to the cutout of the NWS GEBCO data (NWS_CUT_GEBCO.nc) and the path
+of the dir to store the resultant cube of data (GEBCO_CUBE.nc).
+
+
+### Interpolate GEBCO cube to AMM15 extended domain
+    
+In the later stages when we use the Shapiro smoother we need data that goes beyond AMM15 boundaries.
+Thus we actually map the GEBCO data onto a cube whos lat lon extents are beyond the AMM15 lat lon extents,
 but use the same underlying grid.
 
-In order to expand the grid we need to obtain the underlygin AMM15 grid to begin with.
+In order to expand the grid we need to obtain the underlying AMM15 grid to begin with.
 This is defined in the grid file AMM15_ROTATED_CS.nc and stored on jasmin under:
 
    * /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/AMM15_ROTATED_CS.nc
+
+We use the script 
+
+   * GEBCO_PROCESS/EXPAND_AMM15_CUBE.p
+
+to interpolate the GEBCO data onto the expanded AMM15 grid.
+
+It takes as input the pat to the AMM15 rotated CS file, the path to the GEBCO cube
+and the GEBCO mask file (TID).  It also takes as an argument the path to where to store the resultant  
+interpolated files.
+
+
+The mask on AMM15 will be defined to be exactly that as in the operational case by reading in a reference LSM.
+This will be applied when we later apply the LAT correction ahead of smoothing.
+
+For the domain that goes beyond the AMM15, we derive the mask based on the GEBCO mask. This will have many lakes
+and fine scale estuaries etc. that do not connect with the sea due to lack of required resolution at 1.5 km etc.
+We don\'t at this stage want to redo the cleaning up of the mask for the inner AMM15 hence we just apply what we
+already have. But we don\'t need to worry about unconnected lakes etc. in the domain beyond AMM15 as it is only used
+for the Shapiro filter to have data that goes beyond the AMM15 boundaries.
+
+
+So we process the data outside the inner core AMM15 domain and inside differently.
+   * We compute a version of the bathymetry that is extrapolated everywhere regardless of LSM
+   * We compute a version of the bathymetry that is  masked by the GEBCO mask
+   * we merge the two but retain the extrapolated version in the inner domain and the LSM in the outer domain
+      * later we apply the operational LSM on the inner domain ahead of Shapiro smoothing when we also apply the LAT
+
 
 
 
