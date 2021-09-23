@@ -31,7 +31,7 @@ env_r = ds_rr['hbatt_2']
 
 fig, ax = plt.subplots(ncols=1, nrows=1)
 ax.scatter(hpge.data.flatten(),rmaxr.data.flatten(),s=20)
-ax.plot([trshl,trshl],[0.,rmaxr.max()])
+ax.plot([trshl,trshl],[0.,rmaxr.max()], 'red')
 ax.set_xlabel('max hpge [$m\;s^{-1}$]')
 ax.set_ylabel('rmax')
 plt.show()
