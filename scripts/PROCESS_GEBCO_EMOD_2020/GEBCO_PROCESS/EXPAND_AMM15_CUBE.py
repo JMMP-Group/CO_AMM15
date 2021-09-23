@@ -151,9 +151,16 @@ expandcube = Cube(np.zeros((n_lat, n_lon), np.float32),
                                  (grid_longitude, 1)], standard_name='sea_floor_depth_below_geoid')
 
 
+
 print("\n Saving the expanded domain to expand_test:\n")
 
 iris.save(expandcube, '{}/expand_test.nc'.format( args.OUT_DIR[0]) )
+
+
+# we want to save the 2d rotated lats and lons for the extended grid in NEMO format
+from get_expanded_coordinates import output_nemo_coords
+
+output_nemo_coords(inflate_lat, inflate_lon, args.OUT_DIR[0])
 
 # Read in the cube of gebco data this was created by MAKE_GEBCO_CUBE.py
 
