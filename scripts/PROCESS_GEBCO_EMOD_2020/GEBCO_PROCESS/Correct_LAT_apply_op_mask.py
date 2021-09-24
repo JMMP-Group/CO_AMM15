@@ -73,24 +73,16 @@ op_lsm_bath = op_lsm_file.variables['Bathymetry'][:,:]
 # NEMO will convert these to the min depth variable for now.
 # Will need to consider changing this method when W&D comes in...
 
-#emodnet_bath[emodnet_bath<=0.] = 1e-3
-#emodnet_bath[np.isnan(emodnet_bath)] = 0
-
-# EMODNET_LSM_v2 uses TPXO LAT correction. 
-# Read in new file with CS3X correction. (but use previous for LSM.)
-#fname =('DATA_OUT/MERGE_JENNY_C3X_COLIN_CS20.nc')
-
-#cs3xcs20_fname =('../../PROCESS_EMODNET_DEC_2020/INTERP_EMOD2020_TO_AMM15/MERGE_JENNY_C3X_COLIN_CS20.nc')
 cs3xcs20 = Dataset((args.CS3X_CS20)[0],'r')
 cs3xcs20_bathy = cs3xcs20.variables['sea_floor_depth_below_geoid'][:,:]
 
-#input_fname = ('../MASK_EXTRAPOLATE_GEBCO_vDec2020_ON_EXPAND_AMM15.nc')
 input_dataset = Dataset((args.BATHY_DATA)[0],'r')
 input_bathy = -input_dataset.variables['sea_floor_depth_below_geoid'][:,:]
-## Note we have widened the domain out by 100 in all directions for the smoother
-inflate_lat=100
-inflate_lon=100
+inflate_lat = 100
+inflate_lon = 100
+
 # Thus we effectively have a core part of the domain and an outer part
+
 
 input_bathy_amm15core = input_bathy[inflate_lat:-inflate_lat,inflate_lon:-inflate_lon]
 
@@ -98,13 +90,11 @@ input_bathy_amm15core = input_bathy[inflate_lat:-inflate_lat,inflate_lon:-inflat
 input_bathy_amm15core_m_cs3xcs20 =  input_bathy_amm15core - cs3xcs20_bathy # we could probably make an expanded cs3x at least to the south, NW, NE not probably possible # NB. nemo interprets any point <= 0 as land (sets mbathy = 0)
 # For now, convert any point <=0 to 1e-3, then land values = 0.
 # Will need to consider changing this method when W&D comes in...
-#emodnet_bath_cs3x[emodnet_bath_cs3x<=0.] = 1e-3
-#emodnet_bath_cs3x[emodnet_bath==0] = 0
+
 input_bathy_amm15core_m_cs3xcs20[ np.isnan( op_lsm_bath ) ] = np.nan  # Enfoce LSM as OP on core part of domain
 
 
 # get coordinates of expanded domain
-#coord_fname =('../../PROCESS_EMODNET_DEC_2020/expand_amm15.coordinates.nc')
 
 coord = Dataset((args.LAT_LON)[0],'r')
 lat = coord.variables['gphit'][:,:]
@@ -129,13 +119,11 @@ Bath_hook = np.copy(input_bathy_amm15core_m_cs3xcs20)
 Bath_hook[514:516,1106:1109] = 0
 
 
-#bathy[:]=emodnet_bath_hook
 
 input_bathy[100:-100,100:-100] =  Bath_hook[:]
 bathy[:] = input_bathy
 
 ncfile.description = 'Expanded AMM15 bathymetry: Original source GEBCO data  converted from LAT to MSL [land mask=0].  Using CS3X and CS20'
-#ncfile.description = 'AMM15 bathymetry: Original source EMODnet data (EMODnet Portal, September 2015 release), converted from LAT to MSL [land mask=0].  Using CS3X and CS20'
 
 now = datetime.now()
 current_time = now.strftime("%Y/%M/%d %H:%M:%S")
@@ -160,13 +148,6 @@ ncfile.Release = platform.release()
 latout.units = 'degrees north'
 lonout.units = 'degrees east'
 bathy.units = 'meters'
-
-#    cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
-#    cube.attributes[ 'Input' ]   = "GEBCO_CUBE.nc, created by  MAKE_GEBCO_CUBE.py, NWS_CUT_GEBCO_2020_TID.nc and the AMM15 unrotated coordinates file"
-#    cube.attributes[ 'Python version' ] = platform.python_version()
-#    cube.attributes[ 'System' ]  = platform.system()
-#    cube.attributes[ 'Release' ] = platform.release()
-
 
 ncfile.close()
 
