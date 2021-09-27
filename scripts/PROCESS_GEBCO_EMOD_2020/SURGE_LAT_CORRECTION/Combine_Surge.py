@@ -105,7 +105,6 @@ lon_CS3X= CS3X_NC.variables['lon'][:]
 
 
 #=== remove nan values and fill ===
-#Jenny version
 AMP_CS3X[AMP_CS3X < -1.e33] = np.nan
 AMP_CS3X[AMP_CS3X > 1.e33] = np.nan
 AMP_CS3X[AMP_CS3X == 0] = np.nan
@@ -116,6 +115,7 @@ AMP_CS3X = fill(AMP_CS3X)
 #CS20
 
 AMP_CS20[AMP_CS20 == 999] = np.nan
+AMP_CS20[AMP_CS20 < -999] = np.nan
 AMP_CS20 = fill(AMP_CS20)
 
 #--------------------------
