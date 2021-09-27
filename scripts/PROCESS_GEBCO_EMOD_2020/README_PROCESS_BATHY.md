@@ -87,11 +87,11 @@ This is defined in the grid file AMM15_ROTATED_CS.nc and stored on jasmin under:
 
 We use the script 
 
-   * GEBCO_PROCESS/EXPAND_AMM15_CUBE.p
+   * GEBCO_PROCESS/EXPAND_AMM15_CUBE.py
 
 to interpolate the GEBCO data onto the expanded AMM15 grid.
 
-It takes as input the pat to the AMM15 rotated CS file, the path to the GEBCO cube
+It takes as input the path to the AMM15 rotated CS file, the path to the GEBCO cube
 and the GEBCO mask file (TID).  It also takes as an argument the path to where to store the resultant  
 interpolated files.
 
@@ -105,13 +105,53 @@ We don\'t at this stage want to redo the cleaning up of the mask for the inner A
 already have. But we don\'t need to worry about unconnected lakes etc. in the domain beyond AMM15 as it is only used
 for the Shapiro filter to have data that goes beyond the AMM15 boundaries.
 
+This script also computes a NEMO style coordinates file for the extended AMM15 routine using the function 
+   * output_nemo_coords
+From
+   * EXPAND_AMM15_CUBE.py
 
-So we process the data outside the inner core AMM15 domain and inside differently.
+
+We process the data outside the inner core AMM15 domain and inside differently.
    * We compute a version of the bathymetry that is extrapolated everywhere regardless of LSM
    * We compute a version of the bathymetry that is  masked by the GEBCO mask
    * we merge the two but retain the extrapolated version in the inner domain and the LSM in the outer domain
       * later we apply the operational LSM on the inner domain ahead of Shapiro smoothing when we also apply the LAT
 
+
+
+### Correct for LAT and apply the operational existing AMM15 mask to the inner domain.
+
+EMODNET is explicitly quoted as being references to Lowest Astronomical Tide (LAT).
+When we compare EMODNET and GEBCO data it appears that there are regions where they are basically the same
+data as EMODNET defaults to GEBCO as its basemap. Thus it is reasonable to assume that GEBCO to must be LAT referenced.
+Thus we need to apply an LAT correction to this data consistently in the way we intend to with EMODNET.
+
+In order to do that we need an approximation of the LAT. Our current estimation relies on  surge models CS3X and CS20.
+
+CS3X covers the AMM15 domain and CS20 is at a higher resolution but only covers out to the shelf break.
+
+Our approach is to merge the two solutions and to use the CS3X solution beyond the shelf break.
+
+The data for CS3X and CS20 is kindly provided by Colin Bell. It comes in ASCII format and in converted
+into mask netcdf grids using the routines:
+
+   * convertCS3X.py
+      * converts:  CS3X_stat.txt -> CS3X_stat.nc
+   * convertCS20.py
+      * converts:   cs20_stat.txt  -> cs20_stat.nc
+
+Note Jenny Graham already processed the CS3X dat so we can use that file directly instead.
+
+
+
+Once we have both netcdf files as can read them in and combine them together on the AMM15 grid.
+This is done with:
+
+   * SURGE_LAT_CORRECTION/Combine_Surge.py
+
+
+It takes as an input argument -i the path for the location of the required surge netcdf files and the AMM15 grid file,
+and an argument -o where to output the data to.
 
 
 
