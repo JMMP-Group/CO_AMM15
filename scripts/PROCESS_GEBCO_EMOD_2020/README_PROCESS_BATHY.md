@@ -1,6 +1,10 @@
 
 # Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy
 
+
+Some Required or intermediate inputs are placed on jasmin under:
+   * /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS
+
 The scripts are pretty small for the most part typically:
    * bathy in -> process it in some way -> bathy out
 
