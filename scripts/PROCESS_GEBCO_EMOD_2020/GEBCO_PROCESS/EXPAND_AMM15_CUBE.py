@@ -22,8 +22,10 @@ Parameters
 ----------
 AMM15_PATH : str
     The location of the rotated AMM15 grid
-IN_DIR : str
-    The path the input bathymetry
+INLSM_DIR : str
+    The path the input  LSM
+INCUBE_DIR : str
+    The path the input cube of bathymetry
 OUT_DIR : str
     The path write the output cube to
 
@@ -66,13 +68,15 @@ def set_history(cube):
 parser = argparse.ArgumentParser(description='Process inputs and output file paths')
 parser.add_argument('-a','--AMM15_PATH', metavar='AMM15_cube_file', nargs=1,
                     help='File location of AMM15 rotated grid', required=True)
-parser.add_argument('-i','--IN_DIR',metavar='IN_DIR',  nargs=1,
-                    help='Path to source bathymertry files', required=True)
+parser.add_argument('-i','--INLSM_DIR',metavar='INLSM_DIR',  nargs=1,
+                    help='Path to source LSM files', required=True)
+parser.add_argument('-c','--INCUBE_DIR',metavar='INCUBE_DIR',  nargs=1,
+                    help='Path to source cube directory ', required=True)
 parser.add_argument( '-o','--OUT_DIR',metavar='OUT_DIR', nargs=1,
                     help='Path to output to ', required=True) 
 
 args = parser.parse_args()
-if not all([args.AMM15_PATH, args.IN_DIR, args.OUT_DIR]):
+if not all([args.AMM15_PATH, args.INLSM_DIR, args.INCUBE_DIR, args.OUT_DIR]):
     print(" Sorry All Arguments are required")
     sys.exit("Sorry all the arguments are required") 
 
@@ -86,11 +90,16 @@ if Path(args.AMM15_PATH[0]).is_file():
 else:
       sys.exit("However, {} does not exist  so we exit here".format(args.AMM15_PATH[0])) 
 
-print("\n     the INPUT directory for bathy as {}\n".format(  args.IN_DIR[0] ))
-if (Path(args.IN_DIR[0])).is_dir():
-       print(" and the {} exists.".format (args.IN_DIR[0]))
+print("\n     the INPUT directory for LSM as {}\n".format(  args.INLSM_DIR[0] ))
+if (Path(args.INLSM_DIR[0])).is_dir():
+       print(" and the {} exists.".format (args.INLSM_DIR[0]))
 else:
-      sys.exit("However, {} does not exist  so we exit here".format(args.IN_DIR[0])) 
+      sys.exit("However, {} does not exist  so we exit here".format(args.INLSM_DIR[0])) 
+print("\n     the INPUT directory for cube as {}\n".format(  args.INCUBE_DIR[0] ))
+if (Path(args.INCUBE_DIR[0])).is_dir():
+       print(" and the {} exists.".format (args.INCUBE_DIR[0]))
+else:
+      sys.exit("However, {} does not exist  so we exit here".format(args.INSUBE_DIR[0])) 
 print("\n     the OUTPUT directory for processed bathy as {}\n".format(  args.OUT_DIR[0] ))
 if (Path(args.OUT_DIR[0])).is_dir():
        print(" and the {} exists.".format (args.OUT_DIR[0]))
@@ -164,12 +173,12 @@ output_nemo_coords(inflate_lat, inflate_lon, args.OUT_DIR[0])
 
 # Read in the cube of gebco data this was created by MAKE_GEBCO_CUBE.py
 
-GEBCO_RAW_cube = iris.load('{}/GEBCO_CUBE.nc'.format( args.IN_DIR[0] ))[0]
+GEBCO_RAW_cube = iris.load('{}/GEBCO_CUBE.nc'.format( args.INCUBE_DIR[0] ))[0]
 
 
 # Read in the in the LSM for the GEBCO data
 
-GEBCO_LSM_fp = Dataset('{}/NWS_CUT_GEBCO_2020_TID.nc'.format( args.IN_DIR[0] ),'r')
+GEBCO_LSM_fp = Dataset('{}/NWS_CUT_GEBCO_2020_TID.nc'.format( args.INLSM_DIR[0] ),'r')
 GEBCO_LSM = GEBCO_LSM_fp.variables['tid'][:]
 
 #

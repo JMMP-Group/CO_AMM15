@@ -13,6 +13,16 @@ IN_DIR : str
     The path the input bathymetry
 OUT_DIR : str
     The path write the output cube to
+OP_LSM : str
+    The location of the operational LSM e.g. EMODNET_LSM_v2.nc (create by J graham from EMODNET to AMM15 plus fill in lakes etc)
+CS3X_CS20: str
+    The location of the merged Surge data for LAT correction (valid only on AMM15 inner domain)
+BATHY_DATA: str
+    THe location the GEBCO data on the extended AMM15 grid
+LAT_LON: str
+    The location odf the file containinf the extended AMM15 domain lat lon grid
+OUT_FILE: str
+    Where to write the final output file after processing.
 
 Returns
 -------
