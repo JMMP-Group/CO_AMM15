@@ -9,10 +9,6 @@
  zenv? (only pre-v3.6?)
 Parameters
 ----------
-IN_DIR : str
-    The path the input bathymetry
-OUT_DIR : str
-    The path write the output cube to
 OP_LSM : str
     The location of the operational LSM e.g. EMODNET_LSM_v2.nc (create by J graham from EMODNET to AMM15 plus fill in lakes etc)
 CS3X_CS20: str
