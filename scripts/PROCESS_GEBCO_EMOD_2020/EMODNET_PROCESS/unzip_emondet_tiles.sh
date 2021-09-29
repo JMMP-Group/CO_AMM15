@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 usage() { echo "Usage: $0 [-i <input_directory>] [-o <output_directory>]" 1>&2; exit 1; }
 
 while getopts ":i:o:" p; do
@@ -37,4 +39,12 @@ fi
 
 echo "<input_dir> = ${i}"
 echo "<output_dir> = ${o}"
+ZIPFILES=`ls ${i}/*.zip`
+for file in  $ZIPFILES
+do
+	ls $file
+	unzip -o $file -d ${o}  &
+done
+
+
 
