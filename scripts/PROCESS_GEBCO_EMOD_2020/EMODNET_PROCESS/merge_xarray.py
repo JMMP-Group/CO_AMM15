@@ -1,8 +1,5 @@
 import xarray as xr
 import numpy as np
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
-import matplotlib.pyplot as plt
 
 import xarray as xr
 
@@ -11,13 +8,17 @@ import sys
 FILE = sys.argv[1]
 NO = sys.argv[2]
 
-dsa = xr.open_mfdataset('../NC/%s*.nc'%(FILE), parallel=True)
+print('%s*.nc'%(FILE))
+
+## as there is overlap we combine by nested and specify long as concat dimension later we remove overlap
+dsa = xr.open_mfdataset('%s*.nc'%(FILE), combine = 'nested', concat_dim = 'lon', parallel=True)
 
 
 from dask.diagnostics import ProgressBar
 
+print('%smerge.nc'%(NO))
 with ProgressBar():
-  dsa.elevation.to_netcdf('../MERGE/%smerge.nc'%(NO))
+  dsa.elevation.to_netcdf('%smerge.nc'%(NO))
 
 
 print('All Done')
