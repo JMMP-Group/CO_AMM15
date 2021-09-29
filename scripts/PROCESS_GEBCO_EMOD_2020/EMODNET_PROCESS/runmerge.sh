@@ -54,9 +54,10 @@ N=4
 for LETTER in  C D E F  
 do
   echo $LETTER, $N
-  #sbatch spicemerge.sh $LETTER $N
+  # merge along lon
   ${p} merge_xarray.py    ${i}/$LETTER ${o}/$N
   N=($N-1)
 done
 
-#sbatch  allspicemerge.sh
+# merge along lat
+${p}   final_merge.py ${o}
