@@ -1,0 +1,1 @@
+  sbatch spice_interp.sh  /scratch/fred/REQUIRED_INPUTS/AMM15_ROTATED_CS.nc  /scratch/fred/REQUIRED_INPUTS  /scratch/fred/REQUIRED_INPUTS
