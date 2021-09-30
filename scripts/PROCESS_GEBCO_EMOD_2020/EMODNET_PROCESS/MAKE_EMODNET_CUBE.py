@@ -208,6 +208,18 @@ longitude_emodnet = DimCoord(EMODNET_LON, standard_name='longitude', units='degr
 
 
 
+now = datetime.now()
+current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+repos = repos.stdout.decode('utf-8').strip('\n')
+branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref',  'HEAD'],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+branch = branch.stdout.decode('utf-8').strip('\n')
+script = parser.prog
+
 
 
 EMODNET_cube = Cube(EMODNET_BATHY, standard_name='sea_floor_depth_below_geoid',units='m',

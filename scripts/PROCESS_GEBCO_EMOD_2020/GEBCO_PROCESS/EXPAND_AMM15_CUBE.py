@@ -41,7 +41,6 @@ from iris.coords import DimCoord
 from iris.analysis.cartography import rotate_pole
 
 import numpy as np
-from mask_tools import fill
 
 
 from netCDF4 import Dataset
@@ -51,6 +50,9 @@ import argparse
 from pathlib import Path
 
 import sys, platform
+sys.path.append(r'../')
+from mask_tools import fill
+
 
 from datetime import datetime
 import subprocess

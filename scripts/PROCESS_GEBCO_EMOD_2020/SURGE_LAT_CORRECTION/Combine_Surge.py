@@ -30,12 +30,14 @@ import cartopy.crs as ccrs
 import iris
 import iris.analysis.cartography
 
-from mask_tools import fill
 
 import argparse
 from pathlib import Path
 
 import sys, platform
+sys.path.append(r'../')
+from mask_tools import fill
+
 
 from datetime import datetime
 import subprocess
