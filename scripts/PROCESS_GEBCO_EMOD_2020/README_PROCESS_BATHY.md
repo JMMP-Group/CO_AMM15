@@ -179,7 +179,7 @@ This script takes a number of inputs:
        * The location odf the file containinf the extended AMM15 domain lat lon grid
    * OUT_FILE:
        * Where to write the final output file after processing
-It applies the LAT corretion only to the inner domain:
+It applies the LAT correction only to the inner domain:
 ```python
 inflate_lat = 100
 inflate_lon = 100
@@ -190,3 +190,26 @@ input_bathy_amm15core = input_bathy[inflate_lat:-inflate_lat,inflate_lon:-inflat
 
 
 ## Processing EMODNET
+
+
+### Joining the Tiles
+EMODNET data comes in a set of tiles. Each Tile has has an overlap with its neighbour. We need to splice all the tiles together into one dataset.
+And then remove any overlaps that occurring the single unified data set.
+
+A script is called to join the tiles typical format is :
+   * bash runmerge.sh -i  InputDirPath -o OutputDirPath -p yourPythonCommand
+
+The input path should contain the EMODNET tiles and then it loops over C to F calling *merge_xarray.py* to create rows of data.
+Then it does a final merge of the rows into a unified block of data using *final_merge.py*
+
+The resultant merged file is ALLmerge.nc
+
+### Removing the overlaps and creating a cube version of EMODNET data
+
+The above data is stripped of overlaps along the edges and then put into tcube format by
+   * *MAKE_EMODNET_CUBE.py*
+
+Typical usage is:
+   * python3.8 MAKE_EMODNET_CUBE.py -i PathToALLmerge.nc/ -o OutPutDir/
+
+This is quite RAM intensive.
