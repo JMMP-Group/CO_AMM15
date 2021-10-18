@@ -20,6 +20,7 @@ iris cube
 """
 import iris
 import numpy as np
+import xarray as xr
 
 
 
@@ -70,12 +71,20 @@ print("\n----------------------------------------------------\n")
 # Get input data
 #------------------------------------------------------------------------------
 
-EMODNET_RAW_fp = Dataset('{}/ALLmerge.nc'.format(args.IN_DIR[0]),'r')
+#EMODNET_RAW_fp = Dataset('{}/ALLmerge.nc'.format(args.IN_DIR[0]),'r')
 
-EMODNET_LAT = EMODNET_RAW_fp.variables['lat'][:]
-EMODNET_LON = EMODNET_RAW_fp.variables['lon'][:]
+#EMODNET_LAT = EMODNET_RAW_fp.variables['lat'][:]
+#EMODNET_LON = EMODNET_RAW_fp.variables['lon'][:]
 
-EMODNET_BATHY = EMODNET_RAW_fp.variables['elevation'][:]
+#EMODNET_BATHY = EMODNET_RAW_fp.variables['elevation'][:]
+
+EMODNET_RAW = xr.open_mfdataset( '{}/ALLmerge.nc'.format(args.IN_DIR[0]), parallel=True)
+EMODNET_LAT = EMODNET_RAW.lat[:]
+EMODNET_LON = EMODNET_RAW.lon[:]
+EMODNET_BATHY = EMODNET_RAW.elevation[:]
+
+print(EMODNET_LAT)
+print(EMODNET_BATHY)
 #EDMONET_BATHY_B = np.copy(EMODNET_BATHY)
 
 print ("Data Read In")
