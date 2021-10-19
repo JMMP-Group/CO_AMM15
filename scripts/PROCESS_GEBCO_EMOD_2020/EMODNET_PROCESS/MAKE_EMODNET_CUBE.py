@@ -23,10 +23,11 @@ import numpy as np
 import xarray as xr
 
 
-
 from iris.coords import DimCoord
 from iris.cube import Cube
-from netCDF4 import Dataset
+
+
+
 
 import argparse
 from pathlib import Path
@@ -35,8 +36,10 @@ import sys, platform
 from datetime import datetime
 import subprocess
 
+import dask
+from dask.diagnostics import ProgressBar
 
-
+#%%
 
 # Just parses the command line arguments in path and out path
 
@@ -70,18 +73,13 @@ print("\n----------------------------------------------------\n")
 #------------------------------------------------------------------------------
 # Get input data
 #------------------------------------------------------------------------------
+#%%
+EMODNET_RAWA = xr.open_mfdataset( '{}/ALLmerge.nc'.format(args.IN_DIR[0]), parallel=True)  
+EMODNET_LAT = EMODNET_RAWA.lat[:]
+EMODNET_LON = EMODNET_RAWA.lon[:]
 
-#EMODNET_RAW_fp = Dataset('{}/ALLmerge.nc'.format(args.IN_DIR[0]),'r')
-
-#EMODNET_LAT = EMODNET_RAW_fp.variables['lat'][:]
-#EMODNET_LON = EMODNET_RAW_fp.variables['lon'][:]
-
-#EMODNET_BATHY = EMODNET_RAW_fp.variables['elevation'][:]
-
-EMODNET_RAW = xr.open_mfdataset( '{}/ALLmerge.nc'.format(args.IN_DIR[0]), parallel=True)
-EMODNET_LAT = EMODNET_RAW.lat[:]
-EMODNET_LON = EMODNET_RAW.lon[:]
-EMODNET_BATHY = EMODNET_RAW.elevation[:]
+EMODNET_RAWB = xr.open_mfdataset( '{}/ALLmerge.nc'.format(args.IN_DIR[0]), parallel=True,chunks=({"lat": 100, "lon": -1 }) )
+EMODNET_BATHY = EMODNET_RAWB.elevation[:]
 
 print(EMODNET_LAT)
 print(EMODNET_BATHY)
@@ -89,134 +87,53 @@ print(EMODNET_BATHY)
 
 print ("Data Read In")
 
-#Travere lats and lons to find repeats
-for i in range(1,np.size(EMODNET_LON[:])):
-  if(EMODNET_LON[i] <= EMODNET_LON[i-1]):
-       print ('Caught a repeat at :,i,EMODNET_LON[i-1],EMODNET_LON[i],EMODNET_LON[i+1],EMODNET_LON[i+2]')
-       print ('Caught a repeat at :',i,EMODNET_LON[i-1],EMODNET_LON[i],EMODNET_LON[i+1],EMODNET_LON[i+2])
-EMODNET_BATHY = np.delete(EMODNET_BATHY,9482,1)
-EMODNET_LON   = np.delete(EMODNET_LON,9482,0)
 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,9482,1)
-EMODNET_LON   = np.delete(EMODNET_LON,9482,0)
+ #%%
+ind_x = np.zeros(1,dtype=int)
+i=1
+while(i < np.size(EMODNET_LON.data[:]) ):
+    if((EMODNET_LON.data[i] - EMODNET_LON.data[i-1])<1e-10):
+        k = i-1
+        print( "caught a repeat", EMODNET_LON.data[i],EMODNET_LON.data[i-1])
+        while( (EMODNET_LON.data[i] - EMODNET_LON.data[k]) < 1e-10):
+            print( "Caught a further repeat", EMODNET_LON[i].data,EMODNET_LON.data[k],-EMODNET_LON.data[i] , EMODNET_LON.data[k])
+            i=i+1    
+    ind_x = np.append(ind_x[:],i)
+    i=i+1
+print(ind_x)
 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,9482,1)
-EMODNET_LON   = np.delete(EMODNET_LON,9482,0)
+ind_x = xr.DataArray(ind_x, dims=["lon"])
+#%%
+ind_y = np.zeros(1,dtype=int)
+i=1
+while(i < np.size(EMODNET_LAT.data[:]) ):
+    if((EMODNET_LAT.data[i] - EMODNET_LAT.data[i-1])<1e-10):
+        k = i-1
+        print( "caught a repeat", EMODNET_LAT.data[i],EMODNET_LAT.data[i-1])
+        while( (EMODNET_LAT.data[i] - EMODNET_LAT.data[k]) < 1e-10):
+            print( "Caught a further repeat", EMODNET_LAT[i].data,EMODNET_LAT.data[k],-EMODNET_LAT.data[i] , EMODNET_LAT.data[k])
+            i=i+1    
+    ind_y = np.append(ind_y[:],i)
+    i=i+1
+print(ind_y)
+ind_y = xr.DataArray(ind_y, dims=["lat"])
 
+#%%
 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,18963,1)
-EMODNET_LON   = np.delete(EMODNET_LON,18963,0)
-
-EMODNET_BATHY = np.delete(EMODNET_BATHY,18963,1)
-EMODNET_LON   = np.delete(EMODNET_LON,18963,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,18963,1)
-EMODNET_LON   = np.delete(EMODNET_LON,18963,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,28444,1)
-EMODNET_LON   = np.delete(EMODNET_LON,28444,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,28444,1)
-EMODNET_LON   = np.delete(EMODNET_LON,28444,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,28444,1)
-EMODNET_LON   = np.delete(EMODNET_LON,28444,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,28444,1)
-EMODNET_LON   = np.delete(EMODNET_LON,28444,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,37924,1)
-EMODNET_LON   = np.delete(EMODNET_LON,37924,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,37924,1)
-EMODNET_LON   = np.delete(EMODNET_LON,37924,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,37924,1)
-EMODNET_LON   = np.delete(EMODNET_LON,37924,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,47405,1)
-EMODNET_LON   = np.delete(EMODNET_LON,47405,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,47405,1)
-EMODNET_LON   = np.delete(EMODNET_LON,47405,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,47405,1)
-EMODNET_LON   = np.delete(EMODNET_LON,47405,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,47405,1)
-EMODNET_LON   = np.delete(EMODNET_LON,47405,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,56885,1)
-EMODNET_LON   = np.delete(EMODNET_LON,56885,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,56885,1)
-EMODNET_LON   = np.delete(EMODNET_LON,56885,0)
- 
-EMODNET_BATHY = np.delete(EMODNET_BATHY,56885,1)
-EMODNET_LON   = np.delete(EMODNET_LON,56885,0)
-
-
-print ("Before Repeat Check")
-
-
-#Repeat Check
-for i in range(1,np.size(EMODNET_LON[:])):
-  if(EMODNET_LON[i]<=EMODNET_LON[i-1]):
-       print ('2nd check Caught a repeat at :,i,EMODNET_LON[i],EMODNET_LON[i-1],EMODNET_LON[i+1]')
-       print ('2nd check Caught a repeat at :',i,EMODNET_LON[i],EMODNET_LON[i-1],EMODNET_LON[i+1])
-#same for lats
-for i in range(1,np.size(EMODNET_LAT[:])):
-  if(EMODNET_LAT[i]<=EMODNET_LAT[i-1]):
-       print ('Caught a repeat at :,i,EMODNET_LAt[i-1],EMODNET_LAt[i],EMODNET_LAT[i+1],EMODNET_LAT[i+2]')
-       print ('Caught a repeat at :',i,EMODNET_LAT[i-1],EMODNET_LAT[i],EMODNET_LAT[i+1],EMODNET_LAT[i+2])
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,9004,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,9004,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,9004,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,9004,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,9004,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,9004,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,18005,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,18005,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,18005,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,18005,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,18005,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,18005,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,27006,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,27006,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,27006,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,27006,0)
-
-EMODNET_BATHY   = np.delete(EMODNET_BATHY,27006,0)
-EMODNET_LAT   = np.delete(EMODNET_LAT,27006,0)
-
- 
-# Repeat Test
- 
-#same for lats
-for i in range(1,np.size(EMODNET_LAT[:])):
-  if(EMODNET_LAT[i]<=EMODNET_LAT[i-1]):
-       print ('2nd check Caught a repeat at :,i,EMODNET_LAt[i-1],EMODNET_LAt[i],EMODNET_LAT[i+1],EMODNET_LAT[i+2]')
-       print ('2nd check Caught a repeat at :',i,EMODNET_LAT[i-1],EMODNET_LAT[i],EMODNET_LAT[i+1],EMODNET_LAT[i+2])
-
+dask.config.set(**{'array.slicing.split_large_chunks': False})
+EMODNET_BATHY = EMODNET_BATHY[ind_y,ind_x]
 
 
 
 ## set up a Cube
 print ("set up a Cube")
 
-cs = iris.coord_systems.GeogCS(6371229)
-latitude_emodnet  = DimCoord(EMODNET_LAT, standard_name='latitude', units='degrees',coord_system=cs)
-longitude_emodnet = DimCoord(EMODNET_LON, standard_name='longitude', units='degrees',coord_system=cs)
+# Rename to eb compatible with expanded cube later
+EMODNET_BATHY = EMODNET_BATHY.rename("sea_floor_depth_below_geoid")
 
-
-
+#%%
+#
+#%%
 now = datetime.now()
 current_time = now.strftime("%Y/%M/%d %H:%M:%S")
 repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
@@ -228,18 +145,29 @@ branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref',  'HEAD'],
                          stderr=subprocess.STDOUT)
 branch = branch.stdout.decode('utf-8').strip('\n')
 script = parser.prog
+#%%
+cs = iris.coord_systems.GeogCS(6371229)
+latitude_emodnet  = DimCoord(EMODNET_LAT[ind_y], standard_name='latitude', units='degrees',coord_system=cs)
+longitude_emodnet = DimCoord(EMODNET_LON[ind_x], standard_name='longitude', units='degrees',coord_system=cs)
+#%%
 
+#%%
+EMODNET_cube = EMODNET_BATHY.to_iris()
+EMODNET_cube.standard_name="sea_floor_depth_below_geoid"
+#%%
+EMODNETB_cube = Cube(EMODNET_BATHY, standard_name='sea_floor_depth_below_geoid',units='m',
+         dim_coords_and_dims=[(latitude_emodnet, 0), (longitude_emodnet, 1)])
 
+EMODNET_cube.coord_system = EMODNETB_cube.coord_system
+#%%
 
-EMODNET_cube = Cube(EMODNET_BATHY, standard_name='sea_floor_depth_below_geoid',units='m',
-            dim_coords_and_dims=[(latitude_emodnet, 0), (longitude_emodnet, 1)])
 EMODNET_cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
 EMODNET_cube.attributes[ 'Input' ] = "Allmerge.nc"
-EMODNET_cube.attributes[ 'Python version' ] = platform.python_version()
+EMODNET_cube.attributes[ 'Python version' ] = platform.python_version()#
 EMODNET_cube.attributes[ 'System' ] = platform.system()
 EMODNET_cube.attributes[ 'Release' ] = platform.release()
-
-
-iris.save(EMODNET_cube, '{}/EMODNET_v2020_NO_REPEAT_LAT_LON.nc'.format(args.OUT_DIR[0]))
+#%%
+with ProgressBar():
+   iris.save(EMODNET_cube, '{}/EMODNET_v2020_NO_REPEAT_LAT_LON.nc'.format(args.OUT_DIR[0]))
 
 

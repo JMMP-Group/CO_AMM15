@@ -1,5 +1,4 @@
 """ Interpolate EMODNET data onto Expanded AMM15 grid
-
 We read in the rotated amm15 grid. We create a grid based on this but that is wider
 so that later smoothing will not effect the bdy regions.
 Here is it set arbitarliy as a 100 points extra NSWE(rotated space)
@@ -17,6 +16,15 @@ and a version that has the EMODET LSM applied directly.
 Later we use the EMODET LSM in the areas beyond the AMM15 extents and the oper LSM in the 
 inner true AMM15 region
 
+Note on Spice we can use enough RAM to process the iris regird all in one but on
+more reasonable machsin etis is not possible and iris regirds cannot chunk in the horizontal
+
+So we have a rok aroudn where we maek a small section of destination grid
+and a small section of src data that covers the destination gris plus extra (1000)
+so the infilling is done consistently
+
+then at the end we can rejoin all the interpolated subsections into a single file
+
 
 Parameters
 ----------
@@ -32,16 +40,15 @@ Returns
 EMODNET interpolated on the expanded AMM15 grid
 
 """
-
+#%%
 import iris
 from iris.cube import Cube
 from iris.coords import DimCoord
-from iris.analysis.cartography import rotate_pole
+from dask.diagnostics import ProgressBar
 
 import numpy as np
 
-
-from netCDF4 import Dataset
+import os, glob
 
 
 import argparse
@@ -52,13 +59,55 @@ import sys, platform
 sys.path.append(r'../')
 from mask_tools import fill
 
+import xarray as xr
 
 from datetime import datetime
 import subprocess
 
+
+
+def find_nearest(array, value):
+   ''' 
+   Finds the nearest value and index of that value in an ordered array to a specifed value
+
+            Parameters:
+                    array[] (float): ordered array of values (lats/lons)
+                    value (float): Desired point 
+
+            Returns:
+                    array[idx] (float): value at array nearest to value
+                    idx(int) : index of array closes to value
+                    
+   '''
+
+   array = np.asarray(array)
+   idx = (np.abs(array - value)).argmin()
+   return array[idx],idx
+
 def set_history(cube):
+    '''
+    Adds a record to the cubes history of when and how it was made 
+   
+            Parameters:
+                    cube(iris cube) : cube to be stored in netcdf
+    '''
+    now = datetime.now()
+    current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+
+    repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    repos = repos.stdout.decode('utf-8').strip('\n')
+ 
+    branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref',  'HEAD'],
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    branch = branch.stdout.decode('utf-8').strip('\n')
+
+
+    script = parser.prog
     cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
-    cube.attributes[ 'Input' ]   = "EMODNET_CUBE.nc, created by  MAKE_EMODNET.py, NWS_CUT_GEBCO_2020_TID.nc and the AMM15 unrotated coordinates file"
+    cube.attributes[ 'Input' ]   = "EMODNET_CUBE.nc, created by  MAKE_EMODNET_CUBE.py,  and the AMM15 unrotated coordinates file"
     cube.attributes[ 'Python version' ] = platform.python_version()
     cube.attributes[ 'System' ]  = platform.system()
     cube.attributes[ 'Release' ] = platform.release()
@@ -66,7 +115,7 @@ def set_history(cube):
 
 
 
-
+#%%
 parser = argparse.ArgumentParser(description='Process inputs and output file paths')
 parser.add_argument('-a','--AMM15_PATH', metavar='AMM15_cube_file', nargs=1,
                     help='File location of AMM15 rotated grid', required=True)
@@ -85,6 +134,7 @@ print (args.AMM15_PATH[0])
 print("\n----------------------------------------------------\n")
 print( "Thanks, you have chosen: \n ")
 print( "      AMM15 grid file as {}\n".format (args.AMM15_PATH[0]))
+
 if Path(args.AMM15_PATH[0]).is_file():
        print(" and the file {} exists.".format (args.AMM15_PATH[0]))
 else:
@@ -101,7 +151,6 @@ if (Path(args.OUT_DIR[0])).is_dir():
 else:
       sys.exit("However, {} does not exist  so we exit here".format(args.OUT_DIR[0])) 
 
-#       and output for process bathy as {}.".format(args.AMM15_PATH[0], args.IN_DIR[0], args.OUT_DIR[0]) ) 
 print("\n----------------------------------------------------\n")
 
 
@@ -132,7 +181,7 @@ n_lat = np.size( inflate_lat )
 n_lon = np.size( inflate_lon )
 
 
-#Make Expansions
+# Make Expansions
 
 rotated_cs = iris.coord_systems.RotatedGeogCS(37.5, 177.5)
 
@@ -163,64 +212,132 @@ iris.save(expandcube, '{}/expand_test.nc'.format( args.OUT_DIR[0]) )
 # we want to save the 2d rotated lats and lons for the extended grid in NEMO format
 from get_expanded_coordinates import output_nemo_coords
 
+
 output_nemo_coords(inflate_lat, inflate_lon, args.OUT_DIR[0])
 
-# Read in the cube of gebco data this was created by MAKE_GEBCO_CUBE.py
+
+# Read in the cube of gebco data this was created by MAKE_EMODNET_CUBE.py
 
 EMODNET_RAW_cube = iris.load('{}/EMODNET_v2020_NO_REPEAT_LAT_LON.nc'.format( args.INCUBE_DIR[0] ))[0]
 
 
-
-
-
-
-
-
-
-
-
-
-
 expandcube.coord_system = AMM15_cube.coord_system
 
-print(AMM15_cube.coord_system)
-print(EMODNET_RAW_cube.coord_system) 
-MASK_EMODNET_ON_EXPANDAMM15 = EMODNET_RAW_cube.regrid(expandcube, iris.analysis.Linear(extrapolation_mode='mask'))
-
-EMODNET_RAW_cube.data[EMODNET_RAW_cube.data > 1.e33] = np.nan
-EMODNET_RAW_cube.data = fill(EMODNET_RAW_cube.data)
-EXTRAPOLATE_EMODNET_ON_EXPANDAMM15 = EMODNET_RAW_cube.regrid(expandcube, iris.analysis.Linear(extrapolation_mode='extrapolate'))
-
-MASK_EXTRAPOLATE = MASK_EMODNET_ON_EXPANDAMM15
-MASK_EXTRAPOLATE.data                   [extra_lat:-extra_lat,extra_lon:-extra_lon] = (
-EXTRAPOLATE_EMODNET_ON_EXPANDAMM15.data [extra_lat:-extra_lat,extra_lon:-extra_lon]   )
-
-#--------------------------------------------------------------------------------------
-# save it to file, set up global attributes to help trace how the file was created
-#--------------------------------------------------------------------------------------
-
-now = datetime.now()
-current_time = now.strftime("%Y/%M/%d %H:%M:%S")
-
-repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-repos = repos.stdout.decode('utf-8').strip('\n')
-
-branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref',  'HEAD'],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-branch = branch.stdout.decode('utf-8').strip('\n')
+# EMODNET_RAW_cube.data = EMODNET_RAW_cube.lazy_data().rechunk([10,None])
+print(EMODNET_RAW_cube.lazy_data().chunks)
 
 
-script = parser.prog
+print ( " Size of domain we want to split is : ", np.size(expandcube.data[:,0]) )
 
-set_history( MASK_GEBCO_ON_EXPANDAMM15 )
-set_history( EXTRAPOLATE_GEBCO_ON_EXPANDAMM15 )
-set_history( MASK_EXTRAPOLATE )
+# Sub size is a small patch to interpolate to to keep the memory usage down of iris regrid
+# we make make the src grid bound this plus some extra points for consistent infilling
+# make smaller for smaller RAM
+#sub_size  = 100
+sub_size  = 300
+
+div, remain = np.divmod( np.size(expandcube.data[ : , 0]), sub_size )
+print ( " This means we need {}  domains of size {} and a remainder domain of size {}".format(div,sub_size,remain) )
+section = 0
+
+os.system("mkdir  -p {}/SUBSECTION/".format(args.OUT_DIR[0]) )
+# Clear out incase there is anything there
+os.system("rm {}/SUBSECTION/*".format(args.OUT_DIR[0]) )
+#%%
+while section  < div+1:
+  
+  print( "Doing Section {} of {} ".format(section,div))
+  if(section < div):
+     subsection_cube = expandcube[ section*sub_size:(section+1)*sub_size,:]
+  if(section == div):
+     subsection_cube = expandcube[ section*sub_size:,:]
+
+  X, Y = np.meshgrid(subsection_cube.coord('grid_longitude').points,subsection_cube.coord('grid_latitude').points)
+
+  lons, lats = iris.analysis.cartography.unrotate_pole(X ,Y    , 177.5, 37.5)
+
+#find closest indices
+# Min
+  value,lat_idx = find_nearest(EMODNET_RAW_cube.coord('latitude').points[:], np.min(lats ))
+  lat_min_idx = lat_idx - 500 # ( for safety for fill interp)
+   
+
+  value,lon_idx = find_nearest(EMODNET_RAW_cube.coord('longitude').points[:], np.min(lons ))
+  lon_min_idx = lon_idx - 500 # ( for safety for fill interp)
+    
+
+
+# Max
+  value,lat_idx = find_nearest(EMODNET_RAW_cube.coord('latitude').points[:], np.max(lats ))
+  lat_max_idx = lat_idx + 500 # (for safety for fill interp)
+    
+
+  value,lon_idx = find_nearest(EMODNET_RAW_cube.coord('longitude').points[:], np.max(lons ))
+  lon_max_idx = lon_idx + 500 # ( for safety for fill interp)
+    
 
 
 
-iris.save(EXTRAPOLATE_EMODNET_ON_EXPANDAMM15, '{}/EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format( args.OUT_DIR[0] ))
-iris.save(MASK_EMODNET_ON_EXPANDAMM15, '{}/MASK_EMODET_vDec2020_ON_EXPAND_AMM15.nc'.format( args.OUT_DIR[0] ))
-iris.save(MASK_EXTRAPOLATE, '{}/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0] ))
+  print("\n section {} of {}\n".format(section,div) )
+  subsection_emodnet_raw_cube = EMODNET_RAW_cube[lat_min_idx:lat_max_idx, lon_min_idx:lon_max_idx ]
+
+
+
+
+  print("About to save and regrid")
+  set_history(subsection_emodnet_raw_cube )
+  iris.save( subsection_emodnet_raw_cube.regrid(subsection_cube, iris.analysis.Linear(extrapolation_mode='mask') ), '{}/SUBSECTION/{:05d}_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section))
+
+
+  print("About to Nan")
+  with ProgressBar():
+     subsection_emodnet_raw_cube.data[subsection_emodnet_raw_cube.data > 1.e33 ] = np.nan
+
+  print("About to Fill")
+  with ProgressBar():
+     subsection_emodnet_raw_cube.data = fill(subsection_emodnet_raw_cube.data)
+
+  print("About to save and regrid")
+  set_history(subsection_emodnet_raw_cube )
+  format(  args.OUT_DIR[0] )
+  with ProgressBar():
+     iris.save(subsection_emodnet_raw_cube.regrid(subsection_cube, iris.analysis.Linear(extrapolation_mode='extrapolate')) ,'{}/SUBSECTION/{:05d}_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section))
+  print("Section {} of {} done".format(section,div))
+
+
+  section += 1
+
+print("all sections done")
+#%%
+print('{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]))
+print("Files to stitch are:")
+for file_name in glob.iglob('{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]), recursive=True):
+  print(file_name)
+#%%
+EXTRAPOLATE_EMODNET_ON_EXPANDAMM15 = xr.open_mfdataset(
+        '{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]), 
+        combine = 'nested', 
+        concat_dim = 'grid_latitude', 
+        parallel=True)
+
+MASK_EMODNET_ON_EXPANDAMM15 = xr.open_mfdataset(
+        '{}/SUBSECTION/00???_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]),
+        combine = 'nested', 
+        concat_dim = 'grid_latitude', 
+        parallel=True)
+
+extra_lat=int(100)
+extra_lon=int(100)
+
+MASK_EXTRAPOLATE = MASK_EMODNET_ON_EXPANDAMM15.copy()
+MASK_EXTRAPOLATE.sea_floor_depth_below_geoid[extra_lat:-extra_lat,extra_lon:-extra_lon] = (
+EXTRAPOLATE_EMODNET_ON_EXPANDAMM15.sea_floor_depth_below_geoid [extra_lat:-extra_lat,extra_lon:-extra_lon]   )
+
+
+
+with ProgressBar():
+  MASK_EMODNET_ON_EXPANDAMM15.to_netcdf('{}/MASK_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0]))
+with ProgressBar():
+  EXTRAPOLATE_EMODNET_ON_EXPANDAMM15.to_netcdf('{}/EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0]))
+with ProgressBar():
+  MASK_EXTRAPOLATE.to_netcdf('{}/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0]))
+
