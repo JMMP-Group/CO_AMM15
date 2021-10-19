@@ -58,7 +58,7 @@ import subprocess
 
 def set_history(cube):
     cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
-    cube.attributes[ 'Input' ]   = "GEBCO_CUBE.nc, created by  MAKE_GEBCO_CUBE.py, NWS_CUT_GEBCO_2020_TID.nc and the AMM15 unrotated coordinates file"
+    cube.attributes[ 'Input' ]   = "EMODNET_CUBE.nc, created by  MAKE_EMODNET.py, NWS_CUT_GEBCO_2020_TID.nc and the AMM15 unrotated coordinates file"
     cube.attributes[ 'Python version' ] = platform.python_version()
     cube.attributes[ 'System' ]  = platform.system()
     cube.attributes[ 'Release' ] = platform.release()
@@ -183,6 +183,8 @@ EMODNET_RAW_cube = iris.load('{}/EMODNET_v2020_NO_REPEAT_LAT_LON.nc'.format( arg
 
 expandcube.coord_system = AMM15_cube.coord_system
 
+print(AMM15_cube.coord_system)
+print(EMODNET_RAW_cube.coord_system) 
 MASK_EMODNET_ON_EXPANDAMM15 = EMODNET_RAW_cube.regrid(expandcube, iris.analysis.Linear(extrapolation_mode='mask'))
 
 EMODNET_RAW_cube.data[EMODNET_RAW_cube.data > 1.e33] = np.nan

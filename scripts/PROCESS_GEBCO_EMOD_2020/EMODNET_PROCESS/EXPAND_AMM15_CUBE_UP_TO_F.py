@@ -64,6 +64,8 @@ import xarray as xr
 from datetime import datetime
 import subprocess
 
+
+
 def find_nearest(array, value):
    ''' 
    Finds the nearest value and index of that value in an ordered array to a specifed value
@@ -102,11 +104,10 @@ def set_history(cube):
                          stderr=subprocess.STDOUT)
     branch = branch.stdout.decode('utf-8').strip('\n')
 
-    print("\nL\n")
 
     script = parser.prog
     cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
-    cube.attributes[ 'Input' ]   = "GEBCO_CUBE.nc, created by  MAKE_GEBCO_CUBE.py, NWS_CUT_GEBCO_2020_TID.nc and the AMM15 unrotated coordinates file"
+    cube.attributes[ 'Input' ]   = "EMODNET_CUBE.nc, created by  MAKE_EMODNET_CUBE.py,  and the AMM15 unrotated coordinates file"
     cube.attributes[ 'Python version' ] = platform.python_version()
     cube.attributes[ 'System' ]  = platform.system()
     cube.attributes[ 'Release' ] = platform.release()
@@ -230,8 +231,9 @@ print ( " Size of domain we want to split is : ", np.size(expandcube.data[:,0]) 
 
 # Sub size is a small patch to interpolate to to keep the memory usage down of iris regrid
 # we make make the src grid bound this plus some extra points for consistent infilling
-#
-sub_size  = 100
+# make smaller for smaller RAM
+#sub_size  = 100
+sub_size  = 300
 
 div, remain = np.divmod( np.size(expandcube.data[ : , 0]), sub_size )
 print ( " This means we need {}  domains of size {} and a remainder domain of size {}".format(div,sub_size,remain) )
@@ -256,21 +258,21 @@ while section  < div+1:
 #find closest indices
 # Min
   value,lat_idx = find_nearest(EMODNET_RAW_cube.coord('latitude').points[:], np.min(lats ))
-  lat_min_idx = lat_idx - 1000 # (10 for safety for interp)
+  lat_min_idx = lat_idx - 500 # ( for safety for fill interp)
    
 
   value,lon_idx = find_nearest(EMODNET_RAW_cube.coord('longitude').points[:], np.min(lons ))
-  lon_min_idx = lon_idx - 1000 # (10 for safety for interp)
+  lon_min_idx = lon_idx - 500 # ( for safety for fill interp)
     
 
 
 # Max
   value,lat_idx = find_nearest(EMODNET_RAW_cube.coord('latitude').points[:], np.max(lats ))
-  lat_max_idx = lat_idx + 1000 # (10 for safety for interp)
+  lat_max_idx = lat_idx + 500 # (for safety for fill interp)
     
 
   value,lon_idx = find_nearest(EMODNET_RAW_cube.coord('longitude').points[:], np.max(lons ))
-  lon_max_idx = lon_idx + 1000 # (10 for safety for interp)
+  lon_max_idx = lon_idx + 500 # ( for safety for fill interp)
     
 
 
@@ -287,15 +289,18 @@ while section  < div+1:
 
 
   print("About to Nan")
-  subsection_emodnet_raw_cube.data[subsection_emodnet_raw_cube.data > 1.e33 ] = np.nan
+  with ProgressBar():
+     subsection_emodnet_raw_cube.data[subsection_emodnet_raw_cube.data > 1.e33 ] = np.nan
 
   print("About to Fill")
-  subsection_emodnet_raw_cube.data = fill(subsection_emodnet_raw_cube.data)
+  with ProgressBar():
+     subsection_emodnet_raw_cube.data = fill(subsection_emodnet_raw_cube.data)
 
   print("About to save and regrid")
   set_history(subsection_emodnet_raw_cube )
   format(  args.OUT_DIR[0] )
-  iris.save(subsection_emodnet_raw_cube.regrid(subsection_cube, iris.analysis.Linear(extrapolation_mode='extrapolate')) ,'{}/SUBSECTION/{:05d}_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section))
+  with ProgressBar():
+     iris.save(subsection_emodnet_raw_cube.regrid(subsection_cube, iris.analysis.Linear(extrapolation_mode='extrapolate')) ,'{}/SUBSECTION/{:05d}_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section))
   print("Section {} of {} done".format(section,div))
 
 
@@ -303,19 +308,19 @@ while section  < div+1:
 
 print("all sections done")
 #%%
-print('{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section))
+print('{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]))
 print("Files to stitch are:")
-for file_name in glob.iglob('{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section), recursive=True):
+for file_name in glob.iglob('{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]), recursive=True):
   print(file_name)
 #%%
 EXTRAPOLATE_EMODNET_ON_EXPANDAMM15 = xr.open_mfdataset(
-        '{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section), 
+        '{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]), 
         combine = 'nested', 
         concat_dim = 'grid_latitude', 
         parallel=True)
 
 MASK_EMODNET_ON_EXPANDAMM15 = xr.open_mfdataset(
-        '{}/SUBSECTION/00???_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0],section),
+        '{}/SUBSECTION/00???_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]),
         combine = 'nested', 
         concat_dim = 'grid_latitude', 
         parallel=True)

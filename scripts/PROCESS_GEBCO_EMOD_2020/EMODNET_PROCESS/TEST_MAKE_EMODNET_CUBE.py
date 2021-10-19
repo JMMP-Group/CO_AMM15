@@ -23,6 +23,8 @@ import numpy as np
 import xarray as xr
 
 
+from iris.coords import DimCoord
+from iris.cube import Cube
 
 
 
@@ -35,6 +37,7 @@ from datetime import datetime
 import subprocess
 
 import dask
+from dask.diagnostics import ProgressBar
 
 #%%
 
@@ -120,20 +123,16 @@ ind_y = xr.DataArray(ind_y, dims=["lat"])
 dask.config.set(**{'array.slicing.split_large_chunks': False})
 EMODNET_BATHY = EMODNET_BATHY[ind_y,ind_x]
 
-from dask.diagnostics import ProgressBar
-#
 
 
-#with ProgressBar():  
-#
-#  EMODNET_BATHY.to_netcdf('TEST.nc')
-#
-#%%
 ## set up a Cube
 print ("set up a Cube")
 
+# Rename to eb compatible with expanded cube later
+EMODNET_BATHY = EMODNET_BATHY.rename("sea_floor_depth_below_geoid")
+
 #%%
-EMODNET_BATHY.to_iris()
+#
 #%%
 now = datetime.now()
 current_time = now.strftime("%Y/%M/%d %H:%M:%S")
@@ -146,13 +145,22 @@ branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref',  'HEAD'],
                          stderr=subprocess.STDOUT)
 branch = branch.stdout.decode('utf-8').strip('\n')
 script = parser.prog
-
+#%%
+cs = iris.coord_systems.GeogCS(6371229)
+latitude_emodnet  = DimCoord(EMODNET_LAT[ind_y], standard_name='latitude', units='degrees',coord_system=cs)
+longitude_emodnet = DimCoord(EMODNET_LON[ind_x], standard_name='longitude', units='degrees',coord_system=cs)
+#%%
 
 #%%
-#EMODNET_cube = Cube(EMODNET_BATHY_REINDEX, standard_name='sea_floor_depth_below_geoid',units='m',
-#           dim_coords_and_dims=[(latitude_emodnet, 0), (longitude_emodnet, 1)])
 EMODNET_cube = EMODNET_BATHY.to_iris()
+EMODNET_cube.standard_name="sea_floor_depth_below_geoid"
 #%%
+EMODNETB_cube = Cube(EMODNET_BATHY, standard_name='sea_floor_depth_below_geoid',units='m',
+         dim_coords_and_dims=[(latitude_emodnet, 0), (longitude_emodnet, 1)])
+
+EMODNET_cube.coord_system = EMODNETB_cube.coord_system
+#%%
+
 EMODNET_cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
 EMODNET_cube.attributes[ 'Input' ] = "Allmerge.nc"
 EMODNET_cube.attributes[ 'Python version' ] = platform.python_version()#
