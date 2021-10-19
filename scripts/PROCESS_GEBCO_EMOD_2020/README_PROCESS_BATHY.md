@@ -212,4 +212,48 @@ The above data is stripped of overlaps along the edges and then put into tcube f
 Typical usage is:
    * python3.8 MAKE_EMODNET_CUBE.py -i PathToALLmerge.nc/ -o OutPutDir/
 
-This is quite RAM intensive.
+To reduce RAM usage this uses xarray chunking.
+```python
+EMODNET_RAWB = xr.open_mfdataset( '{}/ALLmerge.nc'.format(args.IN_DIR[0]), parallel=True,chunks=({"lat": 100, "lon": -1 }) )
+```
+It searches the lats and lons for overlaps and creates an array of indexes so that the global array can be indexed without the overlaps, 
+Note in some cases the indexes are almost the same but only differ by a tiny amount so we exclude those cases too.
+```python
+ind_x = np.zeros(1,dtype=int)
+i=1
+while(i < np.size(EMODNET_LON.data[:]) ):
+    if((EMODNET_LON.data[i] - EMODNET_LON.data[i-1])<1e-10):
+        k = i-1
+        print( "caught a repeat", EMODNET_LON.data[i],EMODNET_LON.data[i-1])
+        while( (EMODNET_LON.data[i] - EMODNET_LON.data[k]) < 1e-10):
+            print( "Caught a further repeat", EMODNET_LON[i].data,EMODNET_LON.data[k],-EMODNET_LON.data[i] , EMODNET_LON.data[k])
+            i=i+1
+    ind_x = np.append(ind_x[:],i)
+    i=i+1
+print(ind_x)
+
+ind_x = xr.DataArray(ind_x, dims=["lon"])
+```
+similar for y and then index the original data_and_products
+```python
+dask.config.set(**{'array.slicing.split_large_chunks': False})
+EMODNET_BATHY = EMODNET_BATHY[ind_y,ind_x]
+```
+
+We rename the data variable for consistency with later scripts
+```python
+EMODNET_BATHY = EMODNET_BATHY.rename("sea_floor_depth_below_geoid")
+```
+And convert to a cube
+```python
+EMODNET_cube = EMODNET_BATHY.to_iris()
+```
+We also want the same coordinate system as AMM15 for re-gridding later.
+
+The output
+```python
+iris.save(EMODNET_cube, '{}/EMODNET_v2020_NO_REPEAT_LAT_LON.nc'.format(args.OUT_DIR[0]))
+```
+is used in the next stage where we re-grid onto the extended AMM15 domain
+
+### Re-grid to extended AMM15 domain
