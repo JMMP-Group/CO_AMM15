@@ -216,7 +216,7 @@ To reduce RAM usage this uses xarray chunking.
 ```python
 EMODNET_RAWB = xr.open_mfdataset( '{}/ALLmerge.nc'.format(args.IN_DIR[0]), parallel=True,chunks=({"lat": 100, "lon": -1 }) )
 ```
-It searches the lats and lons for overlaps and creates an array of indexes so that the global array can be indexed without the overlaps, 
+It searches the lats and lons for overlaps and creates an array of indexes so that the global array can be indexed without the overlaps,
 Note in some cases the indexes are almost the same but only differ by a tiny amount so we exclude those cases too.
 ```python
 ind_x = np.zeros(1,dtype=int)
@@ -257,3 +257,65 @@ iris.save(EMODNET_cube, '{}/EMODNET_v2020_NO_REPEAT_LAT_LON.nc'.format(args.OUT_
 is used in the next stage where we re-grid onto the extended AMM15 domain
 
 ### Re-grid to extended AMM15 domain
+
+To regrid to the extended AMM15 domain we use the script:
+   * EXPAND_AMM15_CUBE.py
+This is amended from the similar version as in GEBCO as we ran into RAM limitations.
+
+The iris re-grid function seems to grab all the data despite using lazy loading etc.
+So to over come this we break the target grid into small sections. We also choose
+src grid that covers the target grid and an extra wind of say 500 points only.
+This reduces the RAM required. The user can split the domain up into smaller sections
+if they have limited RAM. This is changed by setting sub_size(currently hard-coded)
+```python
+sub_size  = 300
+```
+
+Arguments passed are:
+   * -a ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS/AMM15_ROTATED_CS.nc
+     * That is the path to the example AMM15 rotated grid
+   * -c ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS  
+      * the path to where the EMODNET src data has been mapped to a cube
+      * e.g. EMODNET_v2020_NO_REPEAT_LAT_LON.nc
+   * -o  ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS
+      * The path where we want to store our oututs:
+         * MASK_EMODNET_vDec2020_ON_EXPAND_AMM15.nc
+         * EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc
+         * **MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc**
+
+
+When the code runs it calculates the number of blocks or sections required based on sub_size. 
+It creates a SUBSECTION subdir into which is writes each subsection.
+To get the src data correct it finds the  lat lon box that encompasses the target
+section and adds on extra perimeter so that filling in from nearest valid sea point is consistent.
+e.g.
+```python
+find closest indices
+# Min
+  value,lat_idx = find_nearest(EMODNET_RAW_cube.coord('latitude').points[:], np.min(lats ))
+  lat_min_idx = lat_idx - 500 # ( for safety for fill interp)
+
+```
+etc. and then the subsection of src data is:
+```python
+  subsection_emodnet_raw_cube = EMODNET_RAW_cube[lat_min_idx:lat_max_idx, lon_min_idx:lon_max_idx ]
+```
+As in GEBCO case it nans fills masks etc as before.
+To create the final joined up data set it reads in all the subsections using open_mfdataset:
+```python
+EXTRAPOLATE_EMODNET_ON_EXPANDAMM15 = xr.open_mfdataset(
+        '{}/SUBSECTION/00???_FILL_SUBSECTION_CUBE.nc'.format(args.OUT_DIR[0]),
+        combine = 'nested',
+        concat_dim = 'grid_latitude',
+        parallel=True)
+
+```
+and then write back out as a unified dataset e.g.:
+```python
+with ProgressBar():
+  MASK_EXTRAPOLATE.to_netcdf('{}/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0]))
+```
+
+### Correct for LAT
+
+# Merge EMDONET and GEBCO AMM15 data into one dataset
