@@ -1,5 +1,21 @@
+# Table of contents
+1. [Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy](#overview)
+2. [Retrieve and process source data](#retrieve)
+  1. [Processing GEBCO](#GEBCO)
+    1. [Cut out a domain just for the North West shelf](#CUT_OUT_NWS)
+    1. [Convert GEBCO to Cube](#GEBCO2CUBE)
+    1. [Interpolate GEBCO cube to AMM15 extended domain](#InterpGeb_AMM15)
+    1. [Correct for LAT and apply the operational existing AMM15 mask to the inner domain](#Correct_LAT_GEBCO)
+       1. [First Create a file to make the LAT correction with using Surge model data as a proxy for LAT 2D field](#FileLAT)
+       1. [Apply the correction data to the GEBCO data on the AMM15 grid](#ApplyLAT_GEBCO)
+  2. [Processing EMODNET](#EMODNET)
+    1. [Joining the Tiles](#Tiles)
+    1. [Removing the overlaps and creating a cube version of EMODNET data](#Overlaps)
+    1. [Re-grid to extended AMM15 domain](#REGRID_EMODNET_EXTEND_AMM15)
+    1. [Correct for LAT](#CORRECT_LAT_EMODNET)
+  3. [Merge EMDONET and GEBCO AMM15 data into one dataset](#Merge_EMODNET_GEBCO)
 
-# Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy
+# Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy<a name="overview"></a>
 
 
 Some Required or intermediate inputs are placed on jasmin under:
@@ -35,7 +51,7 @@ There are few things that needs doing though.
 
 
 
-# Retrieve and process source data
+# Retrieve and process source data<a name="retrieve"></a>
 
 The source data considered is that of EMODNET and GEBCO 2020.
 
@@ -44,9 +60,9 @@ The source data considered is that of EMODNET and GEBCO 2020.
   * EMODNET:
       * https://portal.emodnet-bathymetry.eu/   (This comes in a selection of tiles with some overlap at the edges that needs care of when processing)
 
-## Processing GEBCO
+## Processing GEBCO<a name=GEBCO></a>
 
-### Cut out a domain just for the North West shelf
+### Cut out a domain just for the North West shelf <a name="CUT_OUT_NWS"></a>
 
 Sample files on jamsin:
 
@@ -69,7 +85,7 @@ With a copy on jasmin here:
 
 The data needs to be mapped onto the AMM15 grid. To do we we can make use of the iris interpolation.
 
-### Convert GEBCO to Cube
+### Convert GEBCO to Cube <a name="GEBCO2CUBE"></a>
 
 In order to use the interpolator we convert the GEBCO data into an iris cube. To do that use:
 
@@ -79,7 +95,7 @@ This takes as input the path to the cutout of the NWS GEBCO data (NWS_CUT_GEBCO.
 of the dir to store the resultant cube of data (GEBCO_CUBE.nc).
 
 
-### Interpolate GEBCO cube to AMM15 extended domain
+### Interpolate GEBCO cube to AMM15 extended domain<a name="InterpGeb_AMM15>"
 
 In the later stages when we use the Shapiro smoother we need data that goes beyond AMM15 boundaries.
 Thus we actually map the GEBCO data onto a cube whos lat lon extents are beyond the AMM15 lat lon extents,
@@ -124,7 +140,7 @@ We process the data outside the inner core AMM15 domain and inside differently.
 
 
 
-### Correct for LAT and apply the operational existing AMM15 mask to the inner domain.
+### Correct for LAT and apply the operational existing AMM15 mask to the inner domain. <a name="Correct_LAT_GEBCO"></a>
 
 
 EMODNET is explicitly quoted as being references to Lowest Astronomical Tide (LAT).
@@ -132,7 +148,7 @@ When we compare EMODNET and GEBCO data it appears that there are regions where t
 data as EMODNET defaults to GEBCO as its basemap. Thus it is reasonable to assume that GEBCO to must be LAT referenced.
 Thus we need to apply an LAT correction to this data consistently in the way we intend to with EMODNET.
 
-#### First Create a file to make the LAT correction with usgin Surge model data as a proxy for LAT 2D field
+#### First Create a file to make the LAT correction with using Surge model data as a proxy for LAT 2D field <a name="FileLAT"></a>
 In order to do that we need an approximation of the LAT. Our current estimation relies on  surge models CS3X and CS20.
 
 CS3X covers the AMM15 domain and CS20 is at a higher resolution but only covers out to the shelf break.
@@ -163,7 +179,7 @@ and an argument -o where to output the data to.
 
 
 
-#### Apply the correction data to the GEBCO data on the AMM15 grid
+#### Apply the correction data to the GEBCO data on the AMM15 grid<a name="ApplyLAT_GEBCO"></a>
 With the mrege CS3X CS20 LAT proxy field we can correct the inner domain of the AMM15 (for where we have LAT data) using the script:
 
    * GEBCO_PROCESS/Correct_LAT_apply_op_mask.py
@@ -189,10 +205,10 @@ input_bathy_amm15core = input_bathy[inflate_lat:-inflate_lat,inflate_lon:-inflat
 
 
 
-## Processing EMODNET
+## Processing EMODNET <a name="EMODNET"></a>
 
 
-### Joining the Tiles
+### Joining the Tiles <a name="Tiles></a>
 EMODNET data comes in a set of tiles. Each Tile has has an overlap with its neighbour. We need to splice all the tiles together into one dataset.
 And then remove any overlaps that occurring the single unified data set.
 
@@ -204,7 +220,7 @@ Then it does a final merge of the rows into a unified block of data using *final
 
 The resultant merged file is ALLmerge.nc
 
-### Removing the overlaps and creating a cube version of EMODNET data
+### Removing the overlaps and creating a cube version of EMODNET data<a name="Overlaps"></a>
 
 The above data is stripped of overlaps along the edges and then put into tcube format by
    * *MAKE_EMODNET_CUBE.py*
@@ -256,7 +272,7 @@ iris.save(EMODNET_cube, '{}/EMODNET_v2020_NO_REPEAT_LAT_LON.nc'.format(args.OUT_
 ```
 is used in the next stage where we re-grid onto the extended AMM15 domain
 
-### Re-grid to extended AMM15 domain
+### Re-grid to extended AMM15 domain <a name="REGRID_EMODNET_EXTEND_AMM15"></a>
 
 To regrid to the extended AMM15 domain we use the script:
    * EXPAND_AMM15_CUBE.py
@@ -284,7 +300,7 @@ Arguments passed are:
          * **MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc**
 
 
-When the code runs it calculates the number of blocks or sections required based on sub_size. 
+When the code runs it calculates the number of blocks or sections required based on sub_size.
 It creates a SUBSECTION subdir into which is writes each subsection.
 To get the src data correct it finds the  lat lon box that encompasses the target
 section and adds on extra perimeter so that filling in from nearest valid sea point is consistent.
@@ -316,6 +332,6 @@ with ProgressBar():
   MASK_EXTRAPOLATE.to_netcdf('{}/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0]))
 ```
 
-### Correct for LAT
+### Correct for LAT <a name="CORRECT_LAT_EMODNET"></a>
 
-# Merge EMDONET and GEBCO AMM15 data into one dataset
+# Merge EMDONET and GEBCO AMM15 data into one dataset<a nanme="Merge_EMODNET_GEBCO"></a>
