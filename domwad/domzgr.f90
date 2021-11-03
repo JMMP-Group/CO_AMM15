@@ -1935,6 +1935,8 @@ CONTAINS
       READ  ( numnam_cfg, namzgr_sco, IOSTAT = ios, ERR = 902 )
 902   IF( ios /= 0 ) CALL ctl_nam ( ios , 'namzgr_sco in configuration namelist', lwp )
       IF(lwm) WRITE ( numond, namzgr_sco )
+      
+      rn_hc = rn_hc + rn_wd_ref_depth
 
       IF(lwp) THEN                           ! control print
          WRITE(numout,*)

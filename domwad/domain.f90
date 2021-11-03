@@ -207,6 +207,7 @@ CONTAINS
          WRITE(numout,*) '      overwrite an existing file      ln_clobber = ', ln_clobber
          WRITE(numout,*) '      NetCDF chunksize (bytes)        nn_chunksz = ', nn_chunksz
          WRITE(numout,*) '      IS coupling at the restart step ln_iscpl   = ', ln_iscpl
+         WRITE(numout,*) '      rn_wd_ref_depth =', rn_wd_ref_depth
       ENDIF
 
       no = nn_no                    ! conversion DOCTOR names into model names (this should disappear soon)

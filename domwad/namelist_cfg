@@ -33,9 +33,28 @@
 !-----------------------------------------------------------------------
 &namzgr        !   vertical coordinate
 !-----------------------------------------------------------------------
-   ln_mes      = .true.    !  Multi-Envelope s-coordinate
+   ln_mes      = .false.    !  Multi-Envelope s-coordinate
+   ln_sco = .true.
    ln_linssh   = .true.    !  linear free surface
 /
+&namzgr_sco
+ln_s_sf12=.true.,
+ln_s_sh94=.false.,
+ln_sigcrit=.true.,
+rn_alpha=4.4,
+rn_bb=0.8,
+rn_efold=0.0,
+rn_hc=50,
+rn_rmax=0.1,
+rn_sbot_max=10000.0,
+rn_sbot_min=1.0e-5,
+rn_theta=6.0,
+rn_thetb=1.0,
+rn_zb_a=0.024,
+rn_zb_b=-0.2,
+rn_zs=1.0,
+/
+
 !-----------------------------------------------------------------------
 &namzgr_mes    !   MEs-coordinate                     
 !-----------------------------------------------------------------------
@@ -64,32 +83,28 @@
 !-----------------------------------------------------------------------
 &namdom        !   space and time domain (bathymetry, mesh, timestep)
 !-----------------------------------------------------------------------
-   nn_bathy    =  1
-   nn_msh      =  1
-   jphgr_msh   =  0
-   ldbletanh   = .TRUE.
-   ppglam0     =  999999.d0
-   ppgphi0     =  999999.d0
-   ppe1_deg    =  999999.d0
-   ppe2_deg    =  999999.d0
-   ppe1_m      =  999999.d0
-   ppe2_m      =  999999.d0                 
-   ppa0        =  103.9530096000000
-   ppa1        =  2.415951269000000
-   ppa2        =  100.7609285000000
-   ppacr       =  7.0
-   ppacr2      =  13.0
-   ppdzmin     =  999999.0
-   pphmax      =  999999.0
-   ppkth       =  15.35101370000000
-   ppkth2      =  48.02989372000000
-   ppsur       = -3958.951371276829
-   rn_atfp     =  0.1
-   rn_e3zps_min=  25.0
-   rn_e3zps_rat=  0.2
-   rn_hmin     = -8.0
-   rn_rdt      =  1350.0
-   rn_wd_ref_depth = 0
+ldbletanh=.false.,
+nn_bathy=1,
+nn_msh=1,
+ppa0=999999.0,
+ppa1=999999.0,
+ppa2=999999.0,
+ppacr=9.0,
+ppacr2=999999.0,
+ppdzmin=6.0,
+ppe1_deg=999999.0,
+ppe1_m=999999.0,
+ppe2_deg=999999.0,
+ppe2_m=999999.0,
+ppglam0=999999.0,
+ppgphi0=999999.0,
+pphmax=5720.0,
+ppkth=23.563,
+ppkth2=999999.0,
+ppsur=999999.0,
+rn_bathy=100.0,
+rn_rdt=60.0,
+rn_wd_ref_depth=10.0,
 /
 !-----------------------------------------------------------------------
 &namcrs        !   Grid coarsening for dynamics output and/or
