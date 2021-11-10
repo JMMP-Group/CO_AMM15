@@ -177,17 +177,13 @@ for env in range(num_env):
            ds_vel = xr.open_dataset(filename)
            hpge = ds_vel[varname].data
 
-           # TO DO: optimise it, 
-           # we don't need this loop
-           nt = hpge.shape[0]
-           nj = hpge.shape[2]
-           ni = hpge.shape[3]
-           for t in range(nt):
-               for j in range(nj):
-                   for i in range(ni):
-                       max_hpge = np.nanmax(hpge[t,:,j,i])
-                       if max_hpge >= r0x:
-                          msk_pge[j-hal:j+hal+1,i-hal:i+hal+1] = 1
+           nj = hpge.shape[0]
+           ni = hpge.shape[1]
+           for j in range(nj):
+               for i in range(ni):
+                   max_hpge = hpge[j,i]
+                   if max_hpge >= e_loc_vmx[env]:
+                      msk_pge[j-hal:j+hal+1,i-hal:i+hal+1] = 1
                           
        msg = '   Total number of points with HPGE > ' + str(e_loc_vmx[env]) + ' m/s: ' + str(np.nansum(msk_pge)) 
        msg_info(msg,)
@@ -198,10 +194,10 @@ for env in range(num_env):
        plt.show()
 
        # smoothing with Martinho & Batteen 2006 
-       env_wrk = smooth_MB06(env_tmp, e_loc_rmx[env])
+       hbatt_smt = smooth_MB06(env_tmp, e_loc_rmx[env])
        
        # applying smoothing only where HPGE are large
-       WRK = env_wrk.data
+       WRK = hbatt_smt.data
        TMP = env_tmp.data
        WRK[msk_pge==0] = TMP[msk_pge==0]
        hbatt_smt.data = WRK
@@ -230,17 +226,18 @@ for env in range(num_env):
        hbatt_smt = smooth_MB06(da_wrk, e_glo_rmx[env])#, tol=2.5e-8)
 
     # Computing then MB06 Slope Parameter for the smoothed envelope
-    rmax_smt = calc_rmax(hbatt_smt)*lsm
-    rmax_smt.plot.pcolormesh(add_colorbar=True, add_labels=True, \
-                                cbar_kwargs=dict(pad=0.15, shrink=1, \
-                                label='Slope parameter'))
+    rmax0_smt = calc_rmax(hbatt_smt)*lsm
+    rmax0_smt.plot.pcolormesh(add_colorbar=True, add_labels=True, \
+                              cbar_kwargs=dict(pad=0.15, shrink=1, \
+                              label='Slope parameter'))
     plt.show()
-    rmax_smt = np.amax(rmax_smt).data
+    rmax_smt = np.amax(rmax0_smt).data
     msg = '   Slope parameter of smoothed envelope: rmax = ' + str(rmax_smt)
     msg_info(msg)
 
     # Saving envelope DataArray
     ds_env["hbatt_"+str(env+1)] = hbatt_smt
+    ds_env["rmax0_"+str(env+1)] = rmax0_smt
 
 # -------------------------------------------------------------------------------------   
 # Writing the bathy_meter.nc file
