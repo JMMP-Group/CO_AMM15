@@ -1,0 +1,260 @@
+!!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+!! NEMO/OPA  Configuration namelist : used to overwrite defaults values defined in SHARED/namelist_ref
+!!>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+!
+!-----------------------------------------------------------------------
+&namrun        !   parameters of the run
+!-----------------------------------------------------------------------
+   nn_no       =       0   !  job number (no more used...)
+   cn_exp      =  "domaincfg"  !  experience name
+   nn_it000    =       1   !  first time step
+   nn_itend    =      75   !  last  time step (std 5475)
+/
+!-----------------------------------------------------------------------
+&namcfg        !   parameters of the configuration
+!-----------------------------------------------------------------------
+   !
+   ln_e3_dep   = .true.    ! =T : e3=dk[depth] in discret sens. 
+   !                       !      ===>>> will become the only possibility in v4.0
+   !                       ! =F : e3 analytical derivative of depth function
+   !                       !      only there for backward compatibility test with v3.6
+   !                       !      
+   cp_cfg      = 'eorca'
+   jp_cfg      = 25
+   jperio      = 4
+   jpidta      = 1442
+   jpiglo      = 1442
+   jpjdta      = 1207
+   jpjglo      = 1207
+   jpkdta      = 75
+   jpizoom     = 1
+   jpjzoom     = 1
+/
+!-----------------------------------------------------------------------
+&namzgr        !   vertical coordinate
+!-----------------------------------------------------------------------
+   ln_mes      = .false.    !  Multi-Envelope s-coordinate
+   ln_sco = .true.
+   ln_linssh   = .true.    !  linear free surface
+/
+&namzgr_sco
+ln_s_sf12=.true.,
+ln_s_sh94=.false.,
+ln_sigcrit=.true.,
+rn_alpha=4.4,
+rn_bb=0.8,
+rn_efold=0.0,
+rn_hc=50,
+rn_rmax=0.1,
+rn_sbot_max=10000.0,
+rn_sbot_min=1.0e-5,
+rn_theta=6.0,
+rn_thetb=1.0,
+rn_zb_a=0.024,
+rn_zb_b=-0.2,
+rn_zs=1.0,
+/
+
+!-----------------------------------------------------------------------
+&namzgr_mes    !   MEs-coordinate                     
+!-----------------------------------------------------------------------
+   ln_envl     =   .TRUE. , .TRUE. , .TRUE. , .TRUE., .FALSE.  ! (T/F) If the envelope is used
+   nn_strt     =     1    ,   1    ,    1   ,   1    ,   1     ! Stretch. funct.: Madec 1996 (0) or
+                                                               ! Song & Haidvogel 1994 (1) or                    
+                                                               ! Siddorn & Furner 2012 (2)
+   nn_slev     =     3    ,   37   ,   17   ,   18   ,    0    ! number of s-lev between env(n-1)
+                                                               ! and env(n)
+   rn_e_hc     =     0.0  ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! critical depth for transition to        
+                                                               ! stretch. coord.
+   rn_e_th     =     1.0  ,    1.2 ,   2.0  ,   0.0  ,   0.0   ! surf. control param.:                  
+                                                               ! SH94 or MD96: 0<=th<=20
+                                                               ! SF12: thickness surf. cell
+   rn_e_bb     =     0.9  ,    0.9 ,   0.85 ,   0.0  ,   0.0   ! bot. control param.:
+                                                               ! SH94 or MD96: 0<=bb<=1
+                                                               ! SF12: offset for calculating Zb
+   rn_e_al     =     0.0  ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! alpha stretching param with SF12
+   rn_e_ba     =     0.0  ,    0.0 ,   0.0  ,   0.0  ,   0.0   ! SF12 bathymetry scaling factor for 
+                                                               ! calculating Zb
+   rn_bot_min  = 10.0       ! minimum depth of the ocean bottom (>0) (m)
+   rn_bot_max  = 5900.0     ! maximum depth of the ocean bottom (= ocean depth) (>0) (m)
+
+   ln_loc_mes  = .TRUE.
+/
+!-----------------------------------------------------------------------
+&namdom        !   space and time domain (bathymetry, mesh, timestep)
+!-----------------------------------------------------------------------
+ldbletanh=.false.,
+nn_bathy=1,
+nn_msh=1,
+ppa0=999999.0,
+ppa1=999999.0,
+ppa2=999999.0,
+ppacr=9.0,
+ppacr2=999999.0,
+ppdzmin=6.0,
+ppe1_deg=999999.0,
+ppe1_m=999999.0,
+ppe2_deg=999999.0,
+ppe2_m=999999.0,
+ppglam0=999999.0,
+ppgphi0=999999.0,
+pphmax=5720.0,
+ppkth=23.563,
+ppkth2=999999.0,
+ppsur=999999.0,
+rn_bathy=100.0,
+rn_rdt=60.0,
+rn_wd_ref_depth=10.0,
+/
+!-----------------------------------------------------------------------
+&namcrs        !   Grid coarsening for dynamics output and/or
+               !   passive tracer coarsened online simulations
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namtsd    !   data : Temperature  & Salinity
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namsbc        !   Surface Boundary Condition (surface module)
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namsbc_core   !   namsbc_core  CORE bulk formulae
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namtra_qsr    !   penetrative solar radiation
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namsbc_rnf    !   runoffs namelist surface boundary condition
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namsbc_ssr    !   surface boundary condition : sea surface restoring
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namsbc_alb    !   albedo parameters
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namberg       !   iceberg parameters
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namlbc        !   lateral momentum boundary condition
+!-----------------------------------------------------------------------
+   rn_shlat    = 0.
+   ln_vorlat   = .false.
+/
+!-----------------------------------------------------------------------
+&nambfr        !   bottom friction
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nambbc        !   bottom temperature boundary condition                (default: NO)
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nambbl        !   bottom boundary layer scheme
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nameos        !   ocean physical parameters
+!-----------------------------------------------------------------------
+   ln_teos10   = .true.
+   ln_eos80    = .false.
+/
+!-----------------------------------------------------------------------
+&namtra_adv    !   advection scheme for tracer
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namtra_adv_mle !  mixed layer eddy parametrisation (Fox-Kemper param)
+!-----------------------------------------------------------------------
+/
+!----------------------------------------------------------------------------------
+&namtra_ldf    !   lateral diffusion scheme for tracers
+!----------------------------------------------------------------------------------
+/
+!----------------------------------------------------------------------------------
+&namtra_ldfeiv !   eddy induced velocity param.
+!----------------------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namtra_dmp    !   tracer: T & S newtonian damping
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namdyn_adv    !   formulation of the momentum advection
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namdyn_vor    !   option of physics/algorithm (not control by CPP keys)
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namdyn_hpg    !   Hydrostatic pressure gradient option
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namdyn_spg    !   Surface pressure gradient
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namdyn_ldf    !   lateral diffusion on momentum
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namzdf        !   vertical physics
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namzdf_tke    !   turbulent eddy kinetic dependent vertical diffusion  ("key_zdftke")
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namzdf_ddm    !   double diffusive mixing parameterization             ("key_zdfddm")
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namzdf_tmx    !   tidal mixing parameterization                        ("key_zdftmx")
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nammpp        !   Massively Parallel Processing                        ("key_mpp_mpi)
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namctl        !   Control prints & Benchmark
+!-----------------------------------------------------------------------
+   ln_ctl      = .false.   !  trends control print (expensive!)
+   nn_print    =    0      !  level of print (0 no extra print)
+   nn_ictls    =    1      !  start i indice of control sum (use to compare mono versus
+   nn_ictle    =    1      !  end   i indice of control sum        multi processor runs
+   nn_jctls    =    1      !  start j indice of control               over a subdomain)
+   nn_jctle    =    1      !  end   j indice of control
+   nn_isplt    =    1      !  number of processors in i-direction
+   nn_jsplt    =    1      !  number of processors in j-direction
+   nn_bench    =    0      !  Bench mode (1/0): CAUTION use zero except for bench
+   nn_timing   =    0      !  timing by routine activated (=1) creates timing.output file, or not (=0)
+   nn_diacfl   =    0      !  Write out CFL diagnostics (=1) in cfl_diagnostics.ascii, or not (=0)
+/
+!-----------------------------------------------------------------------
+&namptr       !   Poleward Transport Diagnostic
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namhsb       !  Heat and salt budgets
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&namobs       !  observation usage
+!-----------------------------------------------------------------------
+/
+!-----------------------------------------------------------------------
+&nam_asminc   !   assimilation increments                               ('key_asminc')
+!-----------------------------------------------------------------------
+/
