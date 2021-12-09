@@ -11,7 +11,7 @@
       - [First Create a file to make the LAT correction with using Surge model data as a proxy for LAT 2D field <a name="FileLAT"></a>](#first-create-a-file-to-make-the-lat-correction-with-using-surge-model-data-as-a-proxy-for-lat-2d-field-)
       - [Apply the correction data to the GEBCO data on the AMM15 grid<a name="ApplyLAT_GEBCO"></a>](#apply-the-correction-data-to-the-gebco-data-on-the-amm15-grid)
   - [Processing EMODNET <a name="EMODNET"></a>](#processing-emodnet-)
-    - [Joining the Tiles <a name="Tiles></a>](#joining-the-tiles-a-nametilesa)
+    - [Joining the Tiles <a name="Tiles"></a>](#joining-the-tiles-)
     - [Removing the overlaps and creating a cube version of EMODNET data<a name="Overlaps"></a>](#removing-the-overlaps-and-creating-a-cube-version-of-emodnet-data)
     - [Re-grid to extended AMM15 domain <a name="REGRID_EMODNET_EXTEND_AMM15"></a>](#re-grid-to-extended-amm15-domain-)
     - [Correct for LAT <a name="CORRECT_LAT_EMODNET"></a>](#correct-for-lat-)
@@ -21,11 +21,11 @@
 
 Some Required or intermediate inputs are placed on jasmin under:
 
-* /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS
+- /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS
 
 The scripts are pretty small for the most part typically:
 
-* bathy in -> process it in some way -> bathy out
+- bathy in -> process it in some way -> bathy out
 
 There are few things that needs doing though.
 
@@ -35,29 +35,29 @@ There are few things that needs doing though.
       1. Thus we need to generate a target grid and coordinates files the has an extent greater than the AMM15
    1. As the data sets are referenced again LAT we need a strategy to undo that. For not that involves
       1. Using a combination of CS3X and CS20
-         * CS3X has a larger (off shelf ) coverage then CS20
-         * CS3X is coarse
-         * CS20 was based on an old POLCOMS run and has problems near Holland (Dykes etc not done properly)
-         * Neither cover the extended AMM15, so for data beyond AMM15 we just live without the LAT correction
+         - CS3X has a larger (off shelf ) coverage then CS20
+         - CS3X is coarse
+         - CS20 was based on an old POLCOMS run and has problems near Holland (Dykes etc not done properly)
+         - Neither cover the extended AMM15, so for data beyond AMM15 we just live without the LAT correction
    1. We also do a splice of data for merge dataset.
-      * This is because GEBCO has less spurious features in the deep then EMODNET
-      * Tidal tests seems to show that EMODNET does a better job of Dogger bank
-      * At very shallow areas the extra detail of EMODNET actually is problematic at AMM15 1.5 km resolution and we stick with the smoother GEBCO here
+      - This is because GEBCO has less spurious features in the deep then EMODNET
+      - Tidal tests seems to show that EMODNET does a better job of Dogger bank
+      - At very shallow areas the extra detail of EMODNET actually is problematic at AMM15 1.5 km resolution and we stick with the smoother GEBCO here
 
    1. Pre-Smooth use CDFTOOLS
-      * We need the larger then AMM15 domain as input
-      * Use MBells modifications of the CDFTOOLS to run the Shapiro Smoother
-      * Requires pre formatting the raw bathy data into a format that CDF smoother expects
+      - We need the larger then AMM15 domain as input
+      - Use MBells modifications of the CDFTOOLS to run the Shapiro Smoother
+      - Requires pre formatting the raw bathy data into a format that CDF smoother expects
    1. If we want to retain NICOS Baltic we need to slice on a section for the Baltic bdy that is straight from his bathy data source
 
 # Retrieve and process source data<a name="retrieve"></a>
 
 The source data considered is that of EMODNET and GEBCO 2020.
 
-* GEBCO:
-  * <https://www.gebco.net/data_and_products/gridded_bathymetry_data/#global>  (this at time of writing is  now up to 2021)
-* EMODNET:
-  * <https://portal.emodnet-bathymetry.eu/>   (This comes in a selection of tiles with some overlap at the edges that needs care of when processing)
+- GEBCO:
+  - <https://www.gebco.net/data_and_products/gridded_bathymetry_data/#global>  (this at time of writing is  now up to 2021)
+- EMODNET:
+  - <https://portal.emodnet-bathymetry.eu/>   (This comes in a selection of tiles with some overlap at the edges that needs care of when processing)
 
 ## Processing GEBCO<a name=GEBCO></a>
 
@@ -65,7 +65,7 @@ The source data considered is that of EMODNET and GEBCO 2020.
 
 Sample files on jamsin:
 
-* /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020/SOURCE
+- /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020/SOURCE
 
 They are the global data set of the elevations and also contain the LSM in the tid file.
 
@@ -78,7 +78,7 @@ we make a more manageable cut out of each for the NWS:
 
 With a copy on jasmin here:
 
-* /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020
+- /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020
 
 The data needs to be mapped onto the AMM15 grid. To do we we can make use of the iris interpolation.
 
@@ -86,7 +86,7 @@ The data needs to be mapped onto the AMM15 grid. To do we we can make use of the
 
 In order to use the interpolator we convert the GEBCO data into an iris cube. To do that use:
 
-* [GEBCO_PROCESS/MAKE_GEBCO_CUBE.py](GEBCO_PROCESS/MAKE_GEBCO_CUBE.py)
+- [GEBCO_PROCESS/MAKE_GEBCO_CUBE.py](GEBCO_PROCESS/MAKE_GEBCO_CUBE.py)
 
 This takes as input the path to the cutout of the NWS GEBCO data (NWS_CUT_GEBCO.nc) and the path
 of the dir to store the resultant cube of data (GEBCO_CUBE.nc).
@@ -100,11 +100,11 @@ but use the same underlying grid.
 In order to expand the grid we need to obtain the underlying AMM15 grid to begin with.
 This is defined in the grid file AMM15_ROTATED_CS.nc and stored on jasmin under:
 
-* /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/AMM15_ROTATED_CS.nc
+- /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/AMM15_ROTATED_CS.nc
 
 We use the script
 
-* GEBCO_PROCESS/EXPAND_AMM15_CUBE.py
+- GEBCO_PROCESS/EXPAND_AMM15_CUBE.py
 
 to interpolate the GEBCO data onto the expanded AMM15 grid.
 
@@ -123,16 +123,16 @@ for the Shapiro filter to have data that goes beyond the AMM15 boundaries.
 
 This script also computes a NEMO style coordinates file for the extended AMM15 routine using the function
 
-* output_nemo_coords
+- output_nemo_coords
 From
-* EXPAND_AMM15_CUBE.py
+- EXPAND_AMM15_CUBE.py
 
 We process the data outside the inner core AMM15 domain and inside differently.
 
-* We compute a version of the bathymetry that is extrapolated everywhere regardless of LSM
-* We compute a version of the bathymetry that is  masked by the GEBCO mask
-* we merge the two but retain the extrapolated version in the inner domain and the LSM in the outer domain
-  * later we apply the operational LSM on the inner domain ahead of Shapiro smoothing when we also apply the LAT
+- We compute a version of the bathymetry that is extrapolated everywhere regardless of LSM
+- We compute a version of the bathymetry that is  masked by the GEBCO mask
+- we merge the two but retain the extrapolated version in the inner domain and the LSM in the outer domain
+  - later we apply the operational LSM on the inner domain ahead of Shapiro smoothing when we also apply the LAT
 
 ### Correct for LAT and apply the operational existing AMM15 mask to the inner domain. <a name="Correct_LAT_GEBCO"></a>
 
@@ -152,17 +152,17 @@ Our approach is to merge the two solutions and to use the CS3X solution beyond t
 The data for CS3X and CS20 is kindly provided by Colin Bell. It comes in ASCII format and in converted
 into mask netcdf grids using the routines:
 
-* convertCS3X.py
-  * converts:  CS3X_stat.txt -> CS3X_stat.nc
-* convertCS20.py
-  * converts:   cs20_stat.txt  -> cs20_stat.nc
+- convertCS3X.py
+  - converts:  CS3X_stat.txt -> CS3X_stat.nc
+- convertCS20.py
+  - converts:   cs20_stat.txt  -> cs20_stat.nc
 
 Note Jenny Graham already processed the CS3X dat so we can use that file directly instead.
 
 Once we have both netcdf files as can read them in and combine them together on the AMM15 grid.
 This is done with:
 
-* SURGE_LAT_CORRECTION/Combine_Surge.py
+- SURGE_LAT_CORRECTION/Combine_Surge.py
 
 It takes as an input argument -i the path for the location of the required surge netcdf files and the AMM15 grid file,
 and an argument -o where to output the data to.
@@ -171,22 +171,22 @@ and an argument -o where to output the data to.
 
 With the mrege CS3X CS20 LAT proxy field we can correct the inner domain of the AMM15 (for where we have LAT data) using the script:
 
-* GEBCO_PROCESS/Correct_LAT_apply_op_mask.py
+- GEBCO_PROCESS/Correct_LAT_apply_op_mask.py
 
 This script takes a number of inputs:
 
-* OP_LSM :
-  * The location of the operational LSM e.g. EMODNET_LSM_v2.nc (create by J graham from EMODNET to AMM15 plus fill in lakes etc)
-* CS3X_CS20:
-  * The location of the merged Surge data for LAT correction (valid only on AMM15 inner domain)
-* BATHY_DATA:
-  * The location the GEBCO data on the extended AMM15 grid
+- OP_LSM :
+  - The location of the operational LSM e.g. EMODNET_LSM_v2.nc (create by J graham from EMODNET to AMM15 plus fill in lakes etc)
+- CS3X_CS20:
+  - The location of the merged Surge data for LAT correction (valid only on AMM15 inner domain)
+- BATHY_DATA:
+  - The location the GEBCO data on the extended AMM15 grid
 
-    * LAT_LON:
-      * The location odf the file containinf the extended AMM15 domain lat lon grid
+    - LAT_LON:
+      - The location odf the file containinf the extended AMM15 domain lat lon grid
 
-* OUT_FILE:
-  * Where to write the final output file after processing
+- OUT_FILE:
+  - Where to write the final output file after processing
 It applies the LAT correction only to the inner domain:
 
 ```python
@@ -198,14 +198,14 @@ input_bathy_amm15core = input_bathy[inflate_lat:-inflate_lat,inflate_lon:-inflat
 
 ## Processing EMODNET <a name="EMODNET"></a>
 
-### Joining the Tiles <a name="Tiles></a>
+### Joining the Tiles <a name="Tiles"></a>
 
 EMODNET data comes in a set of tiles. Each Tile has has an overlap with its neighbour. We need to splice all the tiles together into one dataset.
 And then remove any overlaps that occurring the single unified data set.
 
 A script is called to join the tiles typical format is :
 
-* bash runmerge.sh -i  InputDirPath -o OutputDirPath -p yourPythonCommand
+- bash runmerge.sh -i  InputDirPath -o OutputDirPath -p yourPythonCommand
 
 The input path should contain the EMODNET tiles and then it loops over C to F calling *merge_xarray.py* to create rows of data.
 Then it does a final merge of the rows into a unified block of data using *final_merge.py*
@@ -216,11 +216,11 @@ The resultant merged file is ALLmerge.nc
 
 The above data is stripped of overlaps along the edges and then put into tcube format by
 
-* *MAKE_EMODNET_CUBE.py*
+- *MAKE_EMODNET_CUBE.py*
 
 Typical usage is:
 
-* python3.8 MAKE_EMODNET_CUBE.py -i PathToALLmerge.nc/ -o OutPutDir/
+- python3.8 MAKE_EMODNET_CUBE.py -i PathToALLmerge.nc/ -o OutPutDir/
 
 To reduce RAM usage this uses xarray chunking.
 
@@ -281,7 +281,7 @@ is used in the next stage where we re-grid onto the extended AMM15 domain
 
 To regrid to the extended AMM15 domain we use the script:
 
-* EXPAND_AMM15_CUBE.py
+- EXPAND_AMM15_CUBE.py
 This is amended from the similar version as in GEBCO as we ran into RAM limitations.
 
 The iris re-grid function seems to grab all the data despite using lazy loading etc.
@@ -296,16 +296,16 @@ sub_size  = 300
 
 Arguments passed are:
 
-* -a ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS/AMM15_ROTATED_CS.nc
-  * That is the path to the example AMM15 rotated grid
-* -c ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS  
-  * the path to where the EMODNET src data has been mapped to a cube
-  * e.g. EMODNET_v2020_NO_REPEAT_LAT_LON.nc
-* -o  ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS
-  * The path where we want to store our oututs:
-    * MASK_EMODNET_vDec2020_ON_EXPAND_AMM15.nc
-    * EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc
-    * **MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc**
+- -a ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS/AMM15_ROTATED_CS.nc
+  - That is the path to the example AMM15 rotated grid
+- -c ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS  
+  - the path to where the EMODNET src data has been mapped to a cube
+  - e.g. EMODNET_v2020_NO_REPEAT_LAT_LON.nc
+- -o  ~/EMODNET_GEBCO_2020/REQUIRED_INPUTS
+  - The path where we want to store our oututs:
+    - MASK_EMODNET_vDec2020_ON_EXPAND_AMM15.nc
+    - EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc
+    - **MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc**
 
 When the code runs it calculates the number of blocks or sections required based on sub_size.
 It creates a SUBSECTION subdir into which is writes each subsection.
