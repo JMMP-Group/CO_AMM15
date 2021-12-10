@@ -349,3 +349,15 @@ with ProgressBar():
 ### Correct for LAT <a name="CORRECT_LAT_EMODNET"></a>
 
 # Merge EMDONET and GEBCO AMM15 data into one dataset<a nanme="Merge_EMODNET_GEBCO"></a>
+
+
+Note to self:
+* Have basically got EMODNET as far ax extended grid
+* Have GEBCO as far as Extende grid with LAT correction and OP mask
+* Should be easy to merge the two as done before
+* Baltic merge of Nico File
+  * NON WAD straight forward
+  * WAD had 10m limit explicitly set need to think about that
+* Require Shapiro filtering
+  
+  
