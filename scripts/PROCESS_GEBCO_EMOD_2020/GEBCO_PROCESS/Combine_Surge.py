@@ -184,7 +184,7 @@ rotated_CS20_amm15 = CS20_cube.regrid(AMM15_cube, iris.analysis.Linear())
 
 
 now = datetime.now()
-current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+current_time = now.strftime("%Y/%m/%d %H:%M:%S")
 
 repos = subprocess.run(
     ["git", "config", "--get", "remote.origin.url"],

@@ -63,6 +63,7 @@ def set_history(cube):
     cube.attributes[ 'Python version' ] = platform.python_version()
     cube.attributes[ 'System' ]  = platform.system()
     cube.attributes[ 'Release' ] = platform.release()
+    cube.attributes[ 'Commandline' ] = " ".join(sys.argv)
 
 
 
@@ -194,7 +195,7 @@ expandcube.coord_system = AMM15_cube.coord_system
 GEBCO_RAW_cube.data[np.where(GEBCO_LSM.data[:] ==0) ] = np.nan
 
 #
-# masked version od GEBCO on expanded AMM15 domain
+# masked version of GEBCO on expanded AMM15 domain
 #
 
 MASK_GEBCO_ON_EXPANDAMM15 = GEBCO_RAW_cube.regrid(expandcube, iris.analysis.Linear(extrapolation_mode='mask'))
@@ -222,7 +223,7 @@ EXTRAPOLATE_GEBCO_ON_EXPANDAMM15.data [extra_lat:-extra_lat,extra_lon:-extra_lon
 #--------------------------------------------------------------------------------------
 
 now = datetime.now()
-current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+current_time = now.strftime("%Y/%m/%d %H:%M:%S")
 
 repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
                          stdout=subprocess.PIPE,
