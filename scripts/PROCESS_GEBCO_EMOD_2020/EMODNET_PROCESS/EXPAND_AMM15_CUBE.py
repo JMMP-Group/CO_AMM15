@@ -1,7 +1,7 @@
 """ Interpolate EMODNET data onto Expanded AMM15 grid
 We read in the rotated amm15 grid. We create a grid based on this but that is wider
 so that later smoothing will not effect the bdy regions.
-Here is it set arbitarliy as a 100 points extra NSWE(rotated space)
+Here is it set arbitarliy as a 100 points extra NSWE (rotated space)
 
 If we were just considering the AMM15 we would enforce the existing operational LSM
 on this domain in the next step as well as an LAT correction derived from Surge models
@@ -13,13 +13,13 @@ when we later impose the AMM15 mask.
 Thus we have a version of the data that is extrapolated into the land
 and a version that has the EMODET LSM applied directly.
 
-Later we use the EMODET LSM in the areas beyond the AMM15 extents and the oper LSM in th
+Later we use the EMODET LSM in the areas beyond the AMM15 extents and the oper LSM in the
 inner true AMM15 region
 
-Note on Spice we can use enough RAM to process the iris regird all in one but on
-more reasonable machsin etis is not possible and iris regirds cannot chunk in the horizontal
+Note on Spice we can use enough RAM to process the iris regrid all in one but on
+more reasonable machines is is not possible and iris regrid cannot chunk in the horizontal
 
-So we have a rok aroudn where we maek a small section of destination grid
+So we have a work aroudn where we make a small section of destination grid
 and a small section of src data that covers the destination gris plus extra (1000)
 so the infilling is done consistently
 
@@ -96,7 +96,7 @@ def set_history(cube):
                     cube(iris cube) : cube to be stored in netcdf
     """
     now = datetime.now()
-    current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+    current_time = now.strftime("%Y/%m/%d %H:%M:%S")
 
     repos = subprocess.run(
         ["git", "config", "--get", "remote.origin.url"],
@@ -120,7 +120,7 @@ def set_history(cube):
     )
     cube.attributes[
         "Input"
-    ] = "EMODNET_CUBE.nc, created by  MAKE_EMODNET_CUBE.py, and the AMM15 unrotated coordinates file"
+    ] = "EMODNET_v2020_NO_REPEAT_LAT_LON.nc, created by  MAKE_EMODNET_CUBE.py, and the AMM15 unrotated coordinates file"
     cube.attributes["Python version"] = platform.python_version()
     cube.attributes["System"] = platform.system()
     cube.attributes["Release"] = platform.release()

@@ -215,7 +215,7 @@ The resultant merged file is ALLmerge.nc
 
 ### Removing the overlaps and creating a cube version of EMODNET data<a name="Overlaps"></a>
 
-The above data is stripped of overlaps along the edges and then put into tcube format by
+The above data is stripped of overlaps along the edges and then put into cube format by
 
 - *MAKE_EMODNET_CUBE.py*
 
