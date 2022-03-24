@@ -31,21 +31,21 @@ There are few things that needs doing though.
 
    1. Get the raw data and cut out a section for NWS, note for EMODNET some extra steps required for the tile format it comes in
    1. We create cubes of the same data which allows us to use iris/cartopy to do the interpolation
-   1. Because we later want to pre-smooth the bathy wit the Shapiro smoother this needs data that goes beyond the AMM15 domain:
+   1. Because we later want to pre-smooth the bathy with the Shapiro smoother this needs data that goes beyond the AMM15 domain:
       1. Thus we need to generate a target grid and coordinates files the has an extent greater than the AMM15
-   1. As the data sets are referenced again LAT we need a strategy to undo that. For not that involves
+   1. As the data sets are referenced against LAT we need a strategy to undo that. For now that involves
       1. Using a combination of CS3X and CS20
          - CS3X has a larger (off shelf ) coverage then CS20
          - CS3X is coarse
          - CS20 was based on an old POLCOMS run and has problems near Holland (Dykes etc not done properly)
          - Neither cover the extended AMM15, so for data beyond AMM15 we just live without the LAT correction
-   1. We also do a splice of data for merge dataset.
+   1. We also do a splice of data for merged dataset.
       - This is because GEBCO has less spurious features in the deep then EMODNET
       - Tidal tests seems to show that EMODNET does a better job of Dogger bank
       - At very shallow areas the extra detail of EMODNET actually is problematic at AMM15 1.5 km resolution and we stick with the smoother GEBCO here
 
    1. Pre-Smooth use CDFTOOLS
-      - We need the larger then AMM15 domain as input
+      - We need the larger than AMM15 domain as input
       - Use MBells modifications of the CDFTOOLS to run the Shapiro Smoother
       - Requires pre formatting the raw bathy data into a format that CDF smoother expects
    1. If we want to retain NICOS Baltic we need to slice on a section for the Baltic bdy that is straight from his bathy data source
@@ -63,24 +63,24 @@ The source data considered is that of EMODNET and GEBCO 2020.
 
 ### Cut out a domain just for the North West shelf <a name="CUT_OUT_NWS"></a>
 
-Sample files on jamsin:
+Sample files on JASMIN:
 
 - /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020/SOURCE
 
 They are the global data set of the elevations and also contain the LSM in the tid file.
 
-we make a more manageable cut out of each for the NWS:
+We make a more manageable cut out of each for the NWS:
 
 ```bash
  ncks -d lon,33000,52000 -d lat,29000,40000 GEBCO_2020.nc NWS_CUT_GEBCO.nc
  ncks -d lon,33000,52000 -d lat,29000,40000 GEBCO_2020_TID.nc NWS_CUT_GEBCO_2020_TID.nc
 ```
 
-With a copy on jasmin here:
+With a copy on JASMIN here:
 
 - /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020
 
-The data needs to be mapped onto the AMM15 grid. To do we we can make use of the iris interpolation.
+The data needs to be mapped onto the AMM15 grid. To do so we can make use of the iris interpolation.
 
 ### Convert GEBCO to Cube <a name="GEBCO2CUBE"></a>
 
@@ -98,7 +98,7 @@ Thus we actually map the GEBCO data onto a cube whos lat lon extents are beyond 
 but use the same underlying grid.
 
 In order to expand the grid we need to obtain the underlying AMM15 grid to begin with.
-This is defined in the grid file AMM15_ROTATED_CS.nc and stored on jasmin under:
+This is defined in the grid file AMM15_ROTATED_CS.nc and stored on JASMIN under:
 
 - /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/AMM15_ROTATED_CS.nc
 
@@ -121,7 +121,7 @@ We don\'t at this stage want to redo the cleaning up of the mask for the inner A
 already have. But we don\'t need to worry about unconnected lakes etc. in the domain beyond AMM15 as it is only used
 for the Shapiro filter to have data that goes beyond the AMM15 boundaries.
 
-This script also computes a NEMO style coordinates file for the extended AMM15 routine using the function
+This script also computes a NEMO style coordinates file for the extended AMM15 routine using the function.
 
 - output_nemo_coords
 From
@@ -129,16 +129,16 @@ From
 
 We process the data outside the inner core AMM15 domain and inside differently.
 
-- We compute a version of the bathymetry that is extrapolated everywhere regardless of LSM
-- We compute a version of the bathymetry that is  masked by the GEBCO mask
-- we merge the two but retain the extrapolated version in the inner domain and the LSM in the outer domain
-  - later we apply the operational LSM on the inner domain ahead of Shapiro smoothing when we also apply the LAT
+- We compute a version of the bathymetry that is extrapolated everywhere regardless of LSM.
+- We compute a version of the bathymetry that is masked by the GEBCO mask.
+- We merge the two but retain the extrapolated version in the inner domain and the LSM in the outer domain.
+  - Later we apply the operational LSM on the inner domain ahead of Shapiro smoothing when we also apply the LAT.
 
 ### Correct for LAT and apply the operational existing AMM15 mask to the inner domain. <a name="Correct_LAT_GEBCO"></a>
 
-EMODNET is explicitly quoted as being references to Lowest Astronomical Tide (LAT).
+EMODNET is explicitly quoted as being referenced to Lowest Astronomical Tide (LAT).
 When we compare EMODNET and GEBCO data it appears that there are regions where they are basically the same
-data as EMODNET defaults to GEBCO as its basemap. Thus it is reasonable to assume that GEBCO to must be LAT referenced.
+data as EMODNET defaults to GEBCO as its basemap. Thus it is reasonable to assume that GEBCO  must be LAT referenced.
 Thus we need to apply an LAT correction to this data consistently in the way we intend to with EMODNET.
 
 #### First Create a file to make the LAT correction with using Surge model data as a proxy for LAT 2D field <a name="FileLAT"></a>
@@ -169,16 +169,16 @@ and an argument -o where to output the data to.
 
 #### Apply the correction data to the GEBCO data on the AMM15 grid<a name="ApplyLAT_GEBCO"></a>
 
-With the mrege CS3X CS20 LAT proxy field we can correct the inner domain of the AMM15 (for where we have LAT data) using the script:
+With the merge CS3X CS20 LAT proxy field we can correct the inner domain of the AMM15 (for where we have LAT data) using the script:
 
 - GEBCO_PROCESS/Correct_LAT_apply_op_mask.py
 
 This script takes a number of inputs:
 
 - OP_LSM :
-  - The location of the operational LSM e.g. EMODNET_LSM_v2.nc (create by J graham from EMODNET to AMM15 plus fill in lakes etc)
+  - The location of the operational LSM e.g. EMODNET_LSM_v2.nc (created by J graham from EMODNET to AMM15 plus fill in lakes etc)
 - CS3X_CS20:
-  - The location of the merged Surge data for LAT correction (valid only on AMM15 inner domain)
+  - The location of the merged surge data for LAT correction (valid only on AMM15 inner domain)
 - BATHY_DATA:
   - The location the GEBCO data on the extended AMM15 grid
 
@@ -187,6 +187,7 @@ This script takes a number of inputs:
 
 - OUT_FILE:
   - Where to write the final output file after processing
+
 It applies the LAT correction only to the inner domain:
 
 ```python
@@ -214,7 +215,7 @@ The resultant merged file is ALLmerge.nc
 
 ### Removing the overlaps and creating a cube version of EMODNET data<a name="Overlaps"></a>
 
-The above data is stripped of overlaps along the edges and then put into tcube format by
+The above data is stripped of overlaps along the edges and then put into cube format by
 
 - *MAKE_EMODNET_CUBE.py*
 
@@ -352,8 +353,8 @@ with ProgressBar():
 
 
 Note to self:
-* Have basically got EMODNET as far ax extended grid
-* Have GEBCO as far as Extende grid with LAT correction and OP mask
+* Have basically got EMODNET as far as extended grid
+* Have GEBCO as far as Extended grid with LAT correction and OP mask
 * Should be easy to merge the two as done before
 * Baltic merge of Nico File
   * NON WAD straight forward

@@ -95,7 +95,7 @@ GEBCO_cube = Cube(GEBCO_BATHY, standard_name='sea_floor_depth_below_geoid',units
 #--------------------------------------------------------------------------------------
 
 now = datetime.now()
-current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+current_time = now.strftime("%Y/%m/%d %H:%M:%S")
 
 repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
                          stdout=subprocess.PIPE,
@@ -115,6 +115,9 @@ GEBCO_cube.attributes[ 'Input' ] = "NWS_CUT_GEBCO.nc"
 GEBCO_cube.attributes[ 'Python version' ] = platform.python_version()
 GEBCO_cube.attributes[ 'System' ] = platform.system()
 GEBCO_cube.attributes[ 'Release' ] = platform.release()
+import sys
+GEBCO_cube.attributes[ 'Commandline' ] = " ".join(sys.argv) # str(sys.argv)
+
 
 
 iris.save(GEBCO_cube, '{}/GEBCO_CUBE.nc'.format(args.OUT_DIR[0]))

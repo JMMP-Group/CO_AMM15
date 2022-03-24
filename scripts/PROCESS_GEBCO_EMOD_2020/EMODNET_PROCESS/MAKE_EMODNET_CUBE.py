@@ -163,7 +163,7 @@ EMODNET_BATHY = EMODNET_BATHY.rename("sea_floor_depth_below_geoid")
 #
 #%%
 now = datetime.now()
-current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+current_time = now.strftime("%Y/%m/%d %H:%M:%S")
 repos = subprocess.run(
     ["git", "config", "--get", "remote.origin.url"],
     stdout=subprocess.PIPE,

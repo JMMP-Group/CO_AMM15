@@ -132,7 +132,7 @@ bathy[:] = input_bathy
 ncfile.description = 'Expanded AMM15 bathymetry: Original source GEBCO data  converted from LAT to MSL [land mask=0].  Using CS3X and CS20'
 
 now = datetime.now()
-current_time = now.strftime("%Y/%M/%d %H:%M:%S")
+current_time = now.strftime("%Y/%m/%d %H:%M:%S")
 repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
                          stdout=subprocess.PIPE,
                          stderr=subprocess.STDOUT)
@@ -150,6 +150,8 @@ ncfile.inputs  = "{}, {}, {}, {}".format((args.OP_LSM)[0],(args.CS3X_CS20)[0],(a
 ncfile.pyversion = platform.python_version()
 ncfile.System = platform.system()
 ncfile.Release = platform.release()
+import sys
+ncfile.CommandLine = " ".join(sys.argv) # str(sys.argv)
 
 latout.units = 'degrees north'
 lonout.units = 'degrees east'
