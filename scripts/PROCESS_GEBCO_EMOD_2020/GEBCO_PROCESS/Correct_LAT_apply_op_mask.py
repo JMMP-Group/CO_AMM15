@@ -16,7 +16,7 @@ CS3X_CS20: str
 BATHY_DATA: str
     THe location the GEBCO data on the extended AMM15 grid
 LAT_LON: str
-    The location odf the file containinf the extended AMM15 domain lat lon grid
+    The location of the file containing the extended AMM15 domain lat lon grid
 OUT_FILE: str
     Where to write the final output file after processing.
 
