@@ -39,16 +39,16 @@ import subprocess
 parser = argparse.ArgumentParser(description="Process inputs and output file paths")
 parser.add_argument(
     "-e",
-    "--EMOD_DIR",
-    metavar="EMOD_DIR",
+    "--EMOD_FILE",
+    metavar="EMOD_FILE",
     nargs=1,
     help="Path to source EMODNET bathy",
     required=True,
 )
 parser.add_argument(
     "-g",
-    "--GEB_DIR",
-    metavar="GEB_DIR",
+    "--GEB_FILE",
+    metavar="GEB_FILE",
     nargs=1,
     help="Path to source GEBCO bathy",
     required=True,
@@ -63,8 +63,8 @@ parser.add_argument(
 )
 parser.add_argument(
     "-c",
-    "--COORD_DIR",
-    metavar="COORD_DIR",
+    "--COORD_FILE",
+    metavar="COORD_FILE",
     nargs=1,
     help="Path to coordinates ",
     required=True,
@@ -72,32 +72,33 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-if not all([args.GEB_DIR, args.EMOD_DIR,args.OUT_DIR]):
+if not all([args.GEB_FILE, args.EMOD_FILE,args.OUT_DIR]):
     print(" Sorry All Arguments are required")
     sys.exit("Sorry all the arguments are required")
 
 
 print("\n----------------------------------------------------\n")
 print("Thanks, you have chosen: \n ")
-print("\n     the INPUT directory for EMOD as {}\n".format(args.EMOD_DIR[0]))
-if (Path(args.EMOD_DIR[0])).is_dir():
-    print(" and the directory{} exists.".format(args.EMOD_DIR[0]))
+print("\n     the INPUT FILE for EMOD as {}\n".format(args.EMOD_FILE[0]))
+if (Path(args.EMOD_FILE[0])).is_file():
+    print(" and the file {} exists.".format(args.EMOD_FILE[0]))
 else:
-    sys.exit("However, {} does not exist, so we exit here.".format(args.EMOD_DIR[0]))
-print("\n     the INPUT directory for GEBCO as {}\n".format(args.GEB_DIR[0]))
-if (Path(args.GEB_DIR[0])).is_dir():
-    print(" and the directory{} exists.".format(args.GEB_DIR[0]))
+    sys.exit("However, {} does not exist, so we exit here.".format(args.EMOD_FILE[0]))
+print("\n     the INPUT FILE for GEBCO as {}\n".format(args.GEB_FILE[0]))
+if (Path(args.GEB_FILE[0])).is_file():
+    print(" and the file {} exists.".format(args.GEB_FILE[0]))
 else:
-    sys.exit("However, {} does not exist, so we exit here.".format(args.GEB_DIR[0]))
+    sys.exit("However, {} does not exist, so we exit here.".format(args.GEB_FILE[0]))
 print("\n     the OUTPUT directory for processed bathy as {}\n".format(args.OUT_DIR[0]))
 if (Path(args.OUT_DIR[0])).is_dir():
     print(" and the  directory {} exists.".format(args.OUT_DIR[0]))
 else:
     sys.exit("However, {} does not exist, so we exit here.".format(args.OUT_DIR[0]))
-if (Path(args.COORD_DIR[0])).is_dir():
-    print(" and the  directory {} exists.".format(args.COORD_DIR[0]))
+print("\n   The Coordinates file selected is   {}\n".format(args.COORD_FILE[0]))
+if (Path(args.COORD_FILE[0])).is_file():
+    print(" and the  file {} exists.".format(args.COORD_FILE[0]))
 else:
-    sys.exit("However, {} does not exist, so we exit here.".format(args.COORD_DIR[0]))
+    sys.exit("However, {} does not exist, so we exit here.".format(args.COORD_FILE[0]))
 print("\n----------------------------------------------------\n")
 
 # ------------------------------------------------------------------------------
@@ -105,8 +106,8 @@ print("\n----------------------------------------------------\n")
 # ------------------------------------------------------------------------------
 #%%
 
-gebfname =('{}/GEBCO_2020_expand_amm15.bathydepth.co7.cs3x.cs20.nc'.format(args.GEB_DIR[0])) 
-emodfname =('{}/EMODNET_2020_expand_amm15.bathydepth.co7.cs3x.cs20.nc'.format(args.EMOD_DIR[0]))
+gebfname =('{}'.format(args.GEB_FILE[0])) 
+emodfname =('{}'.format(args.EMOD_FILE[0]))
 emod = Dataset(emodfname,'r')
 gebc = Dataset(gebfname,'r')
 emodnet_bathy = emod.variables['Bathymetry'][:,:]
@@ -140,7 +141,7 @@ ramp_pass_2[ np.where( emodnet_bath_merge_1[:]  <  bot_2 )] = 1.
 
 
 emodnet_bath_merge_2 =  gebco_bathy *ramp_pass_2[:] +  (1-ramp_pass_2[:])*emodnet_bath_merge_1[:]
-fname2 =('{}/expand_amm15.coordinates.nc'.format(args.COORD_DIR[0]))
+fname2 =('{}'.format(args.COORD_FILE[0]))
 coord = Dataset(fname2,'r')
 lat = coord.variables['gphit'][:,:]
 lon = coord.variables['glamt'][:,:]
@@ -149,6 +150,7 @@ y,x = np.shape(lat)
 
 
 ncfile = Dataset('%s/CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_%d-%d_EMODNET_TO_%d-%d_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc'%(args.OUT_DIR[0],int(top_1),int(bot_1),int(top_2),int(bot_2)),'w')
+print("\n OUTPUT FILE IS:%s/CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_%d-%d_EMODNET_TO_%d-%d_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc \n"%(args.OUT_DIR[0],int(top_1),int(bot_1),int(top_2),int(bot_2)))
 y_dim = ncfile.createDimension('x', x)     # Y
 x_dim = ncfile.createDimension('y', y)     # X
 latout = ncfile.createVariable('lat', 'f4', ('y','x',))

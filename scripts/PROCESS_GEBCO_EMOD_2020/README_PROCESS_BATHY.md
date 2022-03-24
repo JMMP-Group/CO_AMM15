@@ -349,13 +349,42 @@ with ProgressBar():
 
 ### Correct for LAT <a name="CORRECT_LAT_EMODNET"></a>
 
-# Merge EMDONET and GEBCO AMM15 data into one dataset<a nanme="Merge_EMODNET_GEBCO"></a>
+### Merge EMDONET and GEBCO AMM15 data into one dataset<a nanme="Merge_EMODNET_GEBCO"></a>
+
+Once we have EMODNET and GEBCO with Correction to LAT on the extended AMM15 grid we can merge the two.
+
+(see further notes on why in README_MERGE_EXPANDED.md)
+
+Basic idea is simple enough with GEBCO in the deeep, EMODNET 100-5 m and GEBCO to the coast
+
+We use
+
+```bash
+python3.8 CORRECTED_EMDONET_INPUT_EXPANDED_MERGE_GEBCO_DEEP_to200-100M_EMODNET_TO_10-5M_GEBCO_TO_COAST.py -e ~/scratch/FINAL_EMODNET_LAT_CORRECTED_EXPANDED_AMM15.nc -g ~/scratch/FINAL_GEBCO_LAT_CORRECTED_EXPANDED_AMM15.nc  -c ~/scratch/expand_amm15.coordinates.nc -o ~/scratch/
+```
+
+where
+
+
+- -e/--EMOD_FILE :
+  - The location of the EMODNET data with LAT correction on extended AMM15 grid
+- -g/--GEB_FILE :
+  - The location of the GEBCO data with LAT correction on extended AMM15 grid
+- -c/--COORD_FILE :
+  - The location of the Extended AMM15 coordinates file
+- -o/--OUT_DIR :
+  - The path to the output directory
+
+
 
 
 Note to self:
 * Have basically got EMODNET as far as extended grid
+ - Now Done 
+ - Sone LAT correction also 
 * Have GEBCO as far as Extended grid with LAT correction and OP mask
 * Should be easy to merge the two as done before
+ - Now Done
 * Baltic merge of Nico File
   * NON WAD straight forward
   * WAD had 10m limit explicitly set need to think about that
