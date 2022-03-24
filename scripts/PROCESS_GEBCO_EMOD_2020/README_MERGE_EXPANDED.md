@@ -1,4 +1,4 @@
-# Merging the expanded GEBCO and EMODNET data on AMM15 ahead of Smagornisky Smoothing.
+# Merging the expanded GEBCO and EMODNET data on AMM15 ahead of Shapiro Smoothing.
 
 ### Use Atom
 Ctrl+Shift+M
@@ -66,4 +66,4 @@ lonout[:]=lon
 bathy[:]=emodnet_bath_merge_2
 ```
 
-After that we can then look to using the Smagorinsky interpolation
+After that we can then look to using the Shaprio interpolation
