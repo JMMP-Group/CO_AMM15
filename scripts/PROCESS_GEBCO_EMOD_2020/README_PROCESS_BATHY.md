@@ -348,6 +348,17 @@ with ProgressBar():
 ```
 
 ### Correct for LAT <a name="CORRECT_LAT_EMODNET"></a>
+We ended up using the merge of Jennys CS3X data not Colins CS3X Data
+So the above section needs more information
+
+The script we use to apply the LAT currections and the operational mask is
+`Correct_LAT_Apply_op_mask.py`
+
+```bash
+python Correct_LAT_apply_op_mask.py -o .../EMODNET_GEBCO_2020/REQUIRED_INPUTS/EMODNET_LSM_v2.nc -c .../EMODNET_GEBCO_2020/REQUIRED_INPUTS/MERGE_CS3X_COLIN_CS20.nc  -b  ..../GEB_EMODNET_PROCESSING_GIT_VERSION/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc .../GEB_EMODNET_PROCESSING_GIT_VERSION/expand_amm15.coordinates.nc -f .../GEB_EMODNET_PROCESSING_GIT_VERSION/FINAL_EMODNET_LAT_CORRECTED_EXPANDED_AMM15.nc
+```
+
+
 
 ### Merge EMDONET and GEBCO AMM15 data into one dataset<a nanme="Merge_EMODNET_GEBCO"></a>
 
