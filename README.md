@@ -1,5 +1,5 @@
-# CO9_AMM15
-CO9 configuration of the Atlantic Margin Model (1.5 km resolution)
+# CO_AMM15
+Coastal Ocean (CO) configuration of the Atlantic Margin Model (1.5 km resolution)
 
 This repository is still under construction. It has begun to be populated so that version tracking and branching can begin. 
 
