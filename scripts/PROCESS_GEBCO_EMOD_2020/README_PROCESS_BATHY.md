@@ -100,7 +100,7 @@ but use the same underlying grid.
 In order to expand the grid we need to obtain the underlying AMM15 grid to begin with.
 This is defined in the grid file AMM15_ROTATED_CS.nc and stored on JASMIN under:
 
-- /gws/nopw/j04/jmmp_collab/AMM15/EMODNET_GEBCO_2020/AMM15_ROTATED_CS.nc
+- wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/AMM15_ROTATED_CS.nc
 
 We use the script
 
