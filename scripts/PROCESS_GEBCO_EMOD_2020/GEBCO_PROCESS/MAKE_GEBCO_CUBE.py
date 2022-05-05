@@ -16,66 +16,84 @@ iris cube
     The bathymetry in cube format
 """
 
-import iris
-import numpy as np
-
-from iris.coords import DimCoord
-from iris.cube import Cube
-from netCDF4 import Dataset
 
 import argparse
 from pathlib import Path
-import sys, platform
+import sys
+import platform
 
 from datetime import datetime
 import subprocess
 
+import dask
+from dask.diagnostics import ProgressBar
+
+import iris
+from iris.coords import DimCoord
+from iris.cube import Cube
+import numpy as np
+import xarray as xr
 
 
 
 # Just parses the command line arguments in path and out path
 
-parser = argparse.ArgumentParser(description='Process inputs and output file paths')
-parser.add_argument('-i','--IN_DIR',metavar='IN_DIR',  nargs=1,
-                    help='Path to source bathymertry files', required=True)
-parser.add_argument( '-o','--OUT_DIR',metavar='OUT_DIR', nargs=1,
-                    help='Path to output to ', required=True) 
+parser = argparse.ArgumentParser(description="Process inputs and output file paths")
+parser.add_argument(
+    "-i",
+    "--IN_DIR",
+    metavar="IN_DIR",
+    nargs=1,
+    help="Path to source bathymertry files",
+    required=True,
+)
+parser.add_argument(
+    "-o",
+    "--OUT_DIR",
+    metavar="OUT_DIR",
+    nargs=1,
+    help="Path to output to ",
+    required=True,
+)
 
 args = parser.parse_args()
 
 if not all([args.IN_DIR, args.OUT_DIR]):
     print(" Sorry All Arguments are required")
-    sys.exit("Sorry all the arguments are required") 
+    sys.exit("Sorry all the arguments are required")
 
 
 print("\n----------------------------------------------------\n")
-print( "Thanks, you have chosen: \n ")
-print("\n     the INPUT directory for bathy as {}\n".format(  args.IN_DIR[0] ))
+print("Thanks, you have chosen: \n ")
+print("\n     the INPUT directory for bathy as {}\n".format(args.IN_DIR[0]))
 if (Path(args.IN_DIR[0])).is_dir():
-       print(" and the directory{} exists.".format (args.IN_DIR[0]))
+    print(" and the directory{} exists.".format(args.IN_DIR[0]))
 else:
-      sys.exit("However, {} does not exist, so we exit here.".format(args.IN_DIR[0])) 
-print("\n     the OUTPUT directory for processed bathy as {}\n".format(  args.OUT_DIR[0] ))
+    sys.exit("However, {} does not exist, so we exit here.".format(args.IN_DIR[0]))
+print("\n     the OUTPUT directory for processed bathy as {}\n".format(args.OUT_DIR[0]))
 if (Path(args.OUT_DIR[0])).is_dir():
-       print(" and the  directory {} exists.".format (args.OUT_DIR[0]))
+    print(" and the  directory {} exists.".format(args.OUT_DIR[0]))
 else:
-      sys.exit("However, {} does not exist, so we exit here.".format(args.OUT_DIR[0])) 
+    sys.exit("However, {} does not exist, so we exit here.".format(args.OUT_DIR[0]))
 print("\n----------------------------------------------------\n")
 
 #------------------------------------------------------------------------------
 # Get input data
 #------------------------------------------------------------------------------
 
-GEBCO_RAW_fp = Dataset('{}/NWS_CUT_GEBCO.nc'.format(args.IN_DIR[0]),'r')
+GEBCO_RAWA = xr.open_mfdataset("{}/NWS_CUT_GEBCO.nc".format(args.IN_DIR[0]), parallel=True)
 
-GEBCO_LAT = GEBCO_RAW_fp.variables['lat'][:]
-GEBCO_LON = GEBCO_RAW_fp.variables['lon'][:]
-
-GEBCO_BATHY = GEBCO_RAW_fp.variables['elevation'][:]
+GEBCO_LAT = GEBCO_RAWA.lat[:]
+GEBCO_LON = GEBCO_RAWA.lon[:]
+GEBCO_RAWB= xr.open_mfdataset(
+    "{}/NWS_CUT_GEBCO.nc".format(args.IN_DIR[0]),
+    parallel=True,
+    chunks=({"lat": 100, "lon": -1}),
+)
+GEBCO_BATHY = GEBCO_RAWB.elevation.data[:]
 
 GEBCO_BATHY = GEBCO_BATHY.astype(float)
 
-EDMONET_BATHY_B = np.copy(GEBCO_BATHY)
 
 #--------------------------------------------------------------------------------------
 # set up the cube
@@ -83,12 +101,20 @@ EDMONET_BATHY_B = np.copy(GEBCO_BATHY)
 
 cs = iris.coord_systems.GeogCS(6371229)
 
-latitude_emodnet  = DimCoord(GEBCO_LAT, standard_name='latitude', units='degrees',coord_system=cs)
-longitude_emodnet = DimCoord(GEBCO_LON, standard_name='longitude', units='degrees',coord_system=cs)
+latitude_gebco  = DimCoord(GEBCO_LAT, standard_name='latitude', units='degrees',coord_system=cs)
+longitude_gebco = DimCoord(GEBCO_LON, standard_name='longitude', units='degrees',coord_system=cs)
 
 
-GEBCO_cube = Cube(GEBCO_BATHY, standard_name='sea_floor_depth_below_geoid',units='m',
-            dim_coords_and_dims=[(latitude_emodnet, 0), (longitude_emodnet, 1)])
+#GEBCO_cube = Cube(GEBCO_BATHY, standard_name='sea_floor_depth_below_geoid',units='m',
+#            dim_coords_and_dims=[(latitude_emodnet, 0), (longitude_emodnet, 1)])
+#EMODNET_cube = EMODNET_BATHY.to_iris()
+#EMODNET_cube.standard_name = "sea_floor_depth_below_geoid"
+GEBCO_cube = Cube(
+    GEBCO_BATHY,
+    standard_name="sea_floor_depth_below_geoid",
+    units="m",
+    dim_coords_and_dims=[(latitude_gebco, 0), (longitude_gebco, 1)],
+)
 
 #--------------------------------------------------------------------------------------
 # save it to file, set up global attributes to help trace how the file was created
@@ -96,18 +122,20 @@ GEBCO_cube = Cube(GEBCO_BATHY, standard_name='sea_floor_depth_below_geoid',units
 
 now = datetime.now()
 current_time = now.strftime("%Y/%m/%d %H:%M:%S")
-
-repos = subprocess.run(['git', 'config', '--get', 'remote.origin.url'],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-repos = repos.stdout.decode('utf-8').strip('\n')
-
-branch = subprocess.run(['git', 'rev-parse', '--abbrev-ref',  'HEAD'],
-                         stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
-branch = branch.stdout.decode('utf-8').strip('\n')
-
-
+repos = subprocess.run(
+    ["git", "config", "--get", "remote.origin.url"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    check=True
+)
+repos = repos.stdout.decode("utf-8").strip("\n")
+branch = subprocess.run(
+    ["git", "rev-parse", "--abbrev-ref", "HEAD"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.STDOUT,
+    check=True
+)
+branch = branch.stdout.decode("utf-8").strip("\n")
 script = parser.prog
 
 GEBCO_cube.attributes[ 'History' ] = "Created by {} from branch {} of {} on {} ".format(script,branch[:],repos[:],current_time)
@@ -121,5 +149,6 @@ GEBCO_cube.attributes[ 'Commandline' ] = " ".join(sys.argv) # str(sys.argv)
 
 
 iris.save(GEBCO_cube, '{}/GEBCO_CUBE.nc'.format(args.OUT_DIR[0]))
+print ('Saved {}/GEBCO_CUBE.nc'.format(args.OUT_DIR[0]))
 
 
