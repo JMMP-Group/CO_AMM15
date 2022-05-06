@@ -127,6 +127,14 @@ This script also computes a NEMO style coordinates file for the extended AMM15 r
 From
 - EXPAND_AMM15_CUBE.py
 
+```
+the following arguments are required: -a/--AMM15_PATH, -i/--INLSM_DIR, -c/--INCUBE_DIR, -o/--OUT_DIR -y/--YEAR
+```
+e.g.:
+```
+python EXPAND_AMM15_CUBE.py -a ~/PATH_TO_COORDS/AMM15_ROTATED_CS.nc -i PATH_TO_GEBCO_LSM -c PATH_TO_GEBCO_CUBE -o PATH_TO_OUTPUT -y GEBCO_VERSION_YEAR
+```
+
 We process the data outside the inner core AMM15 domain and inside differently.
 
 - We compute a version of the bathymetry that is extrapolated everywhere regardless of LSM.
