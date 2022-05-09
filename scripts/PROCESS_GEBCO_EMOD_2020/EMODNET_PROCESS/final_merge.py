@@ -8,7 +8,11 @@ import sys
 PATH = sys.argv[1]
 
 
-dsa = xr.open_mfdataset('%s/[1234]merge.nc'%(PATH), combine = 'nested', concat_dim = 'lat', parallel=True)
+dsa = xr.open_mfdataset('%s/[1234]merge.nc'%(PATH),
+                         combine = 'nested',  
+                         concat_dim = 'lat', 
+                         parallel=True,
+                         chunks=({"lat": 3000, "lon": -1}))
 
 
 from dask.diagnostics import ProgressBar
