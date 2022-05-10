@@ -15,7 +15,7 @@
     - [Removing the overlaps and creating a cube version of EMODNET data<a name="Overlaps"></a>](#removing-the-overlaps-and-creating-a-cube-version-of-emodnet-data)
     - [Re-grid to extended AMM15 domain <a name="REGRID_EMODNET_EXTEND_AMM15"></a>](#re-grid-to-extended-amm15-domain-)
     - [Correct for LAT <a name="CORRECT_LAT_EMODNET"></a>](#correct-for-lat-)
-- [Merge EMDONET and GEBCO AMM15 data into one dataset<a nanme="Merge_EMODNET_GEBCO"></a>](#merge-emdonet-and-gebco-amm15-data-into-one-dataset)
+    - [Merge EMDONET and GEBCO AMM15 data into one dataset<a nanme="Merge_EMODNET_GEBCO"></a>](#merge-emdonet-and-gebco-amm15-data-into-one-dataset)
 
 # Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy<a name="overview"></a>
 
@@ -175,6 +175,12 @@ This is done with:
 It takes as an input argument -i the path for the location of the required surge netcdf files and the AMM15 grid file,
 and an argument -o where to output the data to.
 
+Note can retrieve the merged file :
+
+`
+wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/MERGE_JENNY_C3X_COLIN_CS20.nc
+`
+
 #### Apply the correction data to the GEBCO data on the AMM15 grid<a name="ApplyLAT_GEBCO"></a>
 
 With the merge CS3X CS20 LAT proxy field we can correct the inner domain of the AMM15 (for where we have LAT data) using the script:
@@ -185,8 +191,10 @@ This script takes a number of inputs:
 
 - OP_LSM :
   - The location of the operational LSM e.g. EMODNET_LSM_v2.nc (created by J graham from EMODNET to AMM15 plus fill in lakes etc)
+    - wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/EMODNET_LSM_v2.nc
 - CS3X_CS20:
   - The location of the merged surge data for LAT correction (valid only on AMM15 inner domain)
+    - wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/MERGE_JENNY_C3X_COLIN_CS20.nc 
 - BATHY_DATA:
   - The location the GEBCO data on the extended AMM15 grid
 
@@ -359,7 +367,7 @@ with ProgressBar():
 We ended up using the merge of Jennys CS3X data not Colins CS3X Data
 So the above section needs more information
 
-The script we use to apply the LAT currections and the operational mask is
+The script we use to apply the LAT corrections and the operational mask is
 `Correct_LAT_Apply_op_mask.py`
 
 ```bash
