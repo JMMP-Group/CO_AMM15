@@ -289,12 +289,10 @@ GEBCO_LSM_fp = Dataset('{}/NWS_CUT_GEBCO_{}_TID.nc'.format( args.INLSM_DIR[0],YE
 GEBCO_LSM = GEBCO_LSM_fp.variables['tid'][:]
 
 
-#GEBCO_RAW_cube.data[np.where(GEBCO_LSM.data[:] ==0) ] = np.nan
 
 
 expandcube.coord_system = AMM15_cube.coord_system
 
-# GEBCO_RAW_cube.data = GEBCO_RAW_cube.lazy_data().rechunk([10,None])
 print(GEBCO_RAW_cube.lazy_data().chunks)
 
 
@@ -312,7 +310,7 @@ print(
         div, SUB_SIZE, remain
     )
 )
-SECTION = 0
+SECTION = 0 
 
 os.system("mkdir  -p {}/SUBSECTION/".format(args.OUT_DIR[0]))
 # Clear out incase there is anything there
@@ -364,9 +362,16 @@ while SECTION < div + 1:
     subsection_gebco_lsm = GEBCO_LSM[
         lat_min_idx:lat_max_idx, lon_min_idx:lon_max_idx]
 
+    import numpy.ma as ma
+
     subsection_gebco_raw_cube.data[np.where(subsection_gebco_lsm.data[:] ==0) ] = np.nan
 
     print("About to save and regrid")
+    print("About to Nan")
+    with ProgressBar():
+        subsection_gebco_raw_cube.data[
+            subsection_gebco_raw_cube.data > 1.0e33
+        ] = np.nan
     set_history(subsection_gebco_raw_cube)
     iris.save(
         subsection_gebco_raw_cube.regrid(
@@ -375,11 +380,6 @@ while SECTION < div + 1:
         "{}/SUBSECTION/{:05d}_SUBSECTION_CUBE.nc".format(args.OUT_DIR[0], SECTION),
     )
 
-    print("About to Nan")
-    with ProgressBar():
-        subsection_gebco_raw_cube.data[
-            subsection_gebco_raw_cube.data > 1.0e33
-        ] = np.nan
 
     print("About to Fill")
     with ProgressBar():
@@ -428,12 +428,21 @@ MASK_GEBCO_ON_EXPANDAMM15 = xr.open_mfdataset(
 EXTRA_LAT = int(100)
 EXTRA_LON = int(100)
 
+
 MASK_EXTRAPOLATE = MASK_GEBCO_ON_EXPANDAMM15.copy()
 MASK_EXTRAPOLATE.sea_floor_depth_below_geoid[
     EXTRA_LAT:-EXTRA_LAT, EXTRA_LON:-EXTRA_LON
 ] = EXTRAPOLATE_GEBCO_ON_EXPANDAMM15.sea_floor_depth_below_geoid[
     EXTRA_LAT:-EXTRA_LAT, EXTRA_LON:-EXTRA_LON
 ]
+
+
+# set up mask
+mask = ma.zeros(np.shape(MASK_EXTRAPOLATE.sea_floor_depth_below_geoid[:]))
+mask[  np.where(np.isnan(MASK_EXTRAPOLATE.sea_floor_depth_below_geoid) ) ] = 1
+
+MASK_EXTRAPOLATE.sea_floor_depth_below_geoid.data = ma.array(MASK_EXTRAPOLATE.sea_floor_depth_below_geoid.data, mask=mask)
+
 
 
 with ProgressBar():
