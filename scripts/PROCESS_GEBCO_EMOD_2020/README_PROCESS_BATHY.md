@@ -18,6 +18,7 @@
     - [Merge EMDONET and GEBCO AMM15 data into one dataset](#merge-emdonet-and-gebco-amm15-data-into-one-dataset)
     - [Optional Presmooth of the data](#optional-presmooth-of-the-data)
       - [Do the smoothing](#do-the-smoothing)
+  - [Cut out domain to Exact extent of AMM15 and optionally make outer 4 points of bdy equal to the outer rim](#cut-out-domain-to-exact-extent-of-amm15-and-optionally-make-outer-4-points-of-bdy-equal-to-the-outer-rim)
 # Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy
 
 Some Required or intermediate inputs are placed on jasmin under:
@@ -479,3 +480,47 @@ Note this needs documentation final processing:
   - Need to exactly match the Baltic bdy itself for Nicos boundary
 
 Turns out the best bathy actully does not include the Shapiro filter but we include the above in case it is useful in the future with diffrent vertical coordinate systems
+
+
+## Cut out domain to Exact extent of AMM15 and optionally make outer 4 points of bdy equal to the outer rim
+
+The idea of extending the domain beyond the AMM15 domain extents was to allow for the Shapiro Smoother. This smoother actual maeks for worse tides but the methodologyu i s archived here in case of future need.
+
+
+To go back from an extended grid to the actual AMM15 grid for
+the merge G-E-G data we can use the script:
+
+
+```
+Cut_and_copy_bdy_perimeter.py
+```
+
+which requries the input file to be modified e.g.
+
+```
+CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc
+```
+
+and the output dir to put the outputted files
+
+```
+python Cut_and_copy_bdy_perimeter.py -i path_to_input/CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc -o  path_to_output
+```
+
+It outputs 2 files:
+1. Just the simple cut out of the AMM15 domain
+2. The same but wit the bdy perimeter modified
+
+
+for the BDY COPY what it does is:
+
+```python
+for i in range(4):
+    dscut[   i  ,   :  ] = dscut[   4  , :  ]
+    dscut[   i  ,   :  ] = dscut[   4  , :  ]
+    dscut[   :  ,   i  ] = dscut[   :  , 4  ]
+    dscut[ -1-i ,   :  ] = dscut[   -5 , :  ]
+    dscut[   :  , -1-i ] = dscut[   :  , -5 ]
+```
+
+this emulates what is done in CO7.
