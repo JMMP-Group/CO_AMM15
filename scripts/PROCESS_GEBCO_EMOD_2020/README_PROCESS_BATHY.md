@@ -19,6 +19,8 @@
     - [Optional Presmooth of the data](#optional-presmooth-of-the-data)
       - [Do the smoothing](#do-the-smoothing)
   - [Cut out domain to Exact extent of AMM15 and optionally make outer 4 points of bdy equal to the outer rim](#cut-out-domain-to-exact-extent-of-amm15-and-optionally-make-outer-4-points-of-bdy-equal-to-the-outer-rim)
+  - [Modify Baltic bathy](#modify-baltic-bathy)
+    - [Pre Smoot the Baltic](#pre-smoot-the-baltic)
 # Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy
 
 Some Required or intermediate inputs are placed on jasmin under:
@@ -524,3 +526,27 @@ for i in range(4):
 ```
 
 this emulates what is done in CO7.
+
+##  Modify Baltic bathy
+
+There are 2 aspects to this
+
+1. Pre Smooth the bath in the Kattegat-Baltic to Rmax 0.1
+2. Batch the BDY RIM to Nicos Baltic
+   
+The first part is done with presprocessing smoother
+
+The second part currently is done by directly matching existing data.
+
+Would be better to replace this by code.
+
+### Pre Smoot the Baltic
+
+This can be done with : RMAX_BATHY_LIMTED_AREA.py
+
+```
+python -i RMAX_BATHY_LIMTED_AREA.py -i path_to_Input_file -o path to output file 
+```
+
+the resultant file stores the original what area it applies the smoother to and an anomaly of the smoothed data compared to the orginal.
+
