@@ -20,7 +20,8 @@
       - [Do the smoothing](#do-the-smoothing)
   - [Cut out domain to Exact extent of AMM15 and optionally make outer 4 points of bdy equal to the outer rim](#cut-out-domain-to-exact-extent-of-amm15-and-optionally-make-outer-4-points-of-bdy-equal-to-the-outer-rim)
   - [Modify Baltic bathy](#modify-baltic-bathy)
-    - [Pre Smoot the Baltic](#pre-smoot-the-baltic)
+    - [Pre Smooth the Baltic](#pre-smooth-the-baltic)
+    - [Apply Nico Baltic Rim exactly (Optional)](#apply-nico-baltic-rim-exactly-optional)
 # Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy
 
 Some Required or intermediate inputs are placed on jasmin under:
@@ -540,7 +541,7 @@ The second part currently is done by directly matching existing data.
 
 Would be better to replace this by code.
 
-### Pre Smoot the Baltic
+### Pre Smooth the Baltic
 
 This can be done with : RMAX_BATHY_LIMTED_AREA.py
 
@@ -550,3 +551,17 @@ python -i RMAX_BATHY_LIMTED_AREA.py -i path_to_Input_file -o path to output file
 
 the resultant file stores the original what area it applies the smoother to and an anomaly of the smoothed data compared to the orginal.
 
+### Apply Nico Baltic Rim exactly (Optional)
+
+
+To replicate Nicos BDY we can apply it directly to the bathymetry. This is just a simple cut and paste.
+
+Thsi depends on Nicos originall smoothed file al we want frmo this si the bdy data on the rim:
+
+- wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc>
+
+Typical usage:
+
+```bash
+python splice_nic_bal_rim.py  -i path_to_/SMOOTH_BDY_COPY_CUTAMM15_CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc -n path_to_/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc -o path_to_output 
+```
