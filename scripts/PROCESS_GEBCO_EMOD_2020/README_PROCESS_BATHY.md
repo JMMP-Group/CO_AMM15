@@ -22,6 +22,7 @@
   - [Modify Baltic bathy](#modify-baltic-bathy)
     - [Pre Smooth the Baltic](#pre-smooth-the-baltic)
     - [Apply Nico Baltic Rim exactly (Optional)](#apply-nico-baltic-rim-exactly-optional)
+  - [Merge File with Baltic modifications](#merge-file-with-baltic-modifications)
 # Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy
 
 Some Required or intermediate inputs are placed on jasmin under:
@@ -558,10 +559,19 @@ To replicate Nicos BDY we can apply it directly to the bathymetry. This is just 
 
 Thsi depends on Nicos originall smoothed file al we want frmo this si the bdy data on the rim:
 
-- wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc>
+- wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc
 
 Typical usage:
 
 ```bash
 python splice_nic_bal_rim.py  -i path_to_/SMOOTH_BDY_COPY_CUTAMM15_CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc -n path_to_/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc -o path_to_output 
+```
+
+
+## Merge File with Baltic modifications
+
+resultant file (this has no pre smoothign done except in the Baltic region)
+
+```
+- wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/ADD_NICO_BALTIC_BDY_RIM_SMOOTH_BDY_COPY_CUTAMM15_CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc
 ```
