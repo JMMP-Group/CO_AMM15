@@ -31,12 +31,27 @@ Directories:
 	- cpp_co9-amm15.fcm
 		NEMO compile/build keys.
 
-Input Files:
 
-These can be found on a few different locations in /projectsa/, ARCHER and JASMIN:
+## Configuration Input Files
 
-	- Domain
-	- Surface Forcing
-	- Lateral Boundary Forcing
-	- River Forcing
-	- Other
+|  **Input** | **Download Location** |
+|-------------- | -------------- |
+| P1.5**ME** **Domain_cfg.nc** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/domain_cfg_sig9_itr3_MEs_01-002_350-1400_local_opt_v1.nc	 |
+| P1.5b *SF12** **Domain_cfg.nc** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/GEG_SF12.nc	 |
+| **AMM15 Coordinates files** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.coordinates.rim15.nc	 |
+| **Open ocean boundary coordinates.bdy.nc** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc	 |
+| **Baltic coordimates.bdy.nc** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.baltic.bdy.coordinates.nc	 |
+
+---
+
+## Sample Forcing Files
+
+| **Forcing** | **Download Location** |
+|-------------- | ------------------|
+| **Surface boundary** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/SBC/ERA5/ |
+| **Open ocean boundary** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/ |
+| **Atlantic Baroclinic No vertical intrpolation ** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/EXPER_NO_VERT_BDY_SJPZ_A_AND_D/ |
+| **Baltic boundary** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/BALTIC/ |
+| **River runoff** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/RIVERS/ |
+| **Tide** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/ |
+| **Initial condition** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/inputs/IC/ |
