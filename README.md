@@ -36,8 +36,8 @@ Directories:
 
 |  **Input** | **Download Location** |
 |-------------- | -------------- |
-| P1.5**ME** **Domain_cfg.nc** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/domain_cfg_sig9_itr3_MEs_01-002_350-1400_local_opt_v1.nc	 |
-| P1.5b *SF12** **Domain_cfg.nc** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/GEG_SF12.nc	 |
+| P1.5**ME** **Domain_cfg.nc** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/domain_cfg_sig9_itr3_MEs_01-002_350-1400_local_opt_v1.nc	 |
+| P1.5b *SF12** **Domain_cfg.nc** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/GEG_SF12.nc	 |
 | **AMM15 Coordinates files** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.coordinates.rim15.nc	 |
 | **Open ocean boundary coordinates.bdy.nc** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc	 |
 | **Baltic coordimates.bdy.nc** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.baltic.bdy.coordinates.nc	 |
@@ -53,5 +53,5 @@ Directories:
 | **Atlantic Baroclinic No vertical intrpolation** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/EXPER_NO_VERT_BDY_SJPZ_A_AND_D/ |
 | **Baltic boundary** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/BALTIC/ |
 | **River runoff** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/RIVERS/ |
-| **Tide** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/ |
-| **Initial condition** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/inputs/IC/ |
+| **Tide** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/ |
+| **Initial condition** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/inputs/IC/ |
