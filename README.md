@@ -50,7 +50,7 @@ Directories:
 |-------------- | ------------------|
 | **Surface boundary** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/SBC/ERA5/ |
 | **Open ocean boundary** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/ |
-| **Atlantic Baroclinic No vertical intrpolation ** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/EXPER_NO_VERT_BDY_SJPZ_A_AND_D/ |
+| **Atlantic Baroclinic No vertical intrpolation** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/EXPER_NO_VERT_BDY_SJPZ_A_AND_D/ |
 | **Baltic boundary** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/BALTIC/ |
 | **River runoff** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/RIVERS/ |
 | **Tide** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/ |
