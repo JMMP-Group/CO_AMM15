@@ -7,7 +7,7 @@
     - [Cut out a domain just for the North West shelf](#cut-out-a-domain-just-for-the-north-west-shelf)
     - [Convert GEBCO to Cube](#convert-gebco-to-cube)
     - [Interpolate GEBCO cube to AMM15 extended domain](#interpolate-gebco-cube-to-amm15-extended-domain)
-    - [Correct for LAT and apply the operational existing AMM15 mask to the inner domain.](#correct-for-lat-and-apply-the-operational-existing-amm15-mask-to-the-inner-domain)
+    - [Correct for LAT and apply the operational existing AMM15 mask to the inner domain](#correct-for-lat-and-apply-the-operational-existing-amm15-mask-to-the-inner-domain)
       - [First Create a file to make the LAT correction with using Surge model data as a proxy for LAT 2D field](#first-create-a-file-to-make-the-lat-correction-with-using-surge-model-data-as-a-proxy-for-lat-2d-field)
       - [Apply the correction data to the GEBCO data on the AMM15 grid](#apply-the-correction-data-to-the-gebco-data-on-the-amm15-grid)
   - [Processing EMODNET](#processing-emodnet)
@@ -16,13 +16,14 @@
     - [Re-grid to extended AMM15 domain](#re-grid-to-extended-amm15-domain)
     - [Correct for LAT](#correct-for-lat)
     - [Merge EMDONET and GEBCO AMM15 data into one dataset](#merge-emdonet-and-gebco-amm15-data-into-one-dataset)
-    - [Optional Presmooth of the data](#optional-presmooth-of-the-data)
+    - [Optional Pre-smooth of the data](#optional-presmooth-of-the-data)
       - [Do the smoothing](#do-the-smoothing)
   - [Cut out domain to Exact extent of AMM15 and optionally make outer 4 points of bdy equal to the outer rim](#cut-out-domain-to-exact-extent-of-amm15-and-optionally-make-outer-4-points-of-bdy-equal-to-the-outer-rim)
   - [Modify Baltic bathy](#modify-baltic-bathy)
     - [Pre Smooth the Baltic](#pre-smooth-the-baltic)
     - [Apply Nico Baltic Rim exactly (Optional)](#apply-nico-baltic-rim-exactly-optional)
   - [Merge File with Baltic modifications](#merge-file-with-baltic-modifications)
+
 # Here keep a record of various pre processing steps done to the Raw GEBCO/ EMODNET bathy
 
 Some Required or intermediate inputs are placed on jasmin under:
@@ -88,7 +89,7 @@ With a copy on JASMIN here:
 
 The data needs to be mapped onto the AMM15 grid. To do so we can make use of the iris interpolation.
 
-### Convert GEBCO to Cube 
+### Convert GEBCO to Cube
 
 In order to use the interpolator we convert the GEBCO data into an iris cube. To do that use:
 
@@ -100,7 +101,7 @@ of the dir to store the resultant cube of data (GEBCO_CUBE.nc).
 ### Interpolate GEBCO cube to AMM15 extended domain
 
 In the later stages when we use the Shapiro smoother we need data that goes beyond AMM15 boundaries.
-Thus we actually map the GEBCO data onto a cube whos lat lon extents are beyond the AMM15 lat lon extents,
+Thus we actually map the GEBCO data onto a cube who's lat lon extents are beyond the AMM15 lat lon extents,
 but use the same underlying grid.
 
 In order to expand the grid we need to obtain the underlying AMM15 grid to begin with.
@@ -150,7 +151,7 @@ We process the data outside the inner core AMM15 domain and inside differently.
 - We merge the two but retain the extrapolated version in the inner domain and the LSM in the outer domain.
   - Later we apply the operational LSM on the inner domain ahead of Shapiro smoothing when we also apply the LAT.
 
-### Correct for LAT and apply the operational existing AMM15 mask to the inner domain.
+### Correct for LAT and apply the operational existing AMM15 mask to the inner domain
 
 EMODNET is explicitly quoted as being referenced to Lowest Astronomical Tide (LAT).
 When we compare EMODNET and GEBCO data it appears that there are regions where they are basically the same
@@ -173,7 +174,7 @@ into mask netcdf grids using the routines:
 - convertCS20.py
   - converts:   cs20_stat.txt  -> cs20_stat.nc
 
-Note Jenny Graham already processed the CS3X dat so we can use that file directly instead.
+Note Jenny Graham already processed the CS3X data so we can use that file directly instead.
 
 Once we have both netcdf files as can read them in and combine them together on the AMM15 grid.
 This is done with:
@@ -207,7 +208,7 @@ This script takes a number of inputs:
   - The location the GEBCO data on the extended AMM15 grid
 
     - LAT_LON:
-      - The location odf the file containinf the extended AMM15 domain lat lon grid
+      - The location of the file containing the extended AMM15 domain lat lon grid
 
 - OUT_FILE:
   - Where to write the final output file after processing
@@ -371,9 +372,9 @@ with ProgressBar():
   MASK_EXTRAPOLATE.to_netcdf('{}/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc'.format(args.OUT_DIR[0]))
 ```
 
-### Correct for LAT 
+### Correct for LAT
 
-We ended up using the merge of Jennys CS3X data not Colins CS3X Data
+We ended up using the merge of Jenny's CS3X data not Colin's CS3X Data
 So the above section needs more information
 
 The script we use to apply the LAT corrections and the operational mask is
@@ -389,7 +390,7 @@ Once we have EMODNET and GEBCO with Correction to LAT on the extended AMM15 grid
 
 (see further notes on why in README_MERGE_EXPANDED.md)
 
-Basic idea is simple enough with GEBCO in the deeep, EMODNET 100-5 m and GEBCO to the coast
+Basic idea is simple enough with GEBCO in the deep, EMODNET 100-5 m and GEBCO to the coast
 
 We use
 
@@ -410,9 +411,9 @@ where
 
 ### Optional Presmooth of the data
 
-We can use Shaprio pre smoothing of the data. We expanded the domain to allow this to happen,
+We can use Shapiro pre smoothing of the data. We expanded the domain to allow this to happen,
 as at the boundary edge the smoother will not have data to work from. By making it larger
-than AMM15 means this edge artifact will remain outside the final AMM15 domain.
+than AMM15 means this edge artefact will remain outside the final AMM15 domain.
 
 see Branch  Mikes_Shapiro_Changes of git@github.com:endaodea/CDFTOOLS_4.0_ISF.git
 
@@ -455,7 +456,7 @@ OMP=-openmp
 
 then make
 
-Need to preformat the data, use:
+Need to pre-format the data, use:
 
 ```bash
 python xarray_format_notemplate.py
@@ -469,7 +470,7 @@ Note change the input data as needed, results in  **TESTT.nc**
 ./bin/cdfsmooth -f TESTT.nc -c 2 -t S -npass 3 -lap T -lsm TT -nc4 
 ```
 
-This will result in presmoothed file under:
+This will result in pre-smoothed file under:
 
 ```bash
 TESTT.ncS23TT
@@ -478,28 +479,25 @@ TESTT.ncS23TT
 Note this needs documentation final processing:
 
 - Cut it down to the actual AMM15 domain
-- Option to enforce the bathymetry is match at the outer perimieter for x points
+- Option to enforce the bathymetry is match at the outer perimeter for x points
 - Dealing with the Baltic
   - Need to use Rmax = 0.1 in the Baltic region
   - Need to exactly match the Baltic bdy itself for Nicos boundary
 
-Turns out the best bathy actully does not include the Shapiro filter but we include the above in case it is useful in the future with diffrent vertical coordinate systems
-
+Turns out the best bathy actually does not include the Shapiro filter but we include the above in case it is useful in the future with different vertical coordinate systems
 
 ## Cut out domain to Exact extent of AMM15 and optionally make outer 4 points of bdy equal to the outer rim
 
-The idea of extending the domain beyond the AMM15 domain extents was to allow for the Shapiro Smoother. This smoother actual maeks for worse tides but the methodologyu i s archived here in case of future need.
-
+The idea of extending the domain beyond the AMM15 domain extents was to allow for the Shapiro Smoother. This smoother actual makes for worse tides but the methodology i s archived here in case of future need.
 
 To go back from an extended grid to the actual AMM15 grid for
 the merge G-E-G data we can use the script:
-
 
 ```
 Cut_and_copy_bdy_perimeter.py
 ```
 
-which requries the input file to be modified e.g.
+which requires the input file to be modified e.g.
 
 ```
 CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc
@@ -512,9 +510,9 @@ python Cut_and_copy_bdy_perimeter.py -i path_to_input/CORRECTED_EXPANDED_MERGE_G
 ```
 
 It outputs 2 files:
+
 1. Just the simple cut out of the AMM15 domain
 2. The same but wit the bdy perimeter modified
-
 
 for the BDY COPY what it does is:
 
@@ -529,14 +527,14 @@ for i in range(4):
 
 this emulates what is done in CO7.
 
-##  Modify Baltic bathy
+## Modify Baltic bathy
 
 There are 2 aspects to this
 
 1. Pre Smooth the bath in the Kattegat-Baltic to Rmax 0.1
 2. Batch the BDY RIM to Nicos Baltic
-   
-The first part is done with presprocessing smoother
+
+The first part is done with pre-processing smoother
 
 The second part currently is done by directly matching existing data.
 
@@ -546,20 +544,19 @@ Would be better to replace this by code.
 
 This can be done with : RMAX_BATHY_LIMTED_AREA.py
 
-```
+```bash
 python -i RMAX_BATHY_LIMTED_AREA.py -i path_to_Input_file -o path to output file 
 ```
 
-the resultant file stores the original what area it applies the smoother to and an anomaly of the smoothed data compared to the orginal.
+the resultant file stores the original what area it applies the smoother to and an anomaly of the smoothed data compared to the original.
 
 ### Apply Nico Baltic Rim exactly (Optional)
 
-
 To replicate Nicos BDY we can apply it directly to the bathymetry. This is just a simple cut and paste.
 
-Thsi depends on Nicos originall smoothed file al we want frmo this si the bdy data on the rim:
+This depends on Nicos original smoothed file all we want from this is the bdy data on the rim:
 
-- wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc
+- wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc>
 
 Typical usage:
 
@@ -567,11 +564,10 @@ Typical usage:
 python splice_nic_bal_rim.py  -i path_to_/SMOOTH_BDY_COPY_CUTAMM15_CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc -n path_to_/REQUIRED_INPUTS/NICO_MODIFIED_BATHY.nc -o path_to_output 
 ```
 
-
 ## Merge File with Baltic modifications
 
-resultant file (this has no pre smoothign done except in the Baltic region)
+resultant file (this has no pre smoothing done except in the Baltic region)
 
-```
+```bash
 - wget https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/ADD_NICO_BALTIC_BDY_RIM_SMOOTH_BDY_COPY_CUTAMM15_CORRECTED_EXPANDED_MERGE_GEBCO_DEEP_TO_200-100_EMODNET_TO_10-5_GEBCO_TO_COAST_amm15.bathydepth.co7.cs3x.cs20.nc
 ```
