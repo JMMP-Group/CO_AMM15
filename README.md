@@ -52,7 +52,7 @@ Directories:
 | **Open ocean boundary** |[ http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/](https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/) |
 | **Atlantic Baroclinic No vertical intrpolation** | [http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/EXPER_NO_VERT_BDY_SJPZ_A_AND_D/](https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/EXPER_NO_VERT_BDY_SJPZ_A_AND_D/) |
 | **Atlantic Barotropic** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/SJPZ_A_AND_D_BT/ |
-| **Baltic boundary** | [http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/BALTIC/](https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/BALTIC/) |
+| **Baltic boundary** | [https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/BDY/amm15_Baltic/ |
 | **River runoff** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/RIVERS/ |
 | **Tide** | [http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/](https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/) |
 | **Initial condition** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/inputs/IC/ |
