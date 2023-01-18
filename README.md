@@ -59,4 +59,4 @@ https://github.com/JMMP-Group/CO_AMM15/wiki
 | **River runoff** | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/RIVERS/ |
 | **Tide** | [http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/](https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/FORCING/TIDES/FES2014/) |
 | **ME Initial condition** (P1.5) | http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/RESTARTS/RESTART_BASED_ONCO7_TO_GEG_NICO_BALTIC_BLOCK_BUT_10M_MIN_RIV_DEP_MEs_01-002_350-1400/
-| **SF12 Initial Condition (P1.5b)| https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/RESTARTS/RESTART_BASED_ONCO7_20040101_TO_GEG_NICO_BALTIC_BLOCK_BUT_10M_MIN_RIV_DEP/ |
+| **SF12 Initial Condition (P1.5b)** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/RESTARTS/RESTART_BASED_ONCO7_20040101_TO_GEG_NICO_BALTIC_BLOCK_BUT_10M_MIN_RIV_DEP/ |
