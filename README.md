@@ -31,7 +31,7 @@ Directories:
 	- cpp_co9-amm15.fcm
 		NEMO compile/build keys.
 
-Firther background to CO9-AMM15 can be found on the wiki:
+Further background to CO9-AMM15 can be found on the wiki:
 
 https://github.com/JMMP-Group/CO_AMM15/wiki
 
