@@ -45,6 +45,7 @@ https://github.com/JMMP-Group/CO_AMM15/wiki
 | **AMM15 Coordinates files** | [http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.coordinates.rim15.nc](https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc)	 |
 | **Open ocean boundary coordinates.bdy.nc** | [http://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc](https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc)	 |
 | **Baltic coordinates.bdy.nc** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/COORDINATES/amm15.baltic.bdy.coordinates.nc |
+| **XIOS xml files** | https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/XML/ |
 ---
 
 ## Sample Forcing Files
