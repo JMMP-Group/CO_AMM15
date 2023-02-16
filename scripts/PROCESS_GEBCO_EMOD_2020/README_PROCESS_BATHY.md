@@ -176,6 +176,9 @@ into mask netcdf grids using the routines:
   - converts:   cs20_stat.txt  -> cs20_stat.nc
 
 Note Jenny Graham already processed the CS3X data so we can use that file directly instead.
+N.B: After a chat with Enda, he suggests to use the one of Jenny, which seems to be more accurate. The notes to replicate
+     The one of Jenny are in https://www-twiki/Main/JenniferGrahamAMM15Grid#LAT_adjustment (accessible only for MO people).
+     (Diego Bruciaferri 16-02-2023)
 
 Once we have both netcdf files as can read them in and combine them together on the AMM15 grid.
 This is done with:
