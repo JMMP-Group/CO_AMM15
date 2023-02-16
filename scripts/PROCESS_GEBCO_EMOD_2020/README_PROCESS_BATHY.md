@@ -108,6 +108,7 @@ In order to expand the grid we need to obtain the underlying AMM15 grid to begin
 This is defined in the grid file AMM15_ROTATED_CS.nc and stored on JASMIN under:
 
 - wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/AMM15_ROTATED_CS.nc>
+- wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020/NWS_CUT_GEBCO_2020_TID.nc>
 
 We use the script
 
