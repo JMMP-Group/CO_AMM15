@@ -237,7 +237,9 @@ A script is called to join the tiles typical format is :
 The input path should contain the EMODNET tiles and then it loops over C to F calling *merge_xarray.py* to create rows of data.
 Then it does a final merge of the rows into a unified block of data using *final_merge.py*
 
-The resultant merged file is ALLmerge.nc
+The resultant merged file is ALLmerge.nc and can be also downloaded from jamsin
+
+- wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/EMODNET_2020/ALLmerge.nc>
 
 ### Removing the overlaps and creating a cube version of EMODNET data
 
