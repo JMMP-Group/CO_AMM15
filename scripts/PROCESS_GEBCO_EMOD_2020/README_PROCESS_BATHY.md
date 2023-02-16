@@ -178,7 +178,12 @@ into mask netcdf grids using the routines:
 Note Jenny Graham already processed the CS3X data so we can use that file directly instead.
 N.B: After a chat with Enda, he suggests to use the one of Jenny, which seems to be more accurate. The notes to replicate
      The one of Jenny are in https://www-twiki/Main/JenniferGrahamAMM15Grid#LAT_adjustment (accessible only for MO people).
+     From Enda's email:
+     "So I have the raw CS3X data that Jenny used in a tar ball on mass: backup_jgraham/datadir/BATHY.tgz
+     Then using her steps on the twiki its gets interpolated onto  the AMM15 grid and extrapolated over land.
+     I then splice the CS20 data a onto that."
      (Diego Bruciaferri 16-02-2023)
+     
 
 Once we have both netcdf files as can read them in and combine them together on the AMM15 grid.
 This is done with:
