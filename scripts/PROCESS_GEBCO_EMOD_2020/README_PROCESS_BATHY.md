@@ -412,6 +412,8 @@ where
 
 ### Optional Presmooth of the data
 
+N.B.: this PRESMOOTH step is not actually used in Enda's bathymetry since sensitivity test showed that tides were degraded. 
+
 We can use Shapiro pre smoothing of the data. We expanded the domain to allow this to happen,
 as at the boundary edge the smoother will not have data to work from. By making it larger
 than AMM15 means this edge artefact will remain outside the final AMM15 domain.
