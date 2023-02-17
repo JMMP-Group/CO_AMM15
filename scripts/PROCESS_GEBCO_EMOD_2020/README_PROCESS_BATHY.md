@@ -108,6 +108,7 @@ In order to expand the grid we need to obtain the underlying AMM15 grid to begin
 This is defined in the grid file AMM15_ROTATED_CS.nc and stored on JASMIN under:
 
 - wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/REQUIRED_INPUTS/AMM15_ROTATED_CS.nc>
+- wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/GEBCO_2020/NWS_CUT_GEBCO_2020_TID.nc>
 
 We use the script
 
@@ -175,6 +176,14 @@ into mask netcdf grids using the routines:
   - converts:   cs20_stat.txt  -> cs20_stat.nc
 
 Note Jenny Graham already processed the CS3X data so we can use that file directly instead.
+N.B: After a chat with Enda, he suggests to use the one of Jenny, which seems to be more accurate. The notes to replicate
+     The one of Jenny are in https://www-twiki/Main/JenniferGrahamAMM15Grid#LAT_adjustment (accessible only for MO people).
+     From Enda's email:
+     "So I have the raw CS3X data that Jenny used in a tar ball on mass: backup_jgraham/datadir/BATHY.tgz
+     Then using her steps on the twiki its gets interpolated onto  the AMM15 grid and extrapolated over land.
+     I then splice the CS20 data a onto that."
+     (Diego Bruciaferri 16-02-2023)
+     
 
 Once we have both netcdf files as can read them in and combine them together on the AMM15 grid.
 This is done with:
@@ -236,7 +245,9 @@ A script is called to join the tiles typical format is :
 The input path should contain the EMODNET tiles and then it loops over C to F calling *merge_xarray.py* to create rows of data.
 Then it does a final merge of the rows into a unified block of data using *final_merge.py*
 
-The resultant merged file is ALLmerge.nc
+The resultant merged file is ALLmerge.nc and can be also downloaded from jamsin
+
+- wget <https://gws-access.jasmin.ac.uk/public/jmmp_collab/AMM15/EMODNET_GEBCO_2020/EMODNET_2020/ALLmerge.nc>
 
 ### Removing the overlaps and creating a cube version of EMODNET data
 
@@ -381,7 +392,7 @@ The script we use to apply the LAT corrections and the operational mask is
 `Correct_LAT_Apply_op_mask.py`
 
 ```bash
-python Correct_LAT_apply_op_mask.py -o .../EMODNET_GEBCO_2020/REQUIRED_INPUTS/EMODNET_LSM_v2.nc -c .../EMODNET_GEBCO_2020/REQUIRED_INPUTS/MERGE_CS3X_COLIN_CS20.nc  -b  ..../GEB_EMODNET_PROCESSING_GIT_VERSION/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc .../GEB_EMODNET_PROCESSING_GIT_VERSION/expand_amm15.coordinates.nc -f .../GEB_EMODNET_PROCESSING_GIT_VERSION/FINAL_EMODNET_LAT_CORRECTED_EXPANDED_AMM15.nc
+python Correct_LAT_apply_op_mask.py -o .../EMODNET_GEBCO_2020/REQUIRED_INPUTS/EMODNET_LSM_v2.nc -c .../EMODNET_GEBCO_2020/REQUIRED_INPUTS/MERGE_JENNY_CS3X_COLIN_CS20.nc  -b  ..../GEB_EMODNET_PROCESSING_GIT_VERSION/MASK_EXTRAPOLATE_EMODNET_vDec2020_ON_EXPAND_AMM15.nc -l .../GEB_EMODNET_PROCESSING_GIT_VERSION/expand_amm15.coordinates.nc -f .../GEB_EMODNET_PROCESSING_GIT_VERSION/FINAL_EMODNET_LAT_CORRECTED_EXPANDED_AMM15.nc
 ```
 
 ### Merge EMDONET and GEBCO AMM15 data into one dataset
@@ -410,6 +421,8 @@ where
   - The path to the output directory
 
 ### Optional Presmooth of the data
+
+N.B.: this PRESMOOTH step is not actually used in Enda's bathymetry since sensitivity test showed that tides were degraded. 
 
 We can use Shapiro pre smoothing of the data. We expanded the domain to allow this to happen,
 as at the boundary edge the smoother will not have data to work from. By making it larger
