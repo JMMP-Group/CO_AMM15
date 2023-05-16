@@ -15,5 +15,6 @@ Based on https://code.metoffice.gov.uk/svn/roses-u/c/d/6/1/1/trunk/app/nemo_cice
 Uses NEMO version NERC/NEMO_4.0.4_CO9_package_tides@r14364
 Runs with XIOS revision 1903
 
-
+May 2023
+Added setup script for compiling AMM15_CO9_1.5 on ARCHER2: setup_AMM15_CO9_1.5
 
