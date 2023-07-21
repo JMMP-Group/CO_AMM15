@@ -11,23 +11,20 @@ This repository is still under construction. It has begun to be populated so tha
 
 Directories:
 
+    - ARCHER2
+        ARCHER2 specific EXP files
+    - BUILD_CFG
+        scrips and files related to specific checkpoints
 	- EXP00
-		Main, combined run directory
-	- EXP_nico
-		Run directory used by Nico for 10-year RIVER run
-
+		Main experiment
 	- MY_SRC
-		Main, combined MY_SRC directory
-	- MY_SRC_river15
-		MY_SRC for freshwater tracers from river runoff, Baltic (Nico)
-	- MY_SRC_tides
-		MY_SRC for modifications to tide forcing.
-		
+		Custom NEMO 4.0.4 scripts
 	- arch
 		ARCHER architecture files for NEMO and XIOS
+    - docs
+        Miscellaneous documentation
 	- scripts
 		Miscellaneous scripts for running, building and moving configurations/files
-
 	- cpp_co9-amm15.fcm
 		NEMO compile/build keys.
 
