@@ -1,0 +1,169 @@
+#!/bin/bash
+# Script to set up AMM15 on ARCHER2
+# Adapted from se-eORCA025_setup
+ 
+display_usage() { 
+   echo
+   echo "  Auto-Config: AMM15 on ARCHER2"
+   echo "  ***************************************"
+   echo
+   echo "  usage: ${0##*/} set paths in this file "
+   echo
+   exit 1
+	} 
+
+#################################################################################################
+# set paths
+#################################################################################################
+export CONFIG=AMM15_CO9_1.5b
+export WORK=/work/n01/n01/slwa/NEMO/CO_AMM15/
+export REPO_DIR=$WORK/NEMO_REP/
+export WORK_DIR=$WORK/$CONFIG
+export XIOS_DIR=$WORK/$CONFIG
+export HPC_TARG=archer2
+#################################################################################################
+
+echo $WORK_DIR
+
+if [ ${WORK_DIR:0:1} != "/" ]; then
+  echo "WORK_DIR must use full path"
+  exit 1
+fi
+
+if [ ${XIOS_DIR:0:1} != "/" ]; then
+  echo "XIOS_DIR must use full path"
+  exit 1
+fi
+
+if [ ${REPO_DIR:0:1} != "/" ]; then
+  echo "REPO_DIR must use full path"
+  exit 1
+fi
+
+# Change to some working directory of choice
+if [ ! -d "$WORK_DIR" ]; then
+  mkdir $WORK_DIR
+fi
+cd $WORK_DIR
+
+echo "Making sure that the correct modules are loaded"
+
+case "${HPC_TARG}"
+  in
+  archer2) . $REPO_DIR/CO9_modules_archer2
+           ;;
+  *)       echo "Machine not recognised"
+           echo "Machines available: archer2"
+           exit 1
+esac
+
+export LD_LIBRARY_PATH=$CRAY_LD_LIBRARY_PATH:$LD_LIBRARY_PATH
+
+# Currently running 4.0.4 for AMM15 and revision 13653
+NEMO_VER=4.0.4
+REV=13653
+
+#################################################################################################
+# Checkout the NEMO code from the SVN Paris repository 
+#################################################################################################
+echo "Checking out NEMO repository"
+
+svn co -r$REV http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r$NEMO_VER --depth empty nemo
+svn co -r$REV http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r$NEMO_VER/src --depth infinity nemo/src
+svn co -r$REV http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r$NEMO_VER/cfgs/SHARED nemo/cfgs/SHARED
+svn export http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r$NEMO_VER/cfgs/ref_cfgs.txt nemo/cfgs/ref_cfgs.txt
+
+cd nemo
+
+# Now check EXTERNALS revision number before checking out the rest
+for ext_name in mk FCM IOIPSL   
+  do   
+  ext=`svn propget svn:externals | grep $ext_name | cut -c2-`   
+  svn co http://forge.ipsl.jussieu.fr/nemo/svn/$ext
+done
+
+ext=`svn propget svn:externals | grep makenemo | cut -c2-`
+svn export http://forge.ipsl.jussieu.fr/nemo/svn/$ext
+#################################################################################################
+
+mkdir arch
+
+# Setup the directory structure
+mkdir $WORK_DIR/nemo/cfgs/AMM15
+
+#################################################################################################
+#   XIOS installation
+#################################################################################################
+echo $XIOS_DIR
+# Choose an appropriate directory for your XIOS installation
+if [ ! -d "$XIOS_DIR" ]; then
+  mkdir $XIOS_DIR
+fi
+cd $XIOS_DIR
+echo $PWD
+echo "Checking out xios repository"
+svn co http://forge.ipsl.jussieu.fr/ioserver/svn/XIOS/branchs/xios-2.5@1964 xios
+cd xios
+cp $REPO_DIR/arch/xios/* ./arch
+
+echo "Compiling xios"
+./make_xios --full --prod --arch ${HPC_TARG} --netcdf_lib netcdf4_par --job 4
+
+# Let's update the path to xios
+export XIOS_DIR=$XIOS_DIR/xios
+#################################################################################################
+
+cd $WORK_DIR/nemo
+cp $REPO_DIR/arch/nemo/* ./arch
+# Dirty fix to hard wire path otherwise user will have to set XIOS_DIR in every new shell session
+sed -i "s?XXX_XIOS_DIR_XXX?$XIOS_DIR?" ./arch/arch-${HPC_TARG}.fcm
+
+echo 'AMM15 OCE' >> $WORK_DIR/nemo/cfgs/work_cfgs.txt
+
+echo "Gathering forcing data"
+
+export CONFIG_DIR=$WORK_DIR/nemo/cfgs/AMM15
+echo $CONFIG_DIR
+
+cd $CONFIG_DIR
+
+cp -r $REPO_DIR/EXPREF .
+cd $CONFIG_DIR/EXPREF
+
+cp $XIOS_DIR/bin/xios_server.exe $CONFIG_DIR/EXPREF/xios_server.exe
+
+cd $WORK_DIR/nemo
+ 
+#################################################################################################
+# Compile NEMO:
+# First copy AMM15 mods
+#################################################################################################
+export REPO_DIR1=$REPO_DIR/CO_AMM15.git/branches/TEST_MYSRC     # FOR TEST - NEED TO REVISIT slwa
+cp $REPO_DIR1/MY_SRC/* $CONFIG_DIR/MY_SRC/
+####cp $REPO_DIR/MY_SRC/* $CONFIG_DIR/MY_SRC/
+cp /work/n01/n01/slwa/NEMO/CO_AMM15/MY_SRC/bdytides.F90 $CONFIG_DIR/MY_SRC/    # error in reading in tidal constituents
+cp $REPO_DIR/cpp_co9-amm15.fcm $CONFIG_DIR/cpp_AMM15.fcm
+
+echo "Compiling nemo AMM15 Config"
+./makenemo -m ${HPC_TARG} -r AMM15 -j 16
+#################################################################################################
+
+cp $CONFIG_DIR/BLD/bin/nemo.exe  $CONFIG_DIR/EXPREF/nemo.exe
+cp $REPO_DIR/CO_AMM15.git/branches/TEST_MYSRC/EXP00/*xml $CONFIG_DIR/EXPREF/.
+cp $REPO_DIR/CO_AMM15.git/branches/TEST_MYSRC/EXP00/namelist_ref $CONFIG_DIR/EXPREF/.
+
+echo
+echo "  Auto-Config: AMM15"
+echo "  *****************************"
+echo
+echo "  To run the AMM15 Configuration:"
+echo
+echo "  - cp -rP EXPREF EXP_MYRUN "
+echo "  - link the correct domain_cfg.nc "
+echo "  - update the runscript accordingly "
+echo "      (project code, nodes, modules, etc)"
+echo
+
+echo "  - submit via the sbatch command"
+
+echo    
