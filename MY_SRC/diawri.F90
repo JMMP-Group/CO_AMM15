@@ -232,10 +232,6 @@ CONTAINS
       IF( iom_use("hf") )   CALL iom_put( "hf" , hf_0(:,:)*( 1._wp + r3f(:,:) ) )   ! water column at f-point (caution here at Naa)
 #endif
 
-      WRITE(998,*) 'size mbkt', SIZE(mbkt)
-      WRITE(998,*) 'size ts',  SIZE(ts(:,:,:,jp_tem,Kmm))
-      WRITE(998,*) 'size ts1',  SIZE(ts(:,:,1,jp_tem,Kmm))
-      WRITE(998,*) 'size z2d',  SIZE(z2d)
       ! --- tracers T&S --- !      
       CALL iom_put( "toce_"//ttype, ts(:,:,:,jp_tem,Kmm) )    ! 3D temperature
       CALL iom_put(  "sst_"//ttype, ts(:,:,1,jp_tem,Kmm) )    ! surface temperature

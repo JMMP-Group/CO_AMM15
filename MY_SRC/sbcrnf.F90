@@ -363,12 +363,8 @@ CONTAINS
             IF( sn_dep_rnf%clftyp == 'monthly' )   WRITE(rn_dep_file, '(a,"m",i2)'  ) TRIM( rn_dep_file ), nmonth   ! add month
          ENDIF
          CALL iom_open ( rn_dep_file, inum )                             ! open file
-         CALL iom_get  ( inum, jpdom_global, sn_dep_rnf%clvar, h_rnf )   ! read the river mouth array
+         CALL iom_get  ( inum, jpdom_global, sn_dep_rnf%clvar, h_rnf, kfill = jpfillcopy )   ! read the river mouth. no 0 on halos!
          CALL iom_close( inum )                                          ! close file
-         WRITE(999,*) 'sn_dep_rnf%clvar: ',  sn_dep_rnf%clvar
-         WRITE(999,*) 'h_rnf',  h_rnf(1,58)
-         WRITE(999,*) 'h_rnf',  h_rnf(58,1)
-         WRITE(999,*) 'h_rnf',  h_rnf(1,1)
          !
          nk_rnf(:,:) = 0                               ! set the number of level over which river runoffs are applied
          DO_2D( nn_hls, nn_hls, nn_hls, nn_hls )
