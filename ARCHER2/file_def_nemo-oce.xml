@@ -17,23 +17,22 @@
 
 <!--   <file id="file9" name_suffix="_shelftmb_grid_T" description="ocean T grid variables" enabled=".TRUE." > -->
       <!-- EOS80 -->
-
-   <file id="file9" name="shelftmb_grid_T" description="ocean T grid variables" enabled=".TRUE." >
+   <file id="file9" name_suffix="_shelftmb_grid_T" description="ocean T grid variables" enabled=".TRUE." >
      <field field_ref="ssh"         name="sossheig"       operation="instant" enabled=".TRUE." /> 
       <field id="sst_pot"           name="votemper_top"  unit="degC"  />
       <field id="sbt_pot"           name="votemper_bot"  unit="degC"  />
-      <field id="sss_pra"            name="vosaline_top"  unit="psu"   />
-      <field id="sbs_pra"            name="vosaline_bot"  unit="psu"   />
+      <field id="sss_pra"            name="vosaline_top"  unit="1e-3"   />
+      <field id="sbs_pra"            name="vosaline_bot"  unit="1e-3"   />
       <field id="ketrd_bfri"            name="ketrd_bfr"     />
    </file>
 
-   <file id="file10" name="shelftmb_grid_U" description="TMB ocean U grid variables" enabled=".TRUE." >
+   <file id="file10" name_suffix="_shelftmb_grid_U" description="TMB ocean U grid variables" enabled=".TRUE." >
      <field field_ref="baro_u"        name="vobtcrtx"       operation="instant" />
      <field field_ref="utrd_bfr"        name="ubfr_exp"       operation="instant" />
      <field field_ref="utrd_bfri"        name="ubfr_imp"       operation="instant" />
    </file>
 
-   <file id="file11" name="shelftmb_grid_V" description="TMB ocean V grid variables" enabled=".TRUE." >
+   <file id="file11" name_suffix="_shelftmb_grid_V" description="TMB ocean V grid variables" enabled=".TRUE." >
      <field field_ref="baro_v"        name="vobtcrty"       operation="instant" />
      <field field_ref="vtrd_bfr"        name="vbfr_exp"       operation="instant" />
      <field field_ref="vtrd_bfri"        name="vbfr_imp"       operation="instant" />
@@ -41,15 +40,15 @@
       </file_group>
       <file_group id="25h_mean" output_freq="1d" output_level="10" enabled=".TRUE.">
 
-         <file id="file12" name="25hourm_grid_T" description="ocean T grid variables, 25h meaned" enabled=".TRUE." >
+         <file id="file12" name_suffix="_25hourm_grid_T" description="ocean T grid variables, 25h meaned" enabled=".TRUE." >
             <field field_ref="temper25h"   name="votemper"  operation="instant" enabled=".TRUE."/>
             <field field_ref="salin25h"    name="vosaline"  operation="instant" enabled=".TRUE."/>
             <field field_ref="ssh25h"      name="sossheig"  operation="instant" enabled=".TRUE."/>
         </file>
-        <file id="file13" name="25hourm_grid_U" description="ocean U grid variables, 25h meaned" enabled=".TRUE." >
+        <file id="file13" name_suffix="_25hourm_grid_U" description="ocean U grid variables, 25h meaned" enabled=".TRUE." >
            <field field_ref="vozocrtx25h" name="vozocrtx"  operation="instant" enabled=".TRUE."/>
         </file>
-        <file id="file14" name="25hourm_grid_V" description="ocean V grid variables, 25h meaned" enabled=".TRUE." >
+        <file id="file14" name_suffix="_25hourm_grid_V" description="ocean V grid variables, 25h meaned" enabled=".TRUE." >
            <field field_ref="vomecrty25h" name="vomecrty"  operation="instant" enabled=".TRUE."/>
         </file>
 <!--        <file id="file15" name="25hourm_grid_W" description="ocean W grid variables, 25h meaned" enabled=".TRUE." >

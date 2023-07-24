@@ -1,66 +1,58 @@
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!
-!  copied from
-! from https://code.metoffice.gov.uk/svn/roses-u/c/d/6/1/1/trunk/app/nemo_cice/rose-app.conf
-! P0.9b CO9 AMM15 NEMO 404 ERA5+update GLS options + Atlantic 3D UV specified,Tra specified,LN_FULL_TRUE +FES2014 (u-cd513) Done
-! which is actually tpx tide not fes tide
-!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 &namrun
-cn_exp='co9',
-cn_ocerst_in='co8_20040101_restart',
-cn_ocerst_indir='/work/n01/n01/shared/CO_AMM15/OTHER_INPUTS/RESTART/'
+cn_exp='CO10',
+cn_ocerst_in='restart',
+cn_ocerst_indir='RESTART/',
 cn_ocerst_out='restart',
 cn_ocerst_outdir='RESTART/',
 ln_clobber=.true.,
 ln_mskland=.true.,
-ln_rst_eos=.false.,
-ln_rstart=.true.,
+ln_rstart=.false.,
 ln_rstdate=.true.,
 nn_date0=20040101,
-nn_euler=1,
 nn_istate=0,
 nn_it000=1,
-nn_itend=10800,
+nn_itend=45,
+!nn_itend=10800,
 nn_leapy=1,
 nn_stock=144000,
 nn_write=144000,
+ln_1st_euler = .true.,
 /
 &namcfg
-cn_domcfg = '/work/n01/n01/shared/CO_AMM15/INPUTS/domains/CO7_EXACT_CFG_FILE'
 ln_read_cfg=.true.,
+cn_domcfg = '/work/n01/n01/shared/CO_AMM15/P1_INPUTS/DOMAIN_CFG/GEG_SF12.nc'
 /
 &namdom
 ln_meshmask=.false.,
-rn_rdt=80.0,
+rn_Dt=80.0,
 /
 &namdyn_spg
 ln_bt_auto=.true.,
 ln_bt_fw=.false.,
 ln_dynspg_ts=.true.,
-nn_baro=30,
+nn_e=30,
 /
 &namcrs
 /
 &namtsd
-cn_dir='data/RESTART/',
+cn_dir='INITIAL_RESTART/',
 ln_tsd_dmp=.false.,
-ln_tsd_init=.false.,
-sn_sal='restart_based_on_AMM15NOWAD_TOAMM15_WAD_NB_BALTIC_20131230.nc',-1,'sn',.false.,.true.,'yearly',' ',' ',
-sn_tem='restart_based_on_AMM15NOWAD_TOAMM15_WAD_NB_BALTIC_20131230.nc',-1,'tn',.false.,.true.,'yearly',' ',' ',
+ln_tsd_init=.true.,
+sn_sal='ini_GEG_NICOBALS.nc',-1,'sn',.false.,.true.,'yearly','',' '
+sn_tem='ini_GEG_NICOBALT.nc',-1,'tn',.false.,.true.,'yearly',' ',' '
 /
 &namsbc
-ln_apr_dyn=.true.
-ln_blk=.true.
-ln_usr=.false.
-ln_dm2dc=.false.
-ln_rnf=.true.
-ln_ssr=.false.
-nn_fsbc=1
-nn_fwb=0
-nn_ice=0
-nn_lsm=10
-ln_traqsr=.true.
+ln_apr_dyn=.true.,
+ln_blk=.true.,
+ln_dm2dc=.false.,
+ln_rnf=.true.,
+ln_ssr=.false.,
+ln_traqsr=.true.,
+ln_usr=.false.,
+nn_fsbc=1,
+nn_fwb=0,
+nn_ice=0,
+nn_lsm=10,
 /
 &namsbc_flx
 cn_dir='./',
@@ -85,28 +77,22 @@ sn_vtau='tauy_1m',-1,'sometauy',.true.,.true.,'yearly','','','',
 sn_wndm='flx',-1,'socliowi',.true.,.true.,'yearly','','','',
 /
 &namsbc_blk
-cn_dir='/work/n01/n01/shared/CO_AMM15/INPUTS/forcing/era5/',
-ln_NCAR     = .false.   ! "NCAR"      algorithm   (Large and Yeager 2008)
-ln_COARE_3p0= .false.   ! "COARE 3.0" algorithm   (Fairall et al. 2003)
-ln_COARE_3p5= .false.   ! "COARE 3.5" algorithm   (Edson et al. 2013)
-ln_ECMWF    = .true.    ! "ECMWF"     algorithm   (IFS cycle 31)
-ln_taudif   = .false.   !  HF tau contribution: use "mean of stress module - module of the mean stress" data
-rn_zqt      = 2.        !  Air temperature and humidity reference height (m)
-rn_zu       = 10.       !  Wind vector reference height (m)
-rn_pfac     = 1.        !  multiplicative factor for precipitation (total & snow)
-rn_efac     = 1.        !  multiplicative factor for evaporation (0. or 1.)
-rn_vfac     = 0.        !  multiplicative factor for ocean/ice velocity
-ln_Cd_L12   = .false.   !  Modify the drag ice-atm and oce-atm depending on ice concentration
-sn_humi     = 'ERA5_SPH'  ,    1      ,   'SPH'   ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM'
-sn_prec     = 'ERA5_MTPR'   ,    1    ,   'MTPR'    ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM'
-sn_qlw      = 'ERA5_MSDWLWRF' ,    1  ,   'MSDWLWRF'  ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM'
-sn_qsr      = 'ERA5_MSDWSWRF' ,    1  ,   'MSDWSWRF'  ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM'
-sn_snow     = 'ERA5_MSR'   ,    1      ,   'MSR'    ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM'
-sn_tair     = 'ERA5_T2M'  ,    1      ,   'T2M'   ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM'
-sn_wndi     = 'ERA5_U10'  ,    1      ,   'U10'   ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',  'Uwnd'  ,  'ERA5_LSM'
-sn_wndj     = 'ERA5_V10'  ,    1      ,   'V10'   ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',  'Vwnd'  ,  'ERA5_LSM'
-sn_slp      = 'ERA5_MSL'  ,    1      ,   'MSL'   ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM'
-sn_cc       = 'NOT USED'  ,   24.     , 'CC'      ,   .false.   , .true. , 'yearly'  ,'weights_era5_bicubic.nc' , ''       , ''
+cn_dir='./FORCING/SBC/ERA5/',
+ln_ECMWF=.true.    ! "ECMWF"     algorithm   (IFS cycle 31),
+ln_NCAR=.false.   ! "NCAR"      algorithm   (Large and Yeager 2008),
+rn_efac=1.        !  multiplicative factor for evaporation (0. or 1.),
+rn_pfac=1.        !  multiplicative factor for precipitation (total & snow),
+rn_zqt=2.        !  Air temperature and humidity reference height (m),
+rn_zu=10.       !  Wind vector reference height (m),
+sn_humi='ERA5_SPH'            ,        1      ,   'SPH'       ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
+sn_prec='ERA5_MTPR'           ,        1      ,   'MTPR'      ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
+sn_qlw='ERA5_MSDWLWRF'        ,        1      ,   'MSDWLWRF'  ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
+sn_qsr='ERA5_MSDWSWRF'        ,        1      ,   'MSDWSWRF'  ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
+sn_slp='ERA5_MSL'             ,        1      ,   'MSL'       ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
+sn_snow='ERA5_MSR'            ,        1      ,   'MSR'       ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
+sn_tair='ERA5_T2M'            ,        1      ,   'T2M'       ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
+sn_wndi='ERA5_U10'            ,        1      ,   'U10'       ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',  'Uwnd'  ,  'ERA5_LSM',
+sn_wndj='ERA5_V10'            ,        1      ,   'V10'       ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',  'Vwnd'  ,  'ERA5_LSM',
 /
 &namsbc_mfs
 cn_dir='./ECMWF/',
@@ -135,6 +121,9 @@ sn_snd_crt='none','no','spherical','eastward-northward','T',
 sn_snd_temp='weighted oce and ice','no','','','',
 sn_snd_thick='none','no','','','',
 /
+&namsbc_sas
+l_sasread   = .false.
+/
 &namtra_qsr
 cn_dir='./',
 ln_qsr_2bd=.false.,
@@ -148,22 +137,16 @@ sn_chl='chlorophyll',-1,'CHLA',.true.,.true.,'yearly','','',
 &namsbc_rnf
 cn_dir='./',
 ln_rnf_depth=.true.,
-ln_rnf_mouth=.false.,
-ln_rnf_sal=.false.,
-ln_rnf_tem=.false.,
-rn_avt_rnf=1000.0,
-rn_hrnf=10.0,
-rn_rfact=1.0,
-sn_cnf='rivers',24,'socoefr0',.false.,.true.,'yearly','','',
-sn_dep_rnf='rivers',24,'rodepth',.false.,.true.,'yearly','','',
-sn_rnf='rivers',24,'rorunoff',.false.,.true.,'yearly','','',
+sn_cnf='rivers',24.,'socoefr0',.false.,.true.,'yearly','','','',
+sn_dep_rnf='rivers',24.,'rodepth',.false.,.true.,'yearly','','','',
+sn_rnf='rivers',24.,'rorunoff',.true.,.true.,'yearly','','','',
 /
 &namsbc_apr
-cn_dir= '/work/n01/n01/shared/CO_AMM15/INPUTS/forcing/era5/'
-ln_apr_obc=.true.
-ln_ref_apr=.false.
-rn_pref=101000.0
-sn_apr      = 'ERA5_MSL'              ,          1        ,    'MSL'  ,    .true.   , .false., 'yearly'  ,'weights_era5_bicubic.nc','','ERA5_LSM'
+cn_dir= './FORCING/SBC/ERA5/',
+ln_apr_obc=.true.,
+ln_ref_apr=.false.,
+rn_pref=101000.0,
+sn_apr='ERA5_MSL'              ,          1        ,    'MSL'  ,    .true.   , .false., 'yearly'  ,'weights_era5_bicubic.nc','','ERA5_LSM',
 /
 &namsbc_ssr
 nn_sssr=0,
@@ -188,71 +171,99 @@ rn_sponge_dyn=2880.0,
 rn_sponge_tra=2880.0,
 /
 &nam_tide
-clname(1)='M2',
-clname(2)='S2',
-clname(3)='N2',
-clname(4)='K2',
-clname(5)='K1',
-clname(6)='O1',
-clname(7)='P1',
-clname(8)='Q1',
-clname(9)='M4',
-clname(10)='MS4',
-clname(11)='MN4',
+sn_tide_cnames(1)='SA',
+sn_tide_cnames(10)='Q1',
+sn_tide_cnames(11)='P1',
+sn_tide_cnames(12)='S1',
+sn_tide_cnames(13)='J1',
+sn_tide_cnames(14)='M2',
+sn_tide_cnames(15)='N2',
+sn_tide_cnames(16)='S2',
+sn_tide_cnames(17)='K2',
+sn_tide_cnames(18)='L2',
+sn_tide_cnames(19)='T2',
+sn_tide_cnames(2)='SSA',
+sn_tide_cnames(20)='R2',
+sn_tide_cnames(21)='MU2',
+sn_tide_cnames(22)='NU2',
+sn_tide_cnames(23)='2N2',
+sn_tide_cnames(24)='MKS2',
+sn_tide_cnames(25)='LA2',
+sn_tide_cnames(26)='EPS2',
+sn_tide_cnames(27)='M3',
+sn_tide_cnames(28)='M4',
+sn_tide_cnames(29)='M6',
+sn_tide_cnames(3)='MM',
+sn_tide_cnames(30)='M8',
+sn_tide_cnames(31)='N4',
+sn_tide_cnames(32)='S4',
+sn_tide_cnames(33)='MN4',
+sn_tide_cnames(34)='MS4',
+sn_tide_cnames(4)='MF',
+sn_tide_cnames(5)='MTM',
+sn_tide_cnames(6)='MSF',
+sn_tide_cnames(7)='MSQM',
+sn_tide_cnames(8)='K1',
+sn_tide_cnames(9)='O1',
 ln_tide=.true.,
 ln_tide_pot=.true.,
+rn_tide_gamma=0.69,       ! Love number 
+ln_tide_ramp=.false.,
+rn_tide_ramp_dt=1., 
+/
+&nambdy_ssh
+ln_ssh_bdy=.true.,.true.,
+rn_ssh_shift=0,0.05,
 /
 &nambdy
-ln_bdy= .true.
-cn_coords_file='coordinates.bdy.nc','coordinates.skagbdy.nc'
-cn_dyn2d='flather','flather'
-cn_dyn3d= 'specified','specified'
-cn_tra= 'frs','specified'
-ln_coords_file=.true.,.true.
-ln_mask_file=.false.
-!!ln_sponge=.true.
-nb_bdy=2
-nn_dyn2d_dta=3,1
-nn_dyn3d_dta=1,1
-nn_rimwidth=15,9
-nn_tra_dta=1,1
+cn_coords_file='coordinates.bdy.nc','coordinates.skagbdy.nc',
+cn_dyn2d='flather','flather',
+cn_dyn3d='none','specified',
+cn_tra='frs','specified',
+ln_bdy=.true.,
+ln_coords_file=.true.,.true.,
+ln_mask_file=.false.,
+nb_bdy=2,
+nn_dyn2d_dta=3,1,
+nn_dyn3d_dta=0,1,
+nn_rimwidth=15,9,
+nn_tra_dta=1,1,
 /
 &nambdy_dta
-bn_sal='amm15_bdyT',24,'vosaline',.true.,.false.,'daily','','',''
-bn_ssh='amm15_bt_bdyT',24,'sossheig',.true.,.false.,'daily','','',''
-bn_tem='amm15_bdyT',24,'votemper',.true.,.false.,'daily','','',''
-bn_u2d='amm15_bt_bdyU',24,'vobtcrtx',.true.,.false.,'daily','','',''
-bn_u3d='amm15_bdyU',24,'vozocrtx',.true.,.false.,'daily','','',''
-bn_v2d='amm15_bt_bdyV',24,'vobtcrty',.true.,.false.,'daily','','',''
-bn_v3d='amm15_bdyV',24,'vomecrty',.true.,.false.,'daily','','',''
-!bn_a_i= 'NOT USED'        ,         24.       , 'siconc'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-!bn_h_i= 'NOT_USED'        ,         24.       , 'sithic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-!bn_h_s= 'NOT USED'        ,         24.       , 'snthic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-!bn_t_i= 'NOT USED'              ,         24.       , 'sitemp'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-cn_dir='/work/n01/n01/shared/CO_AMM15/INPUTS/bdy/atlantic/'
-ln_full_vel=.true.
-ln_zinterp=.false.
+bn_a_i='NOT USED'        ,         24.       , 'siconc'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_h_i='NOT_USED'        ,         24.       , 'sithic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_h_s='NOT USED'        ,         24.       , 'snthic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_t_i='NOT USED'        ,         24.       , 'sitemp'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_sal='EXPER_NO_VERT_BDY_SJPZ_A_AND_D/amm15_bdyT' ,24,'vosaline',.true.,.false.,'daily','','','',
+bn_ssh='SJPZ_A_AND_D_BT/amm15_bt_bdyT'             ,24,'sossheig',.true.,.false.,'daily','','','',
+bn_tem='EXPER_NO_VERT_BDY_SJPZ_A_AND_D/amm15_bdyT' ,24,'votemper',.true.,.false.,'daily','','','',
+bn_u2d='SJPZ_A_AND_D_BT/amm15_bt_bdyU'             ,24,'vobtcrtx',.true.,.false.,'daily','','','',
+bn_u3d='amm15_bdyU'                                ,24,'vozocrtx',.true.,.false.,'daily','','','',
+bn_v2d='SJPZ_A_AND_D_BT/amm15_bt_bdyV'             ,24,'vobtcrty',.true.,.false.,'daily','','','',
+bn_v3d='amm15_bdyV'                                ,24,'vomecrty',.true.,.false.,'daily','','','',
+cn_dir='./FORCING/BDY/',
+ln_full_vel=.false.,
+ln_zinterp=.true.,
 /
 &nambdy_dta
-!bn_a_i= 'NOT USED'        ,         24.       , 'siconc'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-!bn_h_i= 'NOT_USED'        ,         24.       , 'sithic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-!bn_h_s= 'NOT USED'        ,         24.       , 'snthic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-!bn_t_i= 'NOT USED'              ,         24.       , 'sitemp'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     ''
-ln_zinterp=.true.
-ln_full_vel=.true.
-cn_dir='/work/n01/n01/shared/CO_AMM15/INPUTS/bdy/baltic/'
-bn_ssh      =  'amm15baltic_bt_bdyT'  ,         24        , 'sossheig',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''      ,
-bn_u2d      =  'amm15baltic_bt_bdyU'  ,         24        , 'vobtcrtx',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''      ,
-bn_v2d      =  'amm15baltic_bt_bdyV'  ,         24        , 'vobtcrty',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''      ,
-bn_sal      =  'amm15baltic_bdyT'     ,         24        , 'vosaline',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''      ,
-bn_tem      =  'amm15baltic_bdyT'     ,         24        , 'votemper',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''      ,
-bn_u3d      =  'amm15baltic_bdyU'     ,         24        , 'vozocrtx',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''      ,
-bn_v3d      =  'amm15baltic_bdyV'     ,         24        , 'vomecrty',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   '' 
+bn_a_i='NOT USED'        ,         24.       , 'siconc'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_h_i='NOT_USED'        ,         24.       , 'sithic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_h_s='NOT USED'        ,         24.       , 'snthic'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_t_i='NOT USED'        ,         24.       , 'sitemp'  ,    .true.   , .false.,  'daily'  ,    ''            ,   ''     ,     '',
+bn_sal='amm15baltic_bdyT'     ,         24        , 'vosaline',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''          ,,
+bn_ssh='amm15baltic_bt_bdyT'  ,         24        , 'sossheig',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''          ,,
+bn_tem='amm15baltic_bdyT'     ,         24        , 'votemper',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''          ,,
+bn_u2d='amm15baltic_bt_bdyU'  ,         24        , 'vobtcrtx',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''          ,,
+bn_u3d='amm15baltic_bdyU'     ,         24        , 'vozocrtx',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''          ,,
+bn_v2d='amm15baltic_bt_bdyV'  ,         24        , 'vobtcrty',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''          ,,
+bn_v3d='amm15baltic_bdyV'     ,         24        , 'vomecrty',    .true.   , .false. , 'yearly' ,     ''    ,   ''     ,   ''          ,,
+cn_dir='./FORCING/BDY/amm15_Baltic/'
+ln_full_vel=.true.,
+ln_zinterp=.true.,
 /
 &nambdy_tide
-filtide='/work/n01/n01/shared/CO_AMM15/OTHER_INPUTS/tides/tpxo/amm15_bdytide_tp'
-ln_bdytide_2ddta=.true.
-ln_bdytide_conj=.false.
+filtide='./FORCING/TIDES/FES2014/bdry_tide_34csts_AMM15'
+ln_bdytide_2ddta=.true.,
 /
 &nambbc
 ln_trabbc=.false.,
@@ -277,21 +288,21 @@ nn_fct_v=2,
 &namtra_adv_mle
 /
 &namtra_ldf
-ln_traldf_OFF=.false.
-ln_traldf_lap=.false.
-ln_traldf_blp=.true.
-ln_traldf_lev=.true.
-ln_traldf_hor=.false.
-ln_traldf_iso=.false.
-ln_traldf_triad=.false.
-ln_traldf_msc=.false.
-rn_slpmax=0.01
-ln_triad_iso=.false.
-rn_sw_triad=1
-ln_botmix_triad=.false.
-nn_aht_ijk_t=0
-rn_Ud=0.01
-rn_Ld=493.
+ln_botmix_triad=.false.,
+ln_traldf_OFF=.false.,
+ln_traldf_blp=.true.,
+ln_traldf_hor=.false.,
+ln_traldf_iso=.false.,
+ln_traldf_lap=.false.,
+ln_traldf_lev=.true.,
+ln_traldf_msc=.false.,
+ln_traldf_triad=.false.,
+ln_triad_iso=.false.,
+nn_aht_ijk_t=0,
+rn_Ld=493.,
+rn_Ud=0.01,
+rn_slpmax=0.01,
+rn_sw_triad=1,
 /
 &namtra_dmp
 ln_tradmp=.false.,
@@ -363,20 +374,20 @@ rn_lc=0.15,
 rn_mxl0=0.04,
 /
 &namzdf_gls
-ln_length_lim=.true.
-ln_sigpsi=.true.
-nn_bc_bot=1
-nn_bc_surf=1
-nn_clos=1
-nn_stab_func=1
-nn_z0_met=1
-rn_charn=100000.0
-rn_clim_galp=0.267
-rn_crban=100.0
-rn_emin=1.0e-6
-rn_epsmin=1.0e-9
-rn_frac_hs=1.3
-rn_hsro=0.003
+ln_length_lim=.true.,
+ln_sigpsi=.true.,
+nn_bc_bot=1,
+nn_bc_surf=1,
+nn_clos=1,
+nn_stab_func=1,
+nn_z0_met=1,
+rn_charn=100000.0,
+rn_clim_galp=0.267,
+rn_crban=100.0,
+rn_emin=1.0e-6,
+rn_epsmin=1.0e-9,
+rn_frac_hs=1.3,
+rn_hsro=0.003,
 /
 &namzdf_ddm
 rn_avts=1.0e-4,
@@ -407,15 +418,13 @@ ln_listonly=.false.,
 ln_nnogather=.false.,
 /
 &namctl
-ln_ctl=.false.,
-!ln_timing=.true.,
+sn_cfctl%l_runstat = .TRUE. ,
 nn_ictle=0,
 nn_ictls=0,
 nn_isplt=1,
 nn_jctle=0,
 nn_jctls=0,
 nn_jsplt=1,
-nn_print=0,
 /
 &namnc4
 ln_nc4zip=.true.,
@@ -424,6 +433,7 @@ nn_nchunks_j=4,
 nn_nchunks_k=51,
 /
 &namtrd
+ln_tra_trd  = .true.   ! (T) 3D tracer trend output
 /
 &namflo
 jpnfl=1,
@@ -464,22 +474,22 @@ ln_sla=.false.,
 ln_t3d=.false.,
 /
 &nam_asminc
-ln_asmdin=.false.
-ln_asmiau=.false.
-ln_bkgwri=.false.
-ln_dyninc=.false.
-ln_salfix=.false.
-ln_sshinc=.false.
-ln_trainc=.false.
-ln_trjwri=.false.
-niaufn=0
-nitbkg=0
-nitdin=0
-nitiaufin=15
-nitiaustr=1
-nittrjfrq=0
-nn_divdmp=0
-salfixmin=-9999
+ln_asmdin=.false.,
+ln_asmiau=.false.,
+ln_bkgwri=.false.,
+ln_dyninc=.false.,
+ln_salfix=.false.,
+ln_sshinc=.false.,
+ln_trainc=.false.,
+ln_trjwri=.false.,
+niaufn=0,
+nitbkg=0,
+nitdin=0,
+nitiaufin=15,
+nitiaustr=1,
+nittrjfrq=0,
+nn_divdmp=0,
+salfixmin=-9999,
 /
 &namsbc_wave
 cn_dir_cdg='./',
@@ -497,9 +507,6 @@ rn_tslsp=3.0e3,
 &nam_vvl
 ln_vvl_layer=.false.,
 ln_vvl_zstar=.true.,
-/
-&nam_diatmb
-ln_diatmb=.false.
 /
 &nam_dia25h
 ln_dia25h=.true.,
@@ -533,20 +540,15 @@ rn_z0=0.003,
 &namdrg_top
 /
 &namwad
-ln_wd_dl=.false.,
-ln_wd_dl_bc=.false.,
-ln_wd_dl_rmp=.false.,
+ln_wd_dl=.true.,
+ln_wd_dl_bc=.true.,
+ln_wd_dl_rmp=.true.,
 ln_wd_il=.false.,
 nn_wdit=200,
 rn_wd_sbcdep=30.0,
-rn_wd_sbcfra=0.999,
+rn_wd_sbcfra=0.99,
 rn_wdld=0.0,
-rn_wdmin0=0.9,
-rn_wdmin1=0.2,
-rn_wdmin2=0.1,
+rn_wdmin0=10.0,
+rn_wdmin1=0.1,
+rn_wdmin2=1.0,
 /
-&nambdy_ssh
-ln_ssh_bdy=.true.,.true.
-rn_ssh_shift=0,0.05
-/
-
