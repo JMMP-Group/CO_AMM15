@@ -22,7 +22,7 @@ MODULE bdydta
    USE dom_oce        ! ocean space and time domain
    USE phycst         ! physical constants
    USE sbcapr         ! atmospheric pressure forcing
-   USE sbctide        ! Tidal forcing or not
+   USE tide_mod, ONLY: ln_tide ! tidal forcing
    USE bdy_oce        ! ocean open boundary conditions  
    USE bdytides       ! tidal forcing at boundaries
 #if defined key_si3
@@ -68,14 +68,17 @@ MODULE bdydta
    TYPE(FLD), PUBLIC, ALLOCATABLE, DIMENSION(:,:), TARGET ::   bf   ! structure of input fields (file informations, fields read)
 !$AGRIF_END_DO_NOT_TREAT
 
+   !! * Substitutions
+#  include "do_loop_substitute.h90"
+#  include "domzgr_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
-   !! $Id$
+   !! $Id: bdydta.F90 15368 2021-10-14 08:25:34Z smasson $ 
    !! Software governed by the CeCILL license (see ./LICENSE)
    !!----------------------------------------------------------------------
 CONTAINS
 
-   SUBROUTINE bdy_dta( kt, kit, kt_offset )
+   SUBROUTINE bdy_dta( kt, Kmm )
       !!----------------------------------------------------------------------
       !!                   ***  SUBROUTINE bdy_dta  ***
       !!                    
@@ -85,13 +88,7 @@ CONTAINS
       !!                
       !!----------------------------------------------------------------------
       INTEGER, INTENT(in)           ::   kt           ! ocean time-step index 
-      INTEGER, INTENT(in), OPTIONAL ::   kit          ! subcycle time-step index (for timesplitting option)
-      INTEGER, INTENT(in), OPTIONAL ::   kt_offset    ! time offset in units of timesteps. NB. if kit
-      !                                               ! is present then units = subcycle timesteps.
-      !                                               ! kt_offset = 0 => get data at "now" time level
-      !                                               ! kt_offset = -1 => get data at "before" time level
-      !                                               ! kt_offset = +1 => get data at "after" time level
-      !                                               ! etc.
+      INTEGER, INTENT(in)           ::   Kmm          ! ocean time level index
       !
       INTEGER ::  jbdy, jfld, jstart, jend, ib, jl    ! dummy loop indices
       INTEGER ::  ii, ij, ik, igrd, ipl               ! local integers
@@ -103,7 +100,7 @@ CONTAINS
       !
       ! Initialise data arrays once for all from initial conditions where required
       !---------------------------------------------------------------------------
-      IF( kt == nit000 .AND. .NOT.PRESENT(kit) ) THEN
+      IF( kt == nit000 ) THEN
 
          ! Calculate depth-mean currents
          !-----------------------------
@@ -116,7 +113,7 @@ CONTAINS
                   DO ib = 1, idx_bdy(jbdy)%nblenrim(igrd)   ! ssh is allocated and used only on the rim
                      ii = idx_bdy(jbdy)%nbi(ib,igrd)
                      ij = idx_bdy(jbdy)%nbj(ib,igrd)
-                     dta_bdy(jbdy)%ssh(ib) = sshn(ii,ij) * tmask(ii,ij,1)         
+                     dta_bdy(jbdy)%ssh(ib) = ssh(ii,ij,Kmm) * tmask(ii,ij,1)         
                   END DO
                ENDIF
                IF( ASSOCIATED(dta_bdy(jbdy)%u2d) ) THEN   ! no SIZE with a unassociated pointer. v2d and u2d can differ on subdomain
@@ -124,7 +121,7 @@ CONTAINS
                   DO ib = 1, SIZE(dta_bdy(jbdy)%u2d)      ! u2d is used either over the whole bdy or only on the rim
                      ii = idx_bdy(jbdy)%nbi(ib,igrd)
                      ij = idx_bdy(jbdy)%nbj(ib,igrd)
-                     dta_bdy(jbdy)%u2d(ib) = un_b(ii,ij) * umask(ii,ij,1)         
+                     dta_bdy(jbdy)%u2d(ib) = uu_b(ii,ij,Kmm) * umask(ii,ij,1)         
                   END DO
                ENDIF
                IF( ASSOCIATED(dta_bdy(jbdy)%v2d) ) THEN   ! no SIZE with a unassociated pointer. v2d and u2d can differ on subdomain
@@ -132,7 +129,7 @@ CONTAINS
                   DO ib = 1, SIZE(dta_bdy(jbdy)%v2d)      ! v2d is used either over the whole bdy or only on the rim
                      ii = idx_bdy(jbdy)%nbi(ib,igrd)
                      ij = idx_bdy(jbdy)%nbj(ib,igrd)
-                     dta_bdy(jbdy)%v2d(ib) = vn_b(ii,ij) * vmask(ii,ij,1)         
+                     dta_bdy(jbdy)%v2d(ib) = vv_b(ii,ij,Kmm) * vmask(ii,ij,1)         
                   END DO
                ENDIF
             ENDIF
@@ -144,7 +141,7 @@ CONTAINS
                      DO ik = 1, jpkm1
                         ii = idx_bdy(jbdy)%nbi(ib,igrd)
                         ij = idx_bdy(jbdy)%nbj(ib,igrd)
-                        dta_bdy(jbdy)%u3d(ib,ik) =  ( un(ii,ij,ik) - un_b(ii,ij) ) * umask(ii,ij,ik)         
+                        dta_bdy(jbdy)%u3d(ib,ik) =  ( uu(ii,ij,ik,Kmm) - uu_b(ii,ij,Kmm) ) * umask(ii,ij,ik)         
                      END DO
                   END DO
                   igrd = 3 
@@ -152,7 +149,7 @@ CONTAINS
                      DO ik = 1, jpkm1
                         ii = idx_bdy(jbdy)%nbi(ib,igrd)
                         ij = idx_bdy(jbdy)%nbj(ib,igrd)
-                        dta_bdy(jbdy)%v3d(ib,ik) =  ( vn(ii,ij,ik) - vn_b(ii,ij) ) * vmask(ii,ij,ik)         
+                        dta_bdy(jbdy)%v3d(ib,ik) =  ( vv(ii,ij,ik,Kmm) - vv_b(ii,ij,Kmm) ) * vmask(ii,ij,ik)         
                      END DO
                   END DO
                ENDIF
@@ -165,8 +162,8 @@ CONTAINS
                      DO ik = 1, jpkm1
                         ii = idx_bdy(jbdy)%nbi(ib,igrd)
                         ij = idx_bdy(jbdy)%nbj(ib,igrd)
-                        dta_bdy(jbdy)%tem(ib,ik) = tsn(ii,ij,ik,jp_tem) * tmask(ii,ij,ik)         
-                        dta_bdy(jbdy)%sal(ib,ik) = tsn(ii,ij,ik,jp_sal) * tmask(ii,ij,ik)         
+                        dta_bdy(jbdy)%tem(ib,ik) = ts(ii,ij,ik,jp_tem,Kmm) * tmask(ii,ij,ik)         
+                        dta_bdy(jbdy)%sal(ib,ik) = ts(ii,ij,ik,jp_sal,Kmm) * tmask(ii,ij,ik)         
                      END DO
                   END DO
                ENDIF
@@ -210,8 +207,8 @@ CONTAINS
 
          ! read/update all bdy data
          ! ------------------------
-         CALL fld_read( kt, 1, bf_alias, kit = kit, kt_offset = kt_offset )
-
+         ! BDY: use pt_offset=0.5 as applied at the end of the step and fldread is referenced at the middle of the step
+         CALL fld_read( kt, 1, bf_alias, pt_offset = 0.5_wp, Kmm = Kmm )
          ! apply some corrections in some specific cases...
          ! --------------------------------------------------
          !
@@ -245,40 +242,37 @@ CONTAINS
 
          ! If full velocities in boundary data, then split it into barotropic and baroclinic component
          IF( bf_alias(jp_bdyu3d)%ltotvel ) THEN     ! if we read 3D total velocity (can be true only if u3d was read)
-            !
             igrd = 2                       ! zonal velocity
             DO ib = 1, idx_bdy(jbdy)%nblen(igrd)
                ii   = idx_bdy(jbdy)%nbi(ib,igrd)
                ij   = idx_bdy(jbdy)%nbj(ib,igrd)
                dta_alias%u2d(ib) = 0._wp   ! compute barotrope zonal velocity and put it in u2d
                DO ik = 1, jpkm1
-                  dta_alias%u2d(ib) = dta_alias%u2d(ib) + e3u_n(ii,ij,ik) * umask(ii,ij,ik) * dta_alias%u3d(ib,ik)
+                  dta_alias%u2d(ib) = dta_alias%u2d(ib)   &
+                     &              + e3u(ii,ij,ik,Kmm) * umask(ii,ij,ik) * dta_alias%u3d(ib,ik)
                END DO
-               dta_alias%u2d(ib) =  dta_alias%u2d(ib) * r1_hu_n(ii,ij)
+               dta_alias%u2d(ib) =  dta_alias%u2d(ib) * r1_hu(ii,ij,Kmm)
                DO ik = 1, jpkm1            ! compute barocline zonal velocity and put it in u3d
                   dta_alias%u3d(ib,ik) = dta_alias%u3d(ib,ik) - dta_alias%u2d(ib)
                END DO
             END DO
+         ENDIF   ! ltotvel
+         IF( bf_alias(jp_bdyv3d)%ltotvel ) THEN     ! if we read 3D total velocity (can be true only if v3d was read)
             igrd = 3                       ! meridional velocity
             DO ib = 1, idx_bdy(jbdy)%nblen(igrd)
                ii   = idx_bdy(jbdy)%nbi(ib,igrd)
                ij   = idx_bdy(jbdy)%nbj(ib,igrd)
                dta_alias%v2d(ib) = 0._wp   ! compute barotrope meridional velocity and put it in v2d
                DO ik = 1, jpkm1
-                  dta_alias%v2d(ib) = dta_alias%v2d(ib) + e3v_n(ii,ij,ik) * vmask(ii,ij,ik) * dta_alias%v3d(ib,ik)
+                  dta_alias%v2d(ib) = dta_alias%v2d(ib)   &
+                     &              + e3v(ii,ij,ik,Kmm) * vmask(ii,ij,ik) * dta_alias%v3d(ib,ik)
                END DO
-               dta_alias%v2d(ib) =  dta_alias%v2d(ib) * r1_hv_n(ii,ij)
+               dta_alias%v2d(ib) =  dta_alias%v2d(ib) * r1_hv(ii,ij,Kmm)
                DO ik = 1, jpkm1            ! compute barocline meridional velocity and put it in v3d
                   dta_alias%v3d(ib,ik) = dta_alias%v3d(ib,ik) - dta_alias%v2d(ib)
                END DO
             END DO
          ENDIF   ! ltotvel
-
-         ! update tidal harmonic forcing
-         IF( PRESENT(kit) .AND. nn_dyn2d_dta(jbdy) .GE. 2 ) THEN
-            CALL bdytide_update( kt = kt, idx = idx_bdy(jbdy), dta = dta_alias, td = tides(jbdy),   & 
-               &                 kit = kit, kt_offset = kt_offset )
-         ENDIF
 
          !  atm surface pressure : add inverted barometer effect to ssh if it was read
          IF ( ln_apr_obc .AND. TRIM(bf_alias(jp_bdyssh)%clrootname) /= 'NOT USED' ) THEN
@@ -297,8 +291,8 @@ CONTAINS
             IF( TRIM(bf_alias(jp_bdyt_s)%clrootname) == 'NOT USED' )   bf_alias(jp_bdyt_s)%fnow(:,1,:) = rice_tem (jbdy)
             IF( TRIM(bf_alias(jp_bdytsu)%clrootname) == 'NOT USED' )   bf_alias(jp_bdytsu)%fnow(:,1,:) = rice_tem (jbdy)
             IF( TRIM(bf_alias(jp_bdys_i)%clrootname) == 'NOT USED' )   bf_alias(jp_bdys_i)%fnow(:,1,:) = rice_sal (jbdy)
-            IF( TRIM(bf_alias(jp_bdyaip)%clrootname) == 'NOT USED' )   bf_alias(jp_bdyaip)%fnow(:,1,:) = rice_apnd(jbdy) * & ! rice_apnd is the pond fraction
-               &                                                                         bf_alias(jp_bdya_i)%fnow(:,1,:)     !   ( a_ip = rice_apnd * a_i )
+            IF( TRIM(bf_alias(jp_bdyaip)%clrootname) == 'NOT USED' )   &               ! rice_apnd is the pond fraction
+               &   bf_alias(jp_bdyaip)%fnow(:,1,:) = rice_apnd(jbdy) * bf_alias(jp_bdya_i)%fnow(:,1,:)   ! ( a_ip = rice_apnd*a_i )
             IF( TRIM(bf_alias(jp_bdyhip)%clrootname) == 'NOT USED' )   bf_alias(jp_bdyhip)%fnow(:,1,:) = rice_hpnd(jbdy)
             IF( TRIM(bf_alias(jp_bdyhil)%clrootname) == 'NOT USED' )   bf_alias(jp_bdyhil)%fnow(:,1,:) = rice_hlid(jbdy)
 
@@ -358,11 +352,11 @@ CONTAINS
             END DO
          ELSE ! Add tides if not split-explicit free surface else this is done in ts loop
             !
-            CALL bdy_dta_tides( kt=kt, kt_offset=kt_offset )
+            CALL bdy_dta_tides( kt=kt, pt_offset = 1._wp )
          ENDIF
       ENDIF
-      
-      ! davbyr - add a shift to the boundary + free elevation Enda, JT from NEMO RAN 3.6
+      !
+      ! RDP - add a shift to the boundary + free elevation (davbyr, Enda, JT)
       DO jbdy = 1, nb_bdy
          IF( dta_bdy(jbdy)%lneed_ssh ) THEN
             igrd  = 1
@@ -370,12 +364,11 @@ CONTAINS
                 ii = idx_bdy(jbdy)%nbi(ib,igrd)
                 ij = idx_bdy(jbdy)%nbj(ib,igrd)
                 dta_bdy(jbdy)%ssh(ib) = dta_bdy(jbdy)%ssh(ib) + rn_ssh_shift(jbdy) * tmask(ii,ij,1)
-                IF( .NOT. dta_bdy(jbdy)%lforced_ssh ) dta_bdy(jbdy)%ssh(ib) = sshn(ii,ij) * tmask(ii,ij,1)
+                IF( .NOT. dta_bdy(jbdy)%lforced_ssh ) dta_bdy(jbdy)%ssh(ib) = ssh(ii,ij,Kmm) * tmask(ii,ij,1)
              END DO
          END IF
       END DO
-      !--- END davbyr
-      
+      !--- END RDP
       !
       IF( ln_timing )   CALL timing_stop('bdy_dta')
       !
@@ -395,6 +388,8 @@ CONTAINS
       INTEGER ::   jbdy, jfld    ! Local integers
       INTEGER ::   ierror, ios     ! 
       !
+      INTEGER ::   nbdy_rdstart, nbdy_loc
+      CHARACTER(LEN=50)                      ::   cerrmsg       ! error string
       CHARACTER(len=3)                       ::   cl3           ! 
       CHARACTER(len=100)                     ::   cn_dir        ! Root directory for location of data files
       LOGICAL                                ::   ln_full_vel   ! =T => full velocities in 3D boundary data
@@ -438,14 +433,13 @@ CONTAINS
  
       ! Read namelists
       ! --------------
-      REWIND(numnam_cfg)
+      nbdy_rdstart = 1
       DO jbdy = 1, nb_bdy
 
          WRITE(ctmp1, '(a,i2)') 'BDY number ', jbdy
          WRITE(ctmp2, '(a,i2)') 'block nambdy_dta number ', jbdy
 
-         ! There is only one nambdy_dta block in namelist_ref -> use it for each bdy so we do a rewind 
-         REWIND(numnam_ref)
+         ! There is only one nambdy_dta block in namelist_ref -> use it for each bdy so we read from the beginning
          READ  ( numnam_ref, nambdy_dta, IOSTAT = ios, ERR = 901)
 901      IF( ios /= 0 )   CALL ctl_nam ( ios , 'nambdy_dta in reference namelist' )
 
@@ -454,8 +448,21 @@ CONTAINS
             & .OR. ( dta_bdy(jbdy)%lneed_dyn3d .AND.     nn_dyn3d_dta(jbdy)    == 1 )   &
             & .OR. ( dta_bdy(jbdy)%lneed_tra   .AND.       nn_tra_dta(jbdy)    == 1 )   &
             & .OR. ( dta_bdy(jbdy)%lneed_ice   .AND.       nn_ice_dta(jbdy)    == 1 )   )   THEN
-            ! WARNING: we don't do a rewind here, each bdy reads its own nambdy_dta block one after another
-            READ  ( numnam_cfg, nambdy_dta, IOSTAT = ios, ERR = 902 )
+            !
+            ! Need to support possibility of reading more than one
+            ! nambdy_dta from the namelist_cfg internal file.
+            ! Do this by finding the jbdy'th occurence of nambdy_dta in the
+            ! character buffer as the starting point.
+            !
+            nbdy_loc = INDEX( numnam_cfg( nbdy_rdstart: ), 'nambdy_dta' )
+            IF( nbdy_loc .GT. 0 ) THEN
+               nbdy_rdstart = nbdy_rdstart + nbdy_loc
+            ELSE
+               WRITE(cerrmsg,'(A,I4,A)') 'Error: entry number ',jbdy,' of nambdy_dta not found'
+               ios = -1
+               CALL ctl_nam ( ios , cerrmsg )
+            ENDIF
+            READ  ( numnam_cfg( MAX( 1, nbdy_rdstart - 2 ): ), nambdy_dta, IOSTAT = ios, ERR = 902)
 902         IF( ios >  0 )   CALL ctl_nam ( ios , 'nambdy_dta in configuration namelist' )
             IF(lwm) WRITE( numond, nambdy_dta )           
          ENDIF
@@ -465,11 +472,13 @@ CONTAINS
          IF( dta_bdy(jbdy)%lneed_ice ) THEN    ! if we need ice bdy data
             IF( nn_ice_dta(jbdy) == 1 ) THEN   ! if we get ice bdy data from netcdf file
                CALL fld_fill(  bf(jp_bdya_i,jbdy:jbdy), bn_a_i, cn_dir, 'bdy_dta', 'a_i'//' '//ctmp1, ctmp2 )   ! use namelist info
-               CALL fld_clopn( bf(jp_bdya_i,jbdy), nyear, nmonth, nday )   ! not a problem when we call it again after
+               CALL fld_def( bf(jp_bdya_i,jbdy) )
+               CALL iom_open( bf(jp_bdya_i,jbdy)%clname, bf(jp_bdya_i,jbdy)%num )
                idvar = iom_varid( bf(jp_bdya_i,jbdy)%num, bf(jp_bdya_i,jbdy)%clvar, kndims=indims, kdimsz=i4dimsz, lduld=lluld )
                IF( indims == 4 .OR. ( indims == 3 .AND. .NOT. lluld ) ) THEN   ;   ipl = i4dimsz(3)   ! xylt or xyl
                ELSE                                                            ;   ipl = 1            ! xy or xyt
                ENDIF
+               CALL iom_close( bf(jp_bdya_i,jbdy)%num )
                bf(jp_bdya_i,jbdy)%clrootname = 'NOT USED'   ! reset to default value as this subdomain may not need to read this bdy
             ENDIF
          ENDIF
