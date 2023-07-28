@@ -39,7 +39,7 @@ https://github.com/JMMP-Group/CO_AMM15/wiki
 | **Final Bathy used to make below domain file** | https://gws-access.jasmin.ac.uk/public/jmmp/AMM15/AMM15_BATHY/G-E-G-NICO_BLOCK_River_10mMIN.nc |
 | **P1.5**  **ME** **Domain_cfg.nc** | http://gws-access.jasmin.ac.uk/public/jmmp/AMM15/DOMAIN_CFG/domain_cfg_sig9_itr3_MEs_01-002_350-1400_local_opt_v1.nc	 |
 | **P1.5b** **SF12** **Domain_cfg.nc** | http://gws-access.jasmin.ac.uk/public/jmmp/AMM15/DOMAIN_CFG/GEG_SF12.nc	 |
-| **AMM15 Coordinates files** | [http://gws-access.jasmin.ac.uk/public/jmmp/AMM15/COORDINATES/amm15.coordinates.rim15.nc](https://gws-access.jasmin.ac.uk/public/jmmp/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc)	 |
+| **AMM15 Coordinates files** | [http://gws-access.jasmin.ac.uk/public/jmmp/AMM15/COORDINATES/amm15.coordinates.nc](https://gws-access.jasmin.ac.uk/public/jmmp/AMM15/COORDINATES/amm15.coordinates.nc)	 |
 | **Open ocean boundary coordinates.bdy.nc** | [http://gws-access.jasmin.ac.uk/public/jmmp/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc](https://gws-access.jasmin.ac.uk/public/jmmp/AMM15/COORDINATES/amm15.bdy.coordinates.rim15.nc)	 |
 | **Baltic coordinates.bdy.nc** | https://gws-access.jasmin.ac.uk/public/jmmp/AMM15/COORDINATES/amm15.baltic.bdy.coordinates.nc |
 | **XIOS xml files** | https://gws-access.jasmin.ac.uk/public/jmmp/AMM15/XML/ |
