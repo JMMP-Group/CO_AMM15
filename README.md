@@ -1,5 +1,4 @@
 # CO_AMM15
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8171688.svg)](https://doi.org/10.5281/zenodo.8171688)
 
 Coastal Ocean (CO) configuration of the Atlantic Margin Model (1.5 km resolution)
 
