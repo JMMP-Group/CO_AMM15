@@ -1,4 +1,5 @@
 # CO_AMM15
+
 Coastal Ocean (CO) configuration of the Atlantic Margin Model (1.5 km resolution)
 
 [Citations for releases can be found on Zenodo](https://doi.org/10.5281/zenodo.6497328)
@@ -9,7 +10,7 @@ Model configurations are underpinned by the Nucleus for European Modelling of th
 
 ---
 
-This repository is still under construction. It has begun to be populated so that version tracking and branching can begin. 
+At present, the main is for CO10 development. CO9 will continute to progress under the CO9 branch, with associated v9.x.x releases. See tags for the latest release.
 
 Directories:
 
@@ -30,7 +31,7 @@ Directories:
 	- cpp_co9-amm15.fcm
 		NEMO compile/build keys.
 
-Further background to CO9-AMM15 can be found on the wiki:
+Further background to CO-AMM15 can be found on the wiki:
 
 https://github.com/JMMP-Group/CO_AMM15/wiki
 
