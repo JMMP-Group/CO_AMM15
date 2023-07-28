@@ -21,14 +21,14 @@ Directories:
 	- EXP00
 		Main experiment
 	- MY_SRC
-		Custom NEMO 4.0.4 scripts
+		Custom NEMO 4.2.0 scripts
 	- arch
 		ARCHER architecture files for NEMO and XIOS
     - docs
         Miscellaneous documentation
 	- scripts
 		Miscellaneous scripts for running, building and moving configurations/files
-	- cpp_co9-amm15.fcm
+	- cpp_AMM15.fcm
 		NEMO compile/build keys.
 
 Further background to CO-AMM15 can be found on the wiki:
