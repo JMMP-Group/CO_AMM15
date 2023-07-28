@@ -1,6 +1,8 @@
 # CO_AMM15
 Coastal Ocean (CO) configuration of the Atlantic Margin Model (1.5 km resolution)
 
+[Citations for releases can be found on Zenodo](https://doi.org/10.5281/zenodo.6497328)
+
 The Joint Marine Modelling Programme [(JMMP)](https://www.metoffice.gov.uk/research/approach/collaboration/joint-marine-modelling-programme) provides world-class and easily accessible national capability, ocean modelling infrastructure and configurations to support the UK’s scientific research and operational prediction systems for ocean, weather and climate. It is partnership between the Met Office and British Antarctic Survey, National Oceanography Centre and Centre for Polar Observation and Modelling.
 
 Model configurations are underpinned by the Nucleus for European Modelling of the Ocean [(NEMO)](https://www.nemo-ocean.eu) framework. JMMP works closely with the NEMO consortium to develop the underpinning model capability. 
