@@ -31,6 +31,7 @@ MODULE sbcssm
 
    LOGICAL, SAVE ::   l_ssm_mean = .FALSE.   ! keep track of whether means have been read from restart file
 
+#  include "single_precision_substitute.h90"
 #  include "domzgr_substitute.h90"
    !!----------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
@@ -58,7 +59,7 @@ CONTAINS
       INTEGER  ::   ji, jj               ! loop index
       REAL(wp) ::   zcoef, zf_sbc       ! local scalar
       REAL(wp), DIMENSION(jpi,jpj,jpts) :: zts
-      CHARACTER(len=4),SAVE :: stype
+      CHARACTER(len=4),SAVE :: stype ! (RDP)
       !!---------------------------------------------------------------------
       ! RDP
       IF( kt == nit000 ) THEN
@@ -236,7 +237,7 @@ CONTAINS
             !
             IF( zf_sbc /= REAL( nn_fsbc, wp ) ) THEN      ! nn_fsbc has changed between 2 runs
                IF(lwp) WRITE(numout,*) '   restart with a change in the frequency of mean from ', zf_sbc, ' to ', nn_fsbc
-               zcoef = REAL( nn_fsbc - 1, wp ) / zf_sbc
+               zcoef = REAL( nn_fsbc - 1, wp ) / ( zf_sbc - 1._wp )   ! zf_sbc /= 1 as it was written in the restart
                ssu_m(:,:) = zcoef * ssu_m(:,:)
                ssv_m(:,:) = zcoef * ssv_m(:,:)
                sst_m(:,:) = zcoef * sst_m(:,:)
@@ -255,7 +256,7 @@ CONTAINS
          IF(lwp) WRITE(numout,*) '   default initialisation of ss._m arrays'
          ssu_m(:,:) = uu(:,:,1,Kbb)
          ssv_m(:,:) = vv(:,:,1,Kbb)
-         IF( l_useCT )  THEN    ;   sst_m(:,:) = eos_pt_from_ct( ts(:,:,1,jp_tem,Kmm), ts(:,:,1,jp_sal,Kmm) )
+         IF( l_useCT )  THEN    ;   sst_m(:,:) =eos_pt_from_ct( CASTSP(ts(:,:,1,jp_tem,Kmm)), CASTSP(ts(:,:,1,jp_sal,Kmm)) )
          ELSE                   ;   sst_m(:,:) = ts(:,:,1,jp_tem,Kmm)
          ENDIF
          sss_m(:,:) = ts  (:,:,1,jp_sal,Kmm)

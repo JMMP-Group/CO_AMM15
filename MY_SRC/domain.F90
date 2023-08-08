@@ -36,6 +36,9 @@ MODULE domain
 #endif
 #if defined key_agrif
    USE agrif_oce_interp, ONLY : Agrif_istate_ssh ! ssh interpolated from parent
+#if defined key_si3
+   USE agrif_ice_interp, ONLY : agrif_istate_icevol ! ssh increment from ice
+#endif
 #endif
    USE sbc_oce        ! surface boundary condition: ocean
    USE trc_oce        ! shared ocean & passive tracers variab
@@ -61,6 +64,7 @@ MODULE domain
    PUBLIC   domain_cfg   ! called by nemogcm.F90
 
    !! * Substitutions
+#  include "single_precision_substitute.h90"
 #  include "do_loop_substitute.h90"
    !!-------------------------------------------------------------------------
    !! NEMO/OCE 4.0 , NEMO Consortium (2018)
@@ -177,6 +181,11 @@ CONTAINS
       ELSEIF( .NOT.Agrif_root() .AND.    &
          &     ln_init_chfrpar ) THEN        !* Interpolate initial ssh from parent
          CALL Agrif_istate_ssh( Kbb, Kmm, Kaa )
+#if defined key_si3
+         ! Possibly add ssh increment from parent grid
+         ! only if there is no ice model in the child grid
+         CALL Agrif_istate_icevol( Kbb, Kmm, Kaa ) 
+#endif
 #endif
       ELSE                                   !* Read in restart file or set by user
          CALL rst_read_ssh( Kbb, Kmm, Kaa )
@@ -336,6 +345,9 @@ CONTAINS
       IF( .NOT. Agrif_Root() ) THEN
             nn_it000 = (Agrif_Parent(nn_it000)-1)*Agrif_IRhot() + 1
             nn_itend =  Agrif_Parent(nn_itend)   *Agrif_IRhot()
+            nn_date0 =  Agrif_Parent(nn_date0)
+            nn_time0 =  Agrif_Parent(nn_time0)
+            nn_leapy =  Agrif_Parent(nn_leapy)
       ENDIF
 #endif
       !
@@ -482,6 +494,7 @@ CONTAINS
          WRITE(numout,*)
          IF( ln_tile ) THEN
             WRITE(numout,*) '      The domain will be decomposed into tiles of size', nn_ltile_i, 'x', nn_ltile_j
+            CALL ctl_warn( 'dom_nam', 'you use ln_tile=.true., this may slow down NEMO performances' )
          ELSE
             WRITE(numout,*) '      Domain tiling will NOT be used'
          ENDIF
@@ -535,12 +548,12 @@ CONTAINS
       !
       llmsk = tmask_i(:,:) == 1._wp
       !
-      CALL mpp_minloc( 'domain', glamt(:,:), llmsk, zglmin, imil )
-      CALL mpp_minloc( 'domain', gphit(:,:), llmsk, zgpmin, imip )
-      CALL mpp_minloc( 'domain',   e1t(:,:), llmsk, ze1min, imi1 )
-      CALL mpp_minloc( 'domain',   e2t(:,:), llmsk, ze2min, imi2 )
-      CALL mpp_maxloc( 'domain', glamt(:,:), llmsk, zglmax, imal )
-      CALL mpp_maxloc( 'domain', gphit(:,:), llmsk, zgpmax, imap )
+      CALL mpp_minloc( 'domain', CASTDP(glamt(:,:)), llmsk, zglmin, imil )
+      CALL mpp_minloc( 'domain', CASTDP(gphit(:,:)), llmsk, zgpmin, imip )
+      CALL mpp_minloc( 'domain',   CASTDP(e1t(:,:)), llmsk, ze1min, imi1 )
+      CALL mpp_minloc( 'domain',   CASTDP(e2t(:,:)), llmsk, ze2min, imi2 )
+      CALL mpp_maxloc( 'domain', CASTDP(glamt(:,:)), llmsk, zglmax, imal )
+      CALL mpp_maxloc( 'domain', CASTDP(gphit(:,:)), llmsk, zgpmax, imap )
       CALL mpp_maxloc( 'domain',   e1t(:,:), llmsk, ze1max, ima1 )
       CALL mpp_maxloc( 'domain',   e2t(:,:), llmsk, ze2max, ima2 )
       !

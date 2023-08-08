@@ -31,6 +31,9 @@ MODULE restart
    USE trdmxl_oce     ! ocean active mixed layer tracers trends variables
    USE diu_bulk       ! ???
 #if defined key_agrif
+#if defined key_si3
+   USE agrif_ice_interp
+#endif
    USE agrif_oce_interp
 #endif
    !
@@ -306,8 +309,8 @@ CONTAINS
 #else
       !                             !*  Read Kmm fields   (MLF only)
       IF(lwp) WRITE(numout,*)    '           Kmm u, v and T-S fields read in the restart file'
-      CALL iom_get( numror, jpdom_auto, 'un', uu(:,:,:       ,Kmm), cd_type = 'U', psgn = -1._wp )
-      CALL iom_get( numror, jpdom_auto, 'vn', vv(:,:,:       ,Kmm), cd_type = 'V', psgn = -1._wp )
+      CALL iom_get( numror, jpdom_auto, 'un', uu(:,:,:       ,Kmm), cd_type = 'U', psgn = -1._dp )
+      CALL iom_get( numror, jpdom_auto, 'vn', vv(:,:,:       ,Kmm), cd_type = 'V', psgn = -1._dp )
       CALL iom_get( numror, jpdom_auto, 'tn', ts(:,:,:,jp_tem,Kmm) )
       CALL iom_get( numror, jpdom_auto, 'sn', ts(:,:,:,jp_sal,Kmm) )
       !
@@ -319,8 +322,8 @@ CONTAINS
          !
       ELSE                          !* Leap frog restart   (MLF only)
          IF(lwp) WRITE(numout,*) '           Kbb u, v and T-S fields read in the restart file'
-         CALL iom_get( numror, jpdom_auto, 'ub', uu(:,:,:       ,Kbb), cd_type = 'U', psgn = -1._wp )
-         CALL iom_get( numror, jpdom_auto, 'vb', vv(:,:,:       ,Kbb), cd_type = 'V', psgn = -1._wp )
+         CALL iom_get( numror, jpdom_auto, 'ub', uu(:,:,:       ,Kbb), cd_type = 'U', psgn = -1._dp )
+         CALL iom_get( numror, jpdom_auto, 'vb', vv(:,:,:       ,Kbb), cd_type = 'V', psgn = -1._dp )
          CALL iom_get( numror, jpdom_auto, 'tb', ts(:,:,:,jp_tem,Kbb) )
          CALL iom_get( numror, jpdom_auto, 'sb', ts(:,:,:,jp_sal,Kbb) )
       ENDIF
@@ -435,8 +438,16 @@ CONTAINS
             !
          ENDIF
 #if defined key_agrif
+         ! Set ghosts points from parent 
+         IF (.NOT.Agrif_Root()) THEN 
             ! Set ghosts points from parent 
-            IF (.NOT.Agrif_Root()) CALL Agrif_istate_ssh( Kbb, Kmm, Kaa, .true. )
+            CALL Agrif_istate_ssh( Kbb, Kmm, Kaa, .true. ) 
+#if defined key_si3
+            ! Possibly add ssh increment from parent grid
+            ! only if there is no ice model in the child grid
+            CALL Agrif_istate_icevol( Kbb, Kmm, Kaa ) 
+#endif
+         ENDIF
 #endif
 #if defined key_RK3
          ssh(:,:,Kmm) = 0._wp                  !* RK3: set Kmm to 0 for AGRIF
