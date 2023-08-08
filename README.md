@@ -21,7 +21,7 @@ Directories:
     - EXP00
         Main experiment
     - MY_SRC
-        Custom NEMO 4.2.0 scripts
+        Custom NEMO 4.2.1 scripts
     - arch
         ARCHER architecture files for NEMO and XIOS
     - docs
