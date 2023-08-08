@@ -123,7 +123,7 @@ CONTAINS
       REAL(wp)::   zztmp , zztmpx   ! local scalar
       REAL(wp)::   zztmp2, zztmpy   !   -      -
       REAL(wp)::   ze3
-      REAL(wp), DIMENSION(A2D(nn_hls))     ::   z2d   ! 2D workspace (RDP)
+      REAL(wp), DIMENSION(A2D(     0))     ::   z2d   ! 2D workspace
       REAL(wp), DIMENSION(A2D(nn_hls),jpk) ::   z3d   ! 3D workspace
       CHARACTER(len=4),SAVE :: ttype , stype           ! temperature and salinity type (RDP)
       !!----------------------------------------------------------------------
@@ -236,8 +236,8 @@ CONTAINS
       CALL iom_put( "toce_"//ttype, ts(:,:,:,jp_tem,Kmm) )    ! 3D temperature
       CALL iom_put(  "sst_"//ttype, ts(:,:,1,jp_tem,Kmm) )    ! surface temperature
 
-      IF ( iom_use("sbt_"//ttype) ) THEN
-         DO_2D( 0, 0, 0, 0 ) ! RDP was 4 x 0 (BUG)
+      IF ( iom_use("sbt") ) THEN
+         DO_2D( 0, 0, 0, 0 )
             ikbot = mbkt(ji,jj)
             z2d(ji,jj) = ts(ji,jj,ikbot,jp_tem,Kmm)
          END_2D
@@ -246,9 +246,8 @@ CONTAINS
       
       CALL iom_put( "soce_"//stype, ts(:,:,:,jp_sal,Kmm) )    ! 3D salinity
       CALL iom_put(  "sss_"//stype, ts(:,:,1,jp_sal,Kmm) )    ! surface salinity
-
       IF ( iom_use("sbs_"//stype) ) THEN
-         DO_2D( 0, 0, 0, 0 ) ! RDP was 4 x 0 (BUG)
+         DO_2D( 0, 0, 0, 0 )
             ikbot = mbkt(ji,jj)
             z2d(ji,jj) = ts(ji,jj,ikbot,jp_sal,Kmm)
          END_2D
@@ -607,7 +606,7 @@ CONTAINS
       INTEGER  ::   iimi, iima, ipk, it, itmod, ijmi, ijma   ! local integers
       INTEGER  ::   ipka                                     ! ABL
       INTEGER  ::   jn, ierror                               ! local integers
-      REAL(wp) ::   zsto, zout, zmax, zjulian                ! local scalars
+      REAL(dp) ::   zsto, zout, zmax, zjulian                ! local scalars
       !
       REAL(wp), DIMENSION(jpi,jpj    ) :: z2d     ! 2D workspace
       REAL(wp), DIMENSION(jpi,jpj,jpk) :: z3d     ! 3D workspace

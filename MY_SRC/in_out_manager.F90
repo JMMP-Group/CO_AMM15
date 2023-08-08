@@ -39,7 +39,7 @@ MODULE in_out_manager
    INTEGER       ::   nn_stock         !: restart file frequency
    INTEGER, DIMENSION(10) :: nn_stocklist  !: restart dump times
    LOGICAL       ::   ln_mskland       !: mask land points in NetCDF outputs (costly: + ~15%)
-   LOGICAL       ::   ln_rstdate       !: T=> stamp output restart files with date instead of timestep
+   LOGICAL       ::   ln_rstdate       !: T=> stamp output restart files with date instead of timestep (RDP)
    LOGICAL       ::   ln_cfmeta        !: output additional data to netCDF files required for compliance with the CF metadata standard
    LOGICAL       ::   ln_clobber       !: clobber (overwrite) an existing file
    INTEGER       ::   nn_chunksz       !: chunksize (bytes) for NetCDF file (works only with iom_nf90 routines)

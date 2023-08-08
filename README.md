@@ -18,18 +18,18 @@ Directories:
         ARCHER2 specific EXP files
     - BUILD_CFG
         scrips and files related to specific checkpoints
-	- EXP00
-		Main experiment
-	- MY_SRC
-		Custom NEMO 4.2.0 scripts
-	- arch
-		ARCHER architecture files for NEMO and XIOS
+    - EXP00
+        Main experiment
+    - MY_SRC
+        Custom NEMO 4.2.1 scripts
+    - arch
+        ARCHER architecture files for NEMO and XIOS
     - docs
         Miscellaneous documentation
-	- scripts
-		Miscellaneous scripts for running, building and moving configurations/files
-	- cpp_AMM15.fcm
-		NEMO compile/build keys.
+    - scripts
+        Miscellaneous scripts for running, building and moving configurations/files
+    - cpp_AMM15.fcm
+        NEMO compile/build keys.
 
 Further background to CO-AMM15 can be found on the wiki:
 

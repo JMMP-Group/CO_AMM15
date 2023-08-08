@@ -365,7 +365,12 @@ that are available in the tidal-forcing implementation (see
     <field id="zustar"              long_name="friction velocity"                        unit="m/s"     />
     <field id="zwstrl"              long_name="langmuir velocity scale"                  unit="m/s"     />
     <field id="zvstr"               long_name="mixed velocity scale"                     unit="m/s"     />
-    <field id="zla"                 long_name="langmuir number"                          unit="m/s"     />
+    <field id="zla"                 long_name="langmuir number"                          unit="#"       />
+    <field id="wmp"                 long_name="wave mean period"                         unit="s"       />
+    <field id="hsw"                 long_name="significant wave height"                  unit="m"       />
+    <field id="wmp_NP"              long_name="wave mean period from NP spectrum"        unit="s"       />
+    <field id="hsw_NP"              long_name="significant wave height from NP spectrum" unit="m"       />
+    <field id="wndm"                long_name="U_10"                                     unit="m/s"     />
     <field id="wind_wave_abs_power" long_name="\rho |U_s| x u*^2"                        unit="mW"      />
     <field id="wind_wave_power"     long_name="U_s \dot  tau"                            unit="mW"      />
     <field id="wind_power"          long_name="\rho  u*^3"                               unit="mW"      />
@@ -461,7 +466,7 @@ that are available in the tidal-forcing implementation (see
       <field id="qt"           long_name="Net Downward Heat Flux"                standard_name="surface_downward_heat_flux_in_sea_water"                              unit="W/m2"                           />
       <field id="qns"          long_name="non solar Downward Heat Flux"                                                                                               unit="W/m2"                           />
       <field id="qsr"          long_name="Shortwave Radiation"                   standard_name="net_downward_shortwave_flux_at_sea_water_surface"                     unit="W/m2"                           />
-      <field id="qsr3d"        long_name="Shortwave Radiation 3D distribution"   standard_name="downwelling_shortwave_flux_in_sea_water"                              unit="W/m2"      grid_ref="grid_T_3D" />
+      <field id="qsr3d"        long_name="Shortwave Radiation 3D distribution"   standard_name="downwelling_shortwave_flux_in_sea_water"                              unit="W/m2"      grid_ref="grid_T_3D_inner" />
       <field id="qrp"          long_name="Surface Heat Flux: Damping"            standard_name="heat_flux_into_sea_water_due_to_newtonian_relaxation"                 unit="W/m2"                           />
       <field id="qclosea"      long_name="closed sea heat content flux"          standard_name="closea_heat_content_downward_flux"                                    unit="W/m2"     />
       <field id="erp"          long_name="Surface Water Flux: Damping"           standard_name="water_flux_out_of_sea_water_due_to_newtonian_relaxation"              unit="kg/m2/s"                        />
@@ -801,7 +806,7 @@ that are available in the tidal-forcing implementation (see
     <field id="avt_k"        long_name="vertical eddy diffusivity from closure schemes" standard_name="ocean_vertical_eddy_diffusivity"       unit="m2/s" />
     <field id="avm_k"        long_name="vertical eddy viscosity from closure schemes"   standard_name="ocean_vertical_eddy_viscosity"         unit="m2/s" />
     <field id="ediss_k"      long_name="Kolmogorov energy dissipation (tke scheme)"     standard_name="Kolmogorov_energy_dissipation"         unit="W/kg" />
-    <field id="eshear_k"     long_name="energy source from vertical shear"              standard_name="energy_source_from_shear"              unit="W/kg" />
+    <field id="eshear_k"     long_name="energy source from vertical shear"              standard_name="energy_source_from_shear"              unit="W/kg"   grid_ref="grid_W_3D_inner" />
     <field id="estrat_k"     long_name="energy sink from stratification"                standard_name="energy_sink_from_stratification"       unit="W/kg" />
     
   </field_group>
