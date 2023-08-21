@@ -236,7 +236,7 @@ CONTAINS
       CALL iom_put( "toce_"//ttype, ts(:,:,:,jp_tem,Kmm) )    ! 3D temperature
       CALL iom_put(  "sst_"//ttype, ts(:,:,1,jp_tem,Kmm) )    ! surface temperature
 
-      IF ( iom_use("sbt") ) THEN
+      IF ( iom_use("sbt_"//ttype) ) THEN
          DO_2D( 0, 0, 0, 0 )
             ikbot = mbkt(ji,jj)
             z2d(ji,jj) = ts(ji,jj,ikbot,jp_tem,Kmm)
