@@ -12,7 +12,7 @@ This repository is still under construction. It has begun to be populated so tha
 Directories:
 
     - ARCHER2
-        ARCHER2 specific EXP files
+        ARCHER2 specific files to compile, link to forcing files and run on ARCHER2 (October 2023)
     - BUILD_CFG
         scrips and files related to specific checkpoints
 	- EXP00
