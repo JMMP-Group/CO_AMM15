@@ -176,7 +176,7 @@ CONTAINS
       ! What about under ice shelves? Need rto return to that later
      
       ! 1) get the shallowest k level at neighbouring i and j points store in ! k_bot_i_min
-      DO_2D( 1, 1, 1, 1 )
+      DO_2D( 0, 0, 0, 0 )
          k_bot_i_min(ji,jj) = MIN( ik_bot(ji,jj), ik_bot(ji+1,jj  ))
          k_bot_j_min(ji,jj) = MIN( ik_bot(ji,jj), ik_bot(ji,  jj+1))
       END_2D
@@ -189,7 +189,7 @@ CONTAINS
       sum_e3t_0_min_jp1k(:,:) = 0._wp
      
       !Get sum of e3t_0s down to local min
-      DO_2D( 1, 1, 1, 1 )
+      DO_2D( 0, 0, 0, 0 )
          DO jk = 1, k_bot_i_min(ji,jj)
             sum_e3t_0_min_ik  (ji,jj) =  sum_e3t_0_min_ik  (ji,jj) + e3t_0(ji  ,jj,jk)*tmask(ji,jj,jk)
             sum_e3t_0_min_ip1k(ji,jj) =  sum_e3t_0_min_ip1k(ji,jj) + e3t_0(ji+1,jj,jk)*tmask(ji+1,jj,jk)
@@ -206,10 +206,8 @@ CONTAINS
          scaled_e3t_0_ip1k(ji,jj) = sum_e3t_0_min_ip1k(ji,jj)/( ht_0(ji+1,jj  ) + 1._wp - ssmask(ji+1,jj))
          scaled_e3t_0_jp1k(ji,jj) = sum_e3t_0_min_jp1k(ji,jj)/( ht_0(ji  ,jj+1) + 1._wp - ssmask(ji,jj+1))
       END_2D
-      !WRITE(numout,*)'           scaled_e3t_0_ik(10,10)       = ', scaled_e3t_0_ik(10,10)
-      !WRITE(numout,*)'           scaled_e3t_0_jk(10,10)       = ', scaled_e3t_0_jk(10,10)
-      !WRITE(numout,*)'           scaled_e3t_0_ip1k(10,10)       = ', scaled_e3t_0_ip1k(10,10)
-      !WRITE(numout,*)'           scaled_e3t_0_jp1k(10,10)       = ', scaled_e3t_0_jp1k(10,10)
+      CALL lbc_lnk( 'domain', scaled_e3t_0_ik, 'T', 1.0_wp, scaled_e3t_0_ip1k, 'T', 1.0_wp, &
+                   &          scaled_e3t_0_jk, 'T', 1.0_wp, scaled_e3t_0_jp1k, 'T', 1.0_wp )
       ! END RDP
       IF( lk_SWE ) THEN      ! SWE case redefine hf_0
          hf_0(:,:) = hf_0(:,:) + e3f_0(:,:,1) * ssfmask(:,:)
