@@ -123,7 +123,7 @@ CONTAINS
       REAL(wp)::   zztmp , zztmpx   ! local scalar
       REAL(wp)::   zztmp2, zztmpy   !   -      -
       REAL(wp)::   ze3
-      REAL(wp), DIMENSION(A2D(     0))     ::   z2d   ! 2D workspace
+      REAL(wp), DIMENSION(A2D(nn_hls))     ::   z2d   ! 2D workspace
       REAL(wp), DIMENSION(A2D(nn_hls),jpk) ::   z3d   ! 3D workspace
       CHARACTER(len=4),SAVE :: ttype , stype           ! temperature and salinity type (RDP)
       !!----------------------------------------------------------------------

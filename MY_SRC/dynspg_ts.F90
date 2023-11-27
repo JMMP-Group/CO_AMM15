@@ -694,7 +694,7 @@ CONTAINS
             END_2D
          ENDIF
          ! RDP
-         DO_2D( 0, 0, 0, 0 )
+         DO_2D( 1, 0, 1, 0 )
             zdep_u(ji,jj) = r1_2 * r1_e1e2u(ji,jj) * ( e1e2t(ji,jj  ) * (ssha_e(ji,  jj)+ht_0(ji,  jj))*scaled_e3t_0_ik  (ji,jj) &
                                               &     +  e1e2t(ji+1,jj) * (ssha_e(ji+1,jj)+ht_0(ji+1,jj))*scaled_e3t_0_ip1k(ji,jj) )*ssumask(ji,jj)
             zdep_v(ji,jj) = r1_2 * r1_e1e2v(ji,jj) * ( e1e2t(ji,jj  ) * (ssha_e(ji,  jj)+ht_0(ji,  jj))*scaled_e3t_0_jk  (ji,jj  ) &
@@ -859,6 +859,8 @@ CONTAINS
       END DO
 
       IF ( ln_wd_dl .and. ln_wd_dl_bc) THEN 
+         ! need to set lbc here because not done prior time averaging
+         CALL lbc_lnk( 'dynspg_ts', zuwdav2, 'U', 1._wp, zvwdav2, 'V', 1._wp)
          DO jk = 1, jpkm1
             puu(:,:,jk,Kmm) = ( un_adv(:,:)*r1_hu(:,:,Kmm) &
                        & + zuwdav2(:,:)*(puu(:,:,jk,Kmm) - un_adv(:,:)*r1_hu(:,:,Kmm)) ) * umask(:,:,jk) 
