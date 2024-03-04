@@ -11,8 +11,8 @@ ln_rstdate=.true.,
 nn_date0=20040101,
 nn_istate=0,
 nn_it000=1,
-nn_itend=45,
-!nn_itend=10800,
+!nn_itend=45,
+nn_itend=10800,
 nn_leapy=1,
 nn_stock=144000,
 nn_write=144000,
@@ -21,6 +21,7 @@ ln_1st_euler = .true.,
 &namcfg
 ln_read_cfg=.true.,
 cn_domcfg = '/work/n01/n01/shared/CO_AMM15/P1_INPUTS/DOMAIN_CFG/GEG_SF12.nc'
+!cn_domcfg = '/work/n01/n01/shared/CO_AMM15/P1_INPUTS/DOMAIN_CFG/CO7_EXACT_CFG_FILE.nc'
 /
 &namdom
 ln_meshmask=.false.,
@@ -84,6 +85,7 @@ rn_efac=1.        !  multiplicative factor for evaporation (0. or 1.),
 rn_pfac=1.        !  multiplicative factor for precipitation (total & snow),
 rn_zqt=2.        !  Air temperature and humidity reference height (m),
 rn_zu=10.       !  Wind vector reference height (m),
+!      nn_iter_algo = 10       !  Number of iterations in bulk param. algo ("stable ABL + weak wind" requires more)
 sn_humi='ERA5_SPH'            ,        1      ,   'SPH'       ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
 sn_prec='ERA5_MTPR'           ,        1      ,   'MTPR'      ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
 sn_qlw='ERA5_MSDWLWRF'        ,        1      ,   'MSDWLWRF'  ,    .true.   , .false.,  'yearly' ,'weights_era5_bicubic.nc',    ''    ,  'ERA5_LSM',
@@ -141,6 +143,7 @@ sn_cnf='rivers',24.,'socoefr0',.false.,.true.,'yearly','','','',
 sn_dep_rnf='rivers',24.,'rodepth',.false.,.true.,'yearly','','','',
 sn_rnf='rivers',24.,'rorunoff',.true.,.true.,'yearly','','','',
 /
+
 &namsbc_apr
 cn_dir= './FORCING/SBC/ERA5/',
 ln_apr_obc=.true.,
@@ -182,7 +185,7 @@ sn_tide_cnames(16)='S2',
 sn_tide_cnames(17)='K2',
 sn_tide_cnames(18)='L2',
 sn_tide_cnames(19)='T2',
-sn_tide_cnames(2)='SSA',
+!sn_tide_cnames(2)='SSA',
 sn_tide_cnames(20)='R2',
 sn_tide_cnames(21)='MU2',
 sn_tide_cnames(22)='NU2',
@@ -418,7 +421,8 @@ ln_listonly=.false.,
 ln_nnogather=.false.,
 /
 &namctl
-sn_cfctl%l_runstat = .TRUE. ,
+sn_cfctl%l_runstat = .TRUE.,
+sn_cfctl%l_prtctl  = .FALSE.,
 nn_ictle=0,
 nn_ictls=0,
 nn_isplt=1,
@@ -507,6 +511,7 @@ rn_tslsp=3.0e3,
 &nam_vvl
 ln_vvl_layer=.false.,
 ln_vvl_zstar=.true.,
+nn_vvl_interp =  0               !  interpolation method of scale factor anomalies at U/V/F points
 /
 &nam_dia25h
 ln_dia25h=.true.,
@@ -543,12 +548,8 @@ rn_z0=0.003,
 ln_wd_dl=.true.,
 ln_wd_dl_bc=.true.,
 ln_wd_dl_rmp=.true.,
-ln_wd_il=.false.,
-nn_wdit=200,
 rn_wd_sbcdep=30.0,
 rn_wd_sbcfra=0.99,
 rn_wdld=0.0,
-rn_wdmin0=10.0,
 rn_wdmin1=0.1,
-rn_wdmin2=1.0,
 /

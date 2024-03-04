@@ -96,6 +96,13 @@ CONTAINS
       CHARACTER (len=64) ::   cform = "(A12, 3(A13, I7))"
       INTEGER , DIMENSION(jpi,jpj) ::   ik_top , ik_bot       ! top and bottom ocean level
       REAL(wp), DIMENSION(jpi,jpj) ::   z1_hu_0, z1_hv_0
+      ! RDP
+      REAL(wp), DIMENSION(jpi,jpj) ::  k_bot_i_min, k_bot_j_min
+      REAL(wp), DIMENSION(jpi,jpj) :: sum_e3t_0_min_ik
+      REAL(wp), DIMENSION(jpi,jpj) :: sum_e3t_0_min_jk
+      REAL(wp), DIMENSION(jpi,jpj) :: sum_e3t_0_min_ip1k
+      REAL(wp), DIMENSION(jpi,jpj) :: sum_e3t_0_min_jp1k
+      ! END RDP
       !!----------------------------------------------------------------------
       !
       IF(lwp) THEN         ! Ocean domain Parameters (control print)
@@ -148,12 +155,60 @@ CONTAINS
          hu_0(:,:) = hu_0(:,:) + e3u_0(:,:,jk) * umask(:,:,jk)
          hv_0(:,:) = hv_0(:,:) + e3v_0(:,:,jk) * vmask(:,:,jk)
       END DO
+      
       !
       DO_3D( 0, 0, 0, 0, 1, jpkm1 )
          hf_0(ji,jj) = hf_0(ji,jj) + e3f_0(ji,jj,jk)*vmask(ji,jj,jk)*vmask(ji+1,jj,jk)
       END_3D
       CALL lbc_lnk('domain', hf_0, 'F', 1._wp)
-      !
+      
+      ! RDP
+      !CEOD Here we need to work out which is the shallowest point in terms of k
+      ! levels at neighbouring points in i and j directions.
+      ! Then we need to work out the proportion of the water column down to ht_0 that
+      ! that level is for both i points.
+      ! e.g. point i could say go down to level 10 but point i+1 only level 5
+      ! then work out depth of bottom of level 5 at point i over depth at point i to
+      ! level 10
+      ! This is needed later to work out where a u point depth should be when using
+      ! enveloping coordinates, as it will be 1/2 depth at t point at level 5 for i,i+1
+      ! points Because level 5 at i can change in time, thus u bed can change in time!
+      ! What about under ice shelves? Need rto return to that later
+     
+      ! 1) get the shallowest k level at neighbouring i and j points store in ! k_bot_i_min
+      DO_2D( 0, 0, 0, 0 )
+         k_bot_i_min(ji,jj) = MIN( ik_bot(ji,jj), ik_bot(ji+1,jj  ))
+         k_bot_j_min(ji,jj) = MIN( ik_bot(ji,jj), ik_bot(ji,  jj+1))
+      END_2D
+      ! 2) Work out the depth down to the shallowest k level both at point i and i+1
+      ! (likewise for j)
+     
+      sum_e3t_0_min_ik(:,:) = 0._wp
+      sum_e3t_0_min_jk(:,:) = 0._wp
+      sum_e3t_0_min_ip1k(:,:) = 0._wp
+      sum_e3t_0_min_jp1k(:,:) = 0._wp
+     
+      !Get sum of e3t_0s down to local min
+      DO_2D( 0, 0, 0, 0 )
+         DO jk = 1, k_bot_i_min(ji,jj)
+            sum_e3t_0_min_ik  (ji,jj) =  sum_e3t_0_min_ik  (ji,jj) + e3t_0(ji  ,jj,jk)*tmask(ji,jj,jk)
+            sum_e3t_0_min_ip1k(ji,jj) =  sum_e3t_0_min_ip1k(ji,jj) + e3t_0(ji+1,jj,jk)*tmask(ji+1,jj,jk)
+         ENDDO
+         DO jk = 1, k_bot_j_min(ji,jj)
+            sum_e3t_0_min_jk  (ji,jj) =  sum_e3t_0_min_jk  (ji,jj) + e3t_0(ji,jj  ,jk)*tmask(ji,jj,jk)
+            sum_e3t_0_min_jp1k(ji,jj) =  sum_e3t_0_min_jp1k(ji,jj) + e3t_0(ji,jj+1,jk)*tmask(ji,jj+1,jk)
+         ENDDO
+      ! 3)  Then work out what fraction of the at rest water column that is, we later
+      ! multiply the now water depth by this scale to work out the bottom of the kth
+      ! level at time now in dynspg_ts
+         scaled_e3t_0_ik  (ji,jj) = sum_e3t_0_min_ik  (ji,jj)/( ht_0(ji  ,jj  ) + 1._wp - ssmask(ji,jj))
+         scaled_e3t_0_jk  (ji,jj) = sum_e3t_0_min_jk  (ji,jj)/( ht_0(ji  ,jj  ) + 1._wp - ssmask(ji,jj))
+         scaled_e3t_0_ip1k(ji,jj) = sum_e3t_0_min_ip1k(ji,jj)/( ht_0(ji+1,jj  ) + 1._wp - ssmask(ji+1,jj))
+         scaled_e3t_0_jp1k(ji,jj) = sum_e3t_0_min_jp1k(ji,jj)/( ht_0(ji  ,jj+1) + 1._wp - ssmask(ji,jj+1))
+      END_2D
+      CALL lbc_lnk( 'domain', scaled_e3t_0_ik, 'T', 1.0_wp, scaled_e3t_0_ip1k, 'T', 1.0_wp, &
+                   &          scaled_e3t_0_jk, 'T', 1.0_wp, scaled_e3t_0_jp1k, 'T', 1.0_wp )
+      ! END RDP
       IF( lk_SWE ) THEN      ! SWE case redefine hf_0
          hf_0(:,:) = hf_0(:,:) + e3f_0(:,:,1) * ssfmask(:,:)
       ENDIF

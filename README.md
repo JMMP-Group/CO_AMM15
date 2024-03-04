@@ -17,7 +17,7 @@ Directories:
     - ARCHER2
         ARCHER2 specific EXP files
     - BUILD_CFG
-        scrips and files related to specific checkpoints
+        scripts and files related to specific checkpoints
     - EXP00
         Main experiment
     - MY_SRC
