@@ -287,9 +287,9 @@ nn_bbl_adv=0,
 nn_bbl_ldf=0,
 /
 &nameos
-ln_eos80=.true.,
+ln_eos80=.false.,
 ln_seos=.false.,
-ln_teos10=.false.,
+ln_teos10=.true.,
 /
 &namtra_adv
 ln_traadv_cen=.false.,
