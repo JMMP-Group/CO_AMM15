@@ -8,6 +8,8 @@ The Joint Marine Modelling Programme [(JMMP)](https://www.metoffice.gov.uk/rese
 
 Model configurations are underpinned by the Nucleus for European Modelling of the Ocean [(NEMO)](https://www.nemo-ocean.eu) framework. JMMP works closely with the NEMO consortium to develop the underpinning model capability. 
 
+<img width="561" alt="Figure of the domain, showing surface currents" src="https://github.com/user-attachments/assets/f9299698-0ada-4956-b76c-d9332537a7c3" />
+
 ---
 
 At present, the main is for CO10 development. CO9 will continute to progress under the CO9 branch, with associated v9.x.x releases. See tags for the latest release.
